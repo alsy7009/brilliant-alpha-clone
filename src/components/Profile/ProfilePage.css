@@ -1,0 +1,193 @@
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.profile-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1a2b4a;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.profile-card,
+.profile-decorations,
+.profile-history {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 20px rgba(26, 43, 74, 0.07);
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1a2b4a;
+}
+
+.profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f2f6fd;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2a4068;
+}
+
+.profile-xp {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.section-heading {
+  margin: 0 0 0.85rem;
+  font-size: 1.05rem;
+  color: #1a2b4a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.history-count {
+  font-size: 0.85rem;
+  color: #2d6cdf;
+  font-weight: 700;
+}
+
+.deco-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.deco-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.85rem 0.5rem;
+  border: 2px solid #e3e9f2;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.deco-option:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.deco-option.equipped {
+  border-color: #2d6cdf;
+  background: #eef4ff;
+}
+
+.deco-option.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.deco-name {
+  font-weight: 700;
+  color: #1a2b4a;
+  font-size: 0.9rem;
+}
+
+.deco-status {
+  font-size: 0.78rem;
+  color: #667;
+}
+
+.deco-option.equipped .deco-status {
+  color: #2d6cdf;
+  font-weight: 700;
+}
+
+.history-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  background: #f7f9fc;
+}
+
+.history-item.done {
+  background: #f0fff4;
+}
+
+.history-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  background: #e3e9f2;
+  color: #8a93a3;
+  flex-shrink: 0;
+}
+
+.history-item.done .history-icon {
+  background: #4caf50;
+  color: #fff;
+}
+
+.history-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-name {
+  font-weight: 700;
+  color: #1a2b4a;
+  font-size: 0.95rem;
+}
+
+.history-sub {
+  font-size: 0.8rem;
+  color: #667;
+}
+
+@media (min-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .profile-card {
+    grid-column: 1 / -1;
+  }
+}

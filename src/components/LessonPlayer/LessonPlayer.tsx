@@ -4,6 +4,7 @@ import type { UserProgress } from '../../types/progress'
 import { evaluateWidget, getStepExplanation } from '../../lib/widgets/evaluateWidget'
 import { initWidgetState } from '../../lib/widgets/widgetState'
 import { completeStep, fetchLessonProgress } from '../../lib/progress'
+import { useGamification } from '../../context/GamificationContext'
 import { StepWidget } from '../StepWidget/StepWidget'
 import './LessonPlayer.css'
 
@@ -12,9 +13,17 @@ interface LessonPlayerProps {
   userId: string
   onExit: () => void
   onComplete: (lessonId: string) => void
+  onStepComplete?: () => void
 }
 
-export function LessonPlayer({ lesson, userId, onExit, onComplete }: LessonPlayerProps) {
+export function LessonPlayer({
+  lesson,
+  userId,
+  onExit,
+  onComplete,
+  onStepComplete,
+}: LessonPlayerProps) {
+  const { registerAnswer, markSession } = useGamification()
   const [stepIndex, setStepIndex] = useState(0)
   const [widgetState, setWidgetState] = useState<WidgetState>(() =>
     initWidgetState(lesson.steps[0]),
@@ -59,6 +68,7 @@ export function LessonPlayer({ lesson, userId, onExit, onComplete }: LessonPlaye
   }
 
   const handleCheck = async () => {
+    if (solved) return
     const start = performance.now()
     const outcome = evaluateWidget(step, widgetState)
     const message = getStepExplanation(step, outcome)
@@ -70,9 +80,15 @@ export function LessonPlayer({ lesson, userId, onExit, onComplete }: LessonPlaye
       console.warn(`Feedback latency ${elapsed.toFixed(1)}ms exceeds 100ms target`)
     }
 
+    if (step.type !== 'explanation-slide') {
+      registerAnswer(outcome === 'correct')
+    }
+
     if (outcome === 'correct') {
       setSolved(true)
+      markSession()
       const updated: UserProgress = await completeStep(userId, lesson, step.stepId)
+      onStepComplete?.()
       if (updated.isCompleted) {
         setCelebrate(true)
       }
@@ -139,8 +155,13 @@ export function LessonPlayer({ lesson, userId, onExit, onComplete }: LessonPlaye
         >
           Previous
         </button>
-        <button type="button" className="primary-button" onClick={handleCheck}>
-          Check
+        <button
+          type="button"
+          className="primary-button"
+          onClick={handleCheck}
+          disabled={solved}
+        >
+          {solved ? 'Correct ✓' : 'Check'}
         </button>
         <button
           type="button"

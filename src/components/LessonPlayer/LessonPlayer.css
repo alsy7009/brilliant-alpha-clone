@@ -119,6 +119,12 @@
   color: #fff;
 }
 
+.primary-button:disabled {
+  background: #b8c4da;
+  color: #eef2f8;
+  cursor: not-allowed;
+}
+
 .secondary-button {
   border: 1px solid #c8d4e8;
   background: #fff;

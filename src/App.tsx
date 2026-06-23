@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from 'firebase/auth'
 import { getLessonById } from './content/catalog'
-import { Header } from './components/Header/Header'
 import { LessonPlayer } from './components/LessonPlayer/LessonPlayer'
 import { LoginForm } from './components/Login/LoginForm'
 import { Roadmap } from './components/Roadmap/Roadmap'
+import { MainLayout, type NavKey } from './components/Layout/MainLayout'
+import { ProfilePage } from './components/Profile/ProfilePage'
+import { LevelUpModal } from './components/Gamification/LevelUpModal'
+import { ComboLayer } from './components/Gamification/ComboLayer'
+import { GamificationProvider } from './context/GamificationContext'
 import {
   initAuthRedirect,
   isDemoMode,
@@ -25,6 +29,7 @@ function App() {
 
   const userId = demoUser ? resolveUserId(null) : resolveUserId(authUser)
   const displayName = authUser?.displayName ?? (demoUser ? 'Demo Learner' : undefined)
+  const photoURL = authUser?.photoURL ?? undefined
 
   const refreshProgress = useCallback(async () => {
     const list = await fetchAllProgress(userId)
@@ -52,7 +57,7 @@ function App() {
     if (!authReady) return
     if (isDemoMode()) {
       if (demoUser) {
-        setView('roadmap')
+        setView((current) => (current === 'login' ? 'roadmap' : current))
         void refreshProgress()
       } else {
         setView('login')
@@ -73,41 +78,58 @@ function App() {
     setView('lesson')
   }
 
+  const handleSignOut = () => {
+    setDemoUser(false)
+    setView('login')
+    setProgressList([])
+  }
+
+  const handleNavigate = (key: NavKey) => {
+    setActiveLessonId(null)
+    setView(key === 'profile' ? 'profile' : 'roadmap')
+  }
+
   const activeLesson = activeLessonId ? getLessonById(activeLessonId) : undefined
 
   if (!authReady) {
-    return <div className="app-shell loading">Loading…</div>
+    return <div className="auth-screen">Loading…</div>
   }
 
-  return (
-    <div className="app-shell">
-      {view !== 'login' && (
-        <Header
-          streak={getGlobalStreak(progressList)}
-          displayName={displayName}
-          demoMode={demoUser || isDemoMode()}
-          onSignOut={() => {
-            setDemoUser(false)
-            setView('login')
-            setProgressList([])
+  if (view === 'login') {
+    return (
+      <div className="auth-screen">
+        <LoginForm
+          onDemoContinue={() => {
+            setDemoUser(true)
+            setView('roadmap')
           }}
         />
-      )}
+      </div>
+    )
+  }
 
-      <main className="app-main">
-        {view === 'login' && (
-          <LoginForm
-            onDemoContinue={() => {
-              setDemoUser(true)
-              setView('roadmap')
-            }}
-          />
+  const activeNav: NavKey = view === 'profile' ? 'profile' : 'dashboard'
+
+  return (
+    <GamificationProvider progressList={progressList} streak={getGlobalStreak(progressList)}>
+      <MainLayout
+        active={activeNav}
+        onNavigate={handleNavigate}
+        displayName={displayName}
+        photoURL={photoURL}
+        demoMode={demoUser || isDemoMode()}
+        onSignOut={handleSignOut}
+        immersive={view === 'lesson'}
+      >
+        {view === 'roadmap' && (
+          <Roadmap progressList={progressList} onSelectLesson={openLesson} />
         )}
 
-        {view === 'roadmap' && (
-          <Roadmap
+        {view === 'profile' && (
+          <ProfilePage
+            displayName={displayName}
+            photoURL={photoURL}
             progressList={progressList}
-            onSelectLesson={openLesson}
           />
         )}
 
@@ -115,6 +137,7 @@ function App() {
           <LessonPlayer
             lesson={activeLesson}
             userId={userId}
+            onStepComplete={() => void refreshProgress()}
             onExit={() => {
               setView('roadmap')
               void refreshProgress()
@@ -125,8 +148,11 @@ function App() {
             }}
           />
         )}
-      </main>
-    </div>
+      </MainLayout>
+
+      <ComboLayer />
+      <LevelUpModal displayName={displayName} photoURL={photoURL} />
+    </GamificationProvider>
   )
 }
 

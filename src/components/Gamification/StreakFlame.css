@@ -1,0 +1,74 @@
+.streak-flame {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.flame-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 6px var(--flame-glow));
+  animation: flame-breathe 2.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.flame-svg {
+  display: block;
+  transform-origin: 50% 80%;
+  animation: flame-flicker 1.6s ease-in-out infinite;
+}
+
+.flame-core {
+  transform-origin: 50% 80%;
+  animation: flame-core-pulse 1.2s ease-in-out infinite;
+}
+
+.flame-count {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #e0531f;
+}
+
+@keyframes flame-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(calc(1 + 0.06 * var(--flame-intensity, 0.4)));
+  }
+}
+
+@keyframes flame-flicker {
+  0%,
+  100% {
+    transform: scaleY(1) rotate(0deg);
+  }
+  35% {
+    transform: scaleY(1.05) rotate(-1.5deg);
+  }
+  70% {
+    transform: scaleY(0.97) rotate(1.5deg);
+  }
+}
+
+@keyframes flame-core-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flame-wrap,
+  .flame-svg,
+  .flame-core {
+    animation: none;
+  }
+}

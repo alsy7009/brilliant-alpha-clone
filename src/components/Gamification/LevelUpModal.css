@@ -1,0 +1,177 @@
+.levelup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 22, 38, 0.6);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+  animation: overlay-in 0.2s ease-out;
+}
+
+.levelup-modal {
+  position: relative;
+  background: #fff;
+  border-radius: 20px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  animation: modal-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.levelup-burst {
+  position: relative;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.burst-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  transform: translate(-50%, -50%);
+  animation: burst 0.9s ease-out forwards;
+  animation-delay: var(--delay);
+  will-change: transform, opacity;
+}
+
+.levelup-badge-pop {
+  animation: badge-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.levelup-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #2d6cdf, #b15bff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.levelup-sub {
+  margin: 0.25rem 0 1rem;
+  color: #556;
+}
+
+.levelup-prompt {
+  margin: 0 0 0.75rem;
+  font-weight: 700;
+  color: #1a2b4a;
+}
+
+.levelup-rewards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.levelup-reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.35rem;
+  border: 2px solid #e3e9f2;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.levelup-reward:hover {
+  transform: translateY(-2px);
+}
+
+.levelup-reward.chosen {
+  border-color: #2d6cdf;
+  background: #eef4ff;
+}
+
+.reward-name {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #1a2b4a;
+}
+
+.reward-blurb {
+  font-size: 0.68rem;
+  color: #778;
+  line-height: 1.2;
+}
+
+.levelup-continue {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #2d6cdf, #5b9fff);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+@keyframes burst {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes badge-pop {
+  0% {
+    transform: scale(0) rotate(-30deg);
+  }
+  70% {
+    transform: scale(1.2) rotate(8deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes modal-pop {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .burst-particle {
+    display: none;
+  }
+  .levelup-modal,
+  .levelup-badge-pop {
+    animation: none;
+  }
+}
