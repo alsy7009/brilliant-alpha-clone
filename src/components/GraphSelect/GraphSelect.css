@@ -1,0 +1,52 @@
+.graph-select {
+  width: 100%;
+}
+
+.graph-select-label {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+  color: #1a2b4a;
+}
+
+.graph-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.graph-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  border: 2px solid #d8e3f5;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  min-height: 120px;
+  transition: border-color 0.15s;
+}
+
+.graph-option.selected {
+  border-color: #2d6cdf;
+  background: #eef4ff;
+}
+
+.graph-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.mini-parabola {
+  width: 100%;
+  height: 80px;
+}
+
+.option-id {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #667;
+}

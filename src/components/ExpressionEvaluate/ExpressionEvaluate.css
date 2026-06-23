@@ -1,0 +1,161 @@
+.expression-evaluate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.expression-evaluate .tile-model {
+  width: 100%;
+  max-width: 360px;
+  background: #2a2d35;
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+}
+
+.expression-evaluate .tile-model-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 100px;
+}
+
+.expression-evaluate .variable-tiles {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.expression-evaluate .model-bar {
+  width: 28px;
+  height: 72px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+}
+
+.expression-evaluate .constant-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 52px;
+}
+
+.expression-evaluate .model-unit {
+  width: 22px;
+  height: 22px;
+  background: #8e949e;
+  border-radius: 3px;
+}
+
+.eval-equation-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.85rem;
+  background: #f0f4fa;
+  border-radius: 14px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  width: 100%;
+  max-width: 360px;
+}
+
+.eval-label-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.eval-slot {
+  width: 48px;
+  height: 48px;
+  border: 2px dashed #9aa8bc;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.eval-slot.filled {
+  border-style: solid;
+  border-color: #2d6cdf;
+  background: #eef4ff;
+}
+
+.eval-slot.drop-ready {
+  border-color: #2d6cdf;
+  background: #f8fbff;
+}
+
+.eval-slot.snap-hover {
+  border-style: solid;
+  border-color: #2d6cdf;
+  background: #dbe9ff;
+  transform: scale(1.08);
+  transition: transform 0.1s;
+}
+
+.expression-evaluate .tile-bank {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  background: #2a2d35;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.expression-evaluate .bank-tile {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #5a6270;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #3d424d 0%, #32363f 100%);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: grab;
+  touch-action: none;
+}
+
+.expression-evaluate .bank-tile.selected {
+  outline: 3px solid #5b9fff;
+  outline-offset: 2px;
+}
+
+.expression-evaluate .bank-tile.dragging {
+  opacity: 0.4;
+}
+
+.expression-evaluate .bank-tile.used {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.expression-evaluate .start-over {
+  align-self: flex-end;
+  border: none;
+  background: transparent;
+  color: #667;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.expression-evaluate .tile-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #2d6cdf;
+  text-align: center;
+}

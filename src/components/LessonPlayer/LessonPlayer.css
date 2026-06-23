@@ -1,0 +1,161 @@
+.lesson-player {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  gap: 1rem;
+}
+
+.lesson-player.loading {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.lesson-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lesson-meta h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: #1a2b4a;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e8edf5;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2d6cdf, #5b9fff);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.step-count {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: #667;
+}
+
+.lesson-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 4px 20px rgba(26, 43, 74, 0.08);
+}
+
+.instruction {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: #223;
+}
+
+.feedback {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  animation: fadeIn 0.1s ease-out;
+}
+
+.feedback-success {
+  background: #e8f8ee;
+  color: #1b6b3a;
+  border: 1px solid #b8e6c8;
+}
+
+.feedback-error {
+  background: #fff3f0;
+  color: #8b3a2a;
+  border: 1px solid #f5c4b8;
+}
+
+.feedback-neutral {
+  background: #f5f7fb;
+  color: #334;
+}
+
+.celebration {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d6cdf;
+  animation: pop 0.4s ease;
+}
+
+.lesson-footer {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 0.5rem;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.primary-button,
+.secondary-button,
+.text-button {
+  min-height: 44px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: none;
+  background: #2d6cdf;
+  color: #fff;
+}
+
+.secondary-button {
+  border: 1px solid #c8d4e8;
+  background: #fff;
+  color: #2a4068;
+}
+
+.secondary-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.text-button {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: #2d6cdf;
+  padding: 0.25rem 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

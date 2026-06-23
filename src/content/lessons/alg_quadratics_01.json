@@ -1,0 +1,52 @@
+{
+  "lessonId": "alg_quadratics_01",
+  "title": "Quadratic Graphs",
+  "subject": "algebra",
+  "order": 6,
+  "steps": [
+    {
+      "stepId": "step_quad_select_01",
+      "type": "graph-select",
+      "instruction": "Which graph shows y = (x − 1)(x + 2)?",
+      "widgetConfig": {
+        "equationLabel": "y = (x − 1)(x + 2)",
+        "options": [
+          { "optionId": "a", "roots": [1, -2], "opens": "up" },
+          { "optionId": "b", "roots": [-1, 2], "opens": "up" },
+          { "optionId": "c", "roots": [1, -2], "opens": "down" },
+          { "optionId": "d", "roots": [2, -1], "opens": "up" }
+        ]
+      },
+      "validationRules": {
+        "correctOptionId": "a"
+      },
+      "explanations": {
+        "correct": "Roots at x = 1 and x = −2, opening upward.",
+        "incomplete": "Tap the graph that matches the equation.",
+        "generic_wrong": "Find where y = 0: (x − 1)(x + 2) = 0 at x = 1 and x = −2."
+      }
+    },
+    {
+      "stepId": "step_quad_select_02",
+      "type": "graph-select",
+      "instruction": "Which graph matches y = (x + 1)(x − 3)?",
+      "widgetConfig": {
+        "equationLabel": "y = (x + 1)(x − 3)",
+        "options": [
+          { "optionId": "a", "roots": [1, -3], "opens": "up" },
+          { "optionId": "b", "roots": [-1, 3], "opens": "up" },
+          { "optionId": "c", "roots": [-1, 3], "opens": "down" },
+          { "optionId": "d", "roots": [3, -1], "opens": "up" }
+        ]
+      },
+      "validationRules": {
+        "correctOptionId": "b"
+      },
+      "explanations": {
+        "correct": "Zeros at x = −1 and x = 3, parabola opens up.",
+        "incomplete": "Select one of the four graphs.",
+        "generic_wrong": "Set each factor to zero: x = −1 or x = 3."
+      }
+    }
+  ]
+}

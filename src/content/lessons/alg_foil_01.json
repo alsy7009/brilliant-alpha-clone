@@ -1,0 +1,64 @@
+{
+  "lessonId": "alg_foil_01",
+  "title": "The FOIL Method",
+  "subject": "algebra",
+  "order": 5,
+  "steps": [
+    {
+      "stepId": "step_foil_intro",
+      "type": "explanation-slide",
+      "instruction": "Learn how to multiply two binomials using FOIL.",
+      "widgetConfig": {
+        "slides": [
+          {
+            "title": "What is FOIL?",
+            "body": "FOIL is an order for multiplying (x + a)(x + b): multiply First, Outer, Inner, then Last — and add the results.",
+            "highlight": ["First", "Outer", "Inner", "Last"]
+          },
+          {
+            "title": "Example",
+            "body": "(x + 2)(x + 3): First is x·x = x². Outer is x·3. Inner is 2·x. Last is 2·3 = 6. Add them: x² + 3x + 2x + 6 = x² + 5x + 6.",
+            "highlight": ["x²", "5x", "6"]
+          }
+        ]
+      },
+      "explanations": {
+        "correct": "Great — now try building a product yourself!"
+      }
+    },
+    {
+      "stepId": "step_foil_drag",
+      "type": "foil-multiply",
+      "instruction": "Build (x + 2)(x + 3) by dragging the correct numbers into the boxes.",
+      "widgetConfig": {
+        "tileBank": ["1", "2", "3", "4", "5"],
+        "slotIds": ["slotA", "slotB"]
+      },
+      "validationRules": {
+        "expectedSlots": { "slotA": "2", "slotB": "3" }
+      },
+      "explanations": {
+        "correct": "FOIL on (x + 2)(x + 3) gives x² + 5x + 6.",
+        "incomplete": "Drag numbers into both boxes.",
+        "generic_wrong": "The factors are (x + 2) and (x + 3)."
+      }
+    },
+    {
+      "stepId": "step_foil_drag_02",
+      "type": "foil-multiply",
+      "instruction": "Now build (x + 1)(x + 4).",
+      "widgetConfig": {
+        "tileBank": ["1", "2", "3", "4", "5"],
+        "slotIds": ["slotA", "slotB"]
+      },
+      "validationRules": {
+        "expectedSlots": { "slotA": "1", "slotB": "4" }
+      },
+      "explanations": {
+        "correct": "Nice! (x + 1)(x + 4) expands to x² + 5x + 4.",
+        "incomplete": "Fill both slots.",
+        "generic_wrong": "Order doesn't matter: (x + 1)(x + 4) works."
+      }
+    }
+  ]
+}

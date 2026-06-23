@@ -1,0 +1,62 @@
+{
+  "lessonId": "alg_balancing_01",
+  "title": "Intro to Equation Scales",
+  "subject": "algebra",
+  "order": 1,
+  "steps": [
+    {
+      "stepId": "step_01_concept",
+      "type": "visual-intro",
+      "instruction": "Before touching equations, notice how weight affects balance. Use + and − until both sides match and the scale is level.",
+      "widgetConfig": {
+        "leftWeight": 5,
+        "rightWeight": 3,
+        "isInteractive": true
+      },
+      "explanations": {
+        "correct": "The scale is level! Equal weight on both sides means balance.",
+        "generic_wrong": "The scale is tilted. Adjust the weights until both sides are equal."
+      }
+    },
+    {
+      "stepId": "step_02_problem",
+      "type": "scale-balance",
+      "instruction": "The equation is X + 3 = 7. Isolate X by subtracting 3 from both sides — drag the block or tap the operation button.",
+      "widgetConfig": {
+        "equationLeft": "X + 3",
+        "equationRight": "7",
+        "targetVariable": "X"
+      },
+      "validationRules": {
+        "expectedLeft": "X",
+        "expectedRight": "4"
+      },
+      "explanations": {
+        "correct": "Excellent! Subtracting 3 from both sides leaves X = 4.",
+        "wrong_moved_incorrectly": "Moving +3 across the equals sign flips it to −3 on the right. Try subtracting 3 from both sides instead.",
+        "generic_wrong": "The scale tilted. Whatever you do to one side, do the same to the other.",
+        "incomplete": "Remove the +3 from the left side using the same operation on both sides."
+      }
+    },
+    {
+      "stepId": "step_03_problem",
+      "type": "scale-balance",
+      "instruction": "Now solve X + 5 = 12. Balance the scale!",
+      "widgetConfig": {
+        "equationLeft": "X + 5",
+        "equationRight": "12",
+        "targetVariable": "X"
+      },
+      "validationRules": {
+        "expectedLeft": "X",
+        "expectedRight": "7"
+      },
+      "explanations": {
+        "correct": "You got it! X + 5 = 12 means X = 7.",
+        "wrong_moved_incorrectly": "When +5 crosses the equals sign it becomes −5 on the other side.",
+        "generic_wrong": "Keep both pans balanced while removing the constant from the left.",
+        "incomplete": "Subtract 5 from both sides, then check your answer."
+      }
+    }
+  ]
+}

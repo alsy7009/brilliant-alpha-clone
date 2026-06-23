@@ -1,0 +1,23 @@
+.drag-ghost {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  border: 2px solid #5b9fff;
+  background: linear-gradient(180deg, #3d424d 0%, #32363f 100%);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  opacity: 0.95;
+}
+
+.drag-ghost-var {
+  background: linear-gradient(180deg, #4a4038 0%, #3a332c 100%);
+}

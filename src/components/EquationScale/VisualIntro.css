@@ -1,0 +1,51 @@
+.visual-intro {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.weight-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.weight-side {
+  background: #f7f9fc;
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 600;
+}
+
+.weight-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.weight-buttons button {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: #2d6cdf;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weight-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.intro-scale-svg {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}

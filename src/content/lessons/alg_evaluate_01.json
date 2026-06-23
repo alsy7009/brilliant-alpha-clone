@@ -1,0 +1,64 @@
+{
+  "lessonId": "alg_evaluate_01",
+  "title": "Evaluating Expressions",
+  "subject": "algebra",
+  "order": 3,
+  "steps": [
+    {
+      "stepId": "step_eval_01",
+      "type": "expression-evaluate",
+      "instruction": "Evaluate 2c + 3 for c = 4.",
+      "widgetConfig": {
+        "expression": "2c + 3",
+        "substitute": { "variable": "c", "value": 4 },
+        "visualModel": {
+          "variable": "c",
+          "variableColor": "#9b59b6",
+          "variableCount": 2,
+          "constantCount": 3
+        },
+        "slotIds": ["sub", "result"],
+        "slotLabels": ["2 · □ + 3", "= □"],
+        "tileBank": ["3", "4", "11", "12"]
+      },
+      "validationRules": {
+        "expectedSlots": { "sub": "4", "result": "11" }
+      },
+      "explanations": {
+        "correct": "2(4) + 3 = 8 + 3 = 11.",
+        "wrong_substitution": "Plug in c = 4 where c appears.",
+        "wrong_arithmetic": "Multiply 2 × 4 first, then add 3.",
+        "incomplete": "Fill both boxes using the number tiles.",
+        "generic_wrong": "Replace c with 4 and simplify."
+      }
+    },
+    {
+      "stepId": "step_eval_02",
+      "type": "expression-evaluate",
+      "instruction": "Evaluate 3a + 2 for a = 5.",
+      "widgetConfig": {
+        "expression": "3a + 2",
+        "substitute": { "variable": "a", "value": 5 },
+        "visualModel": {
+          "variable": "a",
+          "variableColor": "#1abc9c",
+          "variableCount": 3,
+          "constantCount": 2
+        },
+        "slotIds": ["sub", "result"],
+        "slotLabels": ["3 · □ + 2", "= □"],
+        "tileBank": ["2", "5", "15", "17"]
+      },
+      "validationRules": {
+        "expectedSlots": { "sub": "5", "result": "17" }
+      },
+      "explanations": {
+        "correct": "3(5) + 2 = 15 + 2 = 17.",
+        "wrong_substitution": "Use a = 5 in the multiplication.",
+        "wrong_arithmetic": "3 × 5 = 15, then add 2.",
+        "incomplete": "Place the substitution and the final answer.",
+        "generic_wrong": "Substitute a = 5 and compute step by step."
+      }
+    }
+  ]
+}

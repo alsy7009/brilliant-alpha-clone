@@ -1,0 +1,80 @@
+.equation-scale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.equation-labels {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.equation-chip {
+  background: #eef4ff;
+  color: #1a3a6b;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.equation-equals {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.scale-svg {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  touch-action: none;
+  user-select: none;
+}
+
+.pan-label,
+.block-text {
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  fill: #1a1a1a;
+}
+
+.term-block {
+  transition: transform 0.15s ease-out;
+}
+
+.term-block.dragging {
+  opacity: 0.85;
+}
+
+.op-button {
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: #2d6cdf;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  width: 100%;
+  max-width: 320px;
+}
+
+.op-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.scale-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+}

@@ -1,0 +1,109 @@
+.foil-multiply {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.foil-template {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a2b4a;
+  padding: 1rem;
+  background: #f0f4fa;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.foil-slot {
+  width: 52px;
+  height: 52px;
+  border: 2px dashed #9aa8bc;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.foil-slot.filled {
+  border-style: solid;
+  border-color: #2d6cdf;
+  background: #eef4ff;
+}
+
+.foil-slot.drop-ready {
+  border-color: #2d6cdf;
+  background: #f8fbff;
+}
+
+.foil-slot.snap-hover {
+  border-style: solid;
+  border-color: #2d6cdf;
+  background: #dbe9ff;
+  transform: scale(1.08);
+  transition: transform 0.1s;
+}
+
+.foil-multiply .tile-bank {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  background: #2a2d35;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.foil-multiply .bank-tile {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #5a6270;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #3d424d 0%, #32363f 100%);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: grab;
+  touch-action: none;
+}
+
+.foil-multiply .bank-tile.selected {
+  outline: 3px solid #5b9fff;
+  outline-offset: 2px;
+}
+
+.foil-multiply .bank-tile.dragging {
+  opacity: 0.4;
+}
+
+.foil-multiply .bank-tile.used {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.foil-multiply .start-over {
+  align-self: flex-end;
+  border: none;
+  background: transparent;
+  color: #667;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.foil-multiply .tile-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #2d6cdf;
+  text-align: center;
+}

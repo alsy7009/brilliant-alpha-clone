@@ -1,0 +1,70 @@
+{
+  "lessonId": "alg_expressions_01",
+  "title": "Constructing Expressions",
+  "subject": "algebra",
+  "order": 2,
+  "steps": [
+    {
+      "stepId": "step_expr_build_01",
+      "type": "expression-build",
+      "instruction": "Complete the expression.",
+      "widgetConfig": {
+        "visualModel": {
+          "variable": "b",
+          "variableColor": "#e67e22",
+          "variableCount": 3,
+          "constantCount": 2
+        },
+        "slots": [
+          { "slotId": "coef", "accept": ["number"] },
+          { "slotId": "var", "accept": ["variable"] },
+          { "slotId": "const", "accept": ["number"] }
+        ],
+        "slotLayout": ["coef", "var", "+", "const"],
+        "tileBank": ["2", "3", "4", "5", "a", "b"]
+      },
+      "validationRules": {
+        "expectedSlots": { "coef": "3", "var": "b", "const": "2" },
+        "expectedExpression": "3b + 2"
+      },
+      "explanations": {
+        "correct": "Yes! Three b tiles and two unit squares make 3b + 2.",
+        "wrong_count": "Count the colored bars and gray squares again.",
+        "wrong_variable": "The tall bars are labeled b — use that variable.",
+        "incomplete": "Fill all three boxes using tiles from the bank.",
+        "generic_wrong": "Match the picture: how many b's? How many ones?"
+      }
+    },
+    {
+      "stepId": "step_expr_build_02",
+      "type": "expression-build",
+      "instruction": "Write an expression for this model.",
+      "widgetConfig": {
+        "visualModel": {
+          "variable": "a",
+          "variableColor": "#1abc9c",
+          "variableCount": 2,
+          "constantCount": 4
+        },
+        "slots": [
+          { "slotId": "coef", "accept": ["number"] },
+          { "slotId": "var", "accept": ["variable"] },
+          { "slotId": "const", "accept": ["number"] }
+        ],
+        "slotLayout": ["coef", "var", "+", "const"],
+        "tileBank": ["2", "3", "4", "5", "a", "b"]
+      },
+      "validationRules": {
+        "expectedSlots": { "coef": "2", "var": "a", "const": "4" },
+        "expectedExpression": "2a + 4"
+      },
+      "explanations": {
+        "correct": "Perfect! Two a tiles and four units give 2a + 4.",
+        "wrong_count": "Count again: how many a bars? How many gray squares?",
+        "wrong_variable": "This model uses a, not b.",
+        "incomplete": "Place a number, variable, and number in the boxes.",
+        "generic_wrong": "Match each part of the picture to the expression."
+      }
+    }
+  ]
+}
