@@ -16,6 +16,7 @@ import {
   subscribeToAuth,
 } from './lib/auth'
 import { fetchAllProgress, getGlobalStreak } from './lib/progress'
+import { fileToResizedDataUrl, getAvatarOverride, setAvatarOverride } from './lib/avatar'
 import type { AppView, UserProgress } from './types/progress'
 import './App.css'
 
@@ -26,15 +27,29 @@ function App() {
   const [view, setView] = useState<AppView>('login')
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
   const [progressList, setProgressList] = useState<UserProgress[]>([])
+  const [avatarOverride, setAvatarOverrideState] = useState<string | null>(null)
 
   const userId = demoUser ? resolveUserId(null) : resolveUserId(authUser)
   const displayName = authUser?.displayName ?? (demoUser ? 'Demo Learner' : undefined)
-  const photoURL = authUser?.photoURL ?? undefined
+  const photoURL = avatarOverride ?? authUser?.photoURL ?? undefined
 
   const refreshProgress = useCallback(async () => {
     const list = await fetchAllProgress(userId)
     setProgressList(list)
   }, [userId])
+
+  useEffect(() => {
+    setAvatarOverrideState(getAvatarOverride(userId))
+  }, [userId])
+
+  const handleAvatarFile = useCallback(
+    async (file: File) => {
+      const dataUrl = await fileToResizedDataUrl(file)
+      setAvatarOverride(userId, dataUrl)
+      setAvatarOverrideState(dataUrl)
+    },
+    [userId],
+  )
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined
@@ -130,6 +145,7 @@ function App() {
             displayName={displayName}
             photoURL={photoURL}
             progressList={progressList}
+            onAvatarFile={handleAvatarFile}
           />
         )}
 

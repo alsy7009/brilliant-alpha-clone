@@ -1,3 +1,4 @@
+import { useRef, useState, type ChangeEvent } from 'react'
 import { LESSONS } from '../../content/catalog'
 import { getDecoration, useGamification } from '../../context/GamificationContext'
 import type { UserProgress } from '../../types/progress'
@@ -11,9 +12,33 @@ interface ProfilePageProps {
   displayName?: string
   photoURL?: string
   progressList: UserProgress[]
+  onAvatarFile?: (file: File) => Promise<void>
 }
 
-export function ProfilePage({ displayName, photoURL, progressList }: ProfilePageProps) {
+export function ProfilePage({
+  displayName,
+  photoURL,
+  progressList,
+  onAvatarFile,
+}: ProfilePageProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = '' // allow re-selecting the same file
+    if (!file || !onAvatarFile) return
+    setUploadError(null)
+    setUploading(true)
+    try {
+      await onAvatarFile(file)
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed.')
+    } finally {
+      setUploading(false)
+    }
+  }
   const {
     level,
     xpIntoLevel,
@@ -47,13 +72,50 @@ export function ProfilePage({ displayName, photoURL, progressList }: ProfilePage
       <div className="profile-grid">
         {/* Profile card */}
         <section className="profile-card">
-          <AvatarDecoration
-            name={displayName}
-            photoURL={photoURL}
-            variant={equipped.variant}
-            size={120}
-          />
+          <div className="profile-avatar-wrap">
+            <AvatarDecoration
+              name={displayName}
+              photoURL={photoURL}
+              variant={equipped.variant}
+              size={120}
+            />
+            <button
+              type="button"
+              className="avatar-upload-btn"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              aria-label="Upload profile photo"
+              title="Upload profile photo"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path
+                  d="M4 7h3l2-2h6l2 2h3v12H4z"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" strokeWidth="2" />
+              </svg>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="avatar-file-input"
+              onChange={handleFileChange}
+            />
+          </div>
           <h2 className="profile-name">{displayName ?? 'Learner'}</h2>
+          <button
+            type="button"
+            className="avatar-upload-link"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading…' : photoURL ? 'Change photo' : 'Upload photo'}
+          </button>
+          {uploadError && <p className="avatar-upload-error">{uploadError}</p>}
           <div className="profile-badges">
             <span className="profile-badge">
               <LevelBadge level={level} size="sm" /> Level {level}

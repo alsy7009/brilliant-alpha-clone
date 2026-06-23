@@ -74,26 +74,26 @@ export async function upsertUserProfile(
 ): Promise<void> {
   if (!isFirebaseConfigured) return
 
-  const profile: UserProfile = {
+  // Firestore rejects `undefined` field values, so only include photoURL when set.
+  const baseFields = {
     userId: user.uid,
     displayName: displayName ?? user.displayName ?? 'Learner',
     email: user.email ?? '',
-    photoURL: user.photoURL ?? undefined,
     authProvider: provider,
-    createdAt: new Date().toISOString(),
+    ...(user.photoURL ? { photoURL: user.photoURL } : {}),
   }
 
   const ref = doc(db, 'users', user.uid)
   const existing = await getDoc(ref)
   if (!existing.exists()) {
-    await setDoc(ref, profile)
+    await setDoc(ref, { ...baseFields, createdAt: new Date().toISOString() })
   } else {
     await setDoc(
       ref,
       {
-        displayName: profile.displayName,
-        email: profile.email,
-        photoURL: profile.photoURL,
+        displayName: baseFields.displayName,
+        email: baseFields.email,
+        ...(user.photoURL ? { photoURL: user.photoURL } : {}),
       },
       { merge: true },
     )

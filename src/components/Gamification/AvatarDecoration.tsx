@@ -8,10 +8,13 @@ interface AvatarDecorationProps {
   size?: number
 }
 
-function initials(name?: string): string {
-  if (!name) return '?'
-  const parts = name.trim().split(/\s+/)
-  return (parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')
+function DefaultPersonIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="avatar-default-icon" aria-hidden="true">
+      <circle cx="12" cy="8.5" r="4" fill="#c2c9d6" />
+      <path d="M3.5 21c0-4.4 4-7 8.5-7s8.5 2.6 8.5 7z" fill="#c2c9d6" />
+    </svg>
+  )
 }
 
 export function AvatarDecoration({
@@ -55,11 +58,11 @@ export function AvatarDecoration({
         </span>
       )}
 
-      <div className="avatar-core">
+      <div className={`avatar-core ${photoURL ? '' : 'avatar-core-empty'}`}>
         {photoURL ? (
           <img src={photoURL} alt={name ?? 'avatar'} className="avatar-img" />
         ) : (
-          <span className="avatar-initials">{initials(name).toUpperCase()}</span>
+          <DefaultPersonIcon />
         )}
       </div>
     </div>
