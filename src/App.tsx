@@ -13,6 +13,7 @@ import {
   getCurrentUser,
   initAuthRedirect,
   isDemoMode,
+  logOut,
   resolveUserId,
   subscribeToAuth,
 } from './lib/auth'
@@ -106,8 +107,10 @@ function App() {
     setView('lesson')
   }
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await logOut()
     setDemoUser(false)
+    setAuthUser(null)
     setView('login')
     setProgressList([])
     setDisplayNameState(null)
@@ -153,7 +156,7 @@ function App() {
         displayName={displayName}
         photoURL={photoURL}
         demoMode={demoUser || isDemoMode()}
-        onSignOut={handleSignOut}
+        onSignOut={() => void handleSignOut()}
         immersive={view === 'lesson'}
       >
         {view === 'roadmap' && (
