@@ -21,7 +21,7 @@ import {
   type LevelInfo,
 } from '../lib/gamification'
 
-const EQUIP_KEY = 'activelearn_equipped_decoration'
+const EQUIP_KEY_PREFIX = 'activelearn_equipped_decoration_'
 
 export interface ComboPopup {
   id: number
@@ -47,18 +47,20 @@ interface GamificationValue extends LevelInfo {
 const GamificationContext = createContext<GamificationValue | null>(null)
 
 interface ProviderProps {
+  userId: string
   progressList: UserProgress[]
   streak: number
   children: ReactNode
 }
 
-export function GamificationProvider({ progressList, streak, children }: ProviderProps) {
+export function GamificationProvider({ userId, progressList, streak, children }: ProviderProps) {
   const totalXp = useMemo(() => totalXpFromProgress(progressList), [progressList])
   const levelInfo = useMemo(() => levelInfoFromXp(totalXp), [totalXp])
   const unlockedIds = useMemo(() => unlockedDecorationIds(levelInfo.level), [levelInfo.level])
 
+  const equipKey = EQUIP_KEY_PREFIX + userId
   const [equippedId, setEquippedId] = useState<string>(
-    () => localStorage.getItem(EQUIP_KEY) ?? 'none',
+    () => localStorage.getItem(equipKey) ?? 'none',
   )
   const [comboCount, setComboCount] = useState(0)
   const [combos, setCombos] = useState<ComboPopup[]>([])
@@ -83,10 +85,13 @@ export function GamificationProvider({ progressList, streak, children }: Provide
     prevLevelRef.current = levelInfo.level
   }, [levelInfo.level])
 
-  const equip = useCallback((id: string) => {
-    setEquippedId(id)
-    localStorage.setItem(EQUIP_KEY, id)
-  }, [])
+  const equip = useCallback(
+    (id: string) => {
+      setEquippedId(id)
+      localStorage.setItem(equipKey, id)
+    },
+    [equipKey],
+  )
 
   const resetCombo = useCallback(() => setComboCount(0), [])
 

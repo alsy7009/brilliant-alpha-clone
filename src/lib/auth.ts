@@ -7,6 +7,7 @@ import {
   signInWithPopup,
   signInWithRedirect,
   signOut,
+  updateProfile,
   type User,
 } from 'firebase/auth'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
@@ -45,8 +46,15 @@ export async function signUpWithEmail(
   displayName: string,
 ): Promise<User> {
   const result = await createUserWithEmailAndPassword(auth, email, password)
+  // Set the auth profile name so it shows immediately and on future logins.
+  await updateProfile(result.user, { displayName })
   await upsertUserProfile(result.user, 'password', displayName)
   return result.user
+}
+
+export function getCurrentUser(): User | null {
+  if (!isFirebaseConfigured) return null
+  return auth.currentUser
 }
 
 export async function signInWithGoogle(): Promise<User | null> {

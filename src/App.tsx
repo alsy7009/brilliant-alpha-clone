@@ -10,6 +10,7 @@ import { LevelUpModal } from './components/Gamification/LevelUpModal'
 import { ComboLayer } from './components/Gamification/ComboLayer'
 import { GamificationProvider } from './context/GamificationContext'
 import {
+  getCurrentUser,
   initAuthRedirect,
   isDemoMode,
   resolveUserId,
@@ -28,9 +29,11 @@ function App() {
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
   const [progressList, setProgressList] = useState<UserProgress[]>([])
   const [avatarOverride, setAvatarOverrideState] = useState<string | null>(null)
+  const [displayNameState, setDisplayNameState] = useState<string | null>(null)
 
   const userId = demoUser ? resolveUserId(null) : resolveUserId(authUser)
-  const displayName = authUser?.displayName ?? (demoUser ? 'Demo Learner' : undefined)
+  const displayName =
+    displayNameState ?? authUser?.displayName ?? (demoUser ? 'Demo Learner' : undefined)
   const photoURL = avatarOverride ?? authUser?.photoURL ?? undefined
 
   const refreshProgress = useCallback(async () => {
@@ -41,6 +44,16 @@ function App() {
   useEffect(() => {
     setAvatarOverrideState(getAvatarOverride(userId))
   }, [userId])
+
+  // Keep the display name in sync once the auth profile carries it.
+  useEffect(() => {
+    if (authUser?.displayName) setDisplayNameState(authUser.displayName)
+  }, [authUser])
+
+  const syncDisplayName = useCallback(() => {
+    const current = getCurrentUser()
+    if (current?.displayName) setDisplayNameState(current.displayName)
+  }, [])
 
   const handleAvatarFile = useCallback(
     async (file: File) => {
@@ -97,6 +110,7 @@ function App() {
     setDemoUser(false)
     setView('login')
     setProgressList([])
+    setDisplayNameState(null)
   }
 
   const handleNavigate = (key: NavKey) => {
@@ -114,6 +128,7 @@ function App() {
     return (
       <div className="auth-screen">
         <LoginForm
+          onAuthed={syncDisplayName}
           onDemoContinue={() => {
             setDemoUser(true)
             setView('roadmap')
@@ -126,7 +141,12 @@ function App() {
   const activeNav: NavKey = view === 'profile' ? 'profile' : 'dashboard'
 
   return (
-    <GamificationProvider progressList={progressList} streak={getGlobalStreak(progressList)}>
+    <GamificationProvider
+      key={userId}
+      userId={userId}
+      progressList={progressList}
+      streak={getGlobalStreak(progressList)}
+    >
       <MainLayout
         active={activeNav}
         onNavigate={handleNavigate}

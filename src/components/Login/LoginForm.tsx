@@ -9,9 +9,10 @@ import './LoginForm.css'
 
 interface LoginFormProps {
   onDemoContinue: () => void
+  onAuthed?: () => void
 }
 
-export function LoginForm({ onDemoContinue }: LoginFormProps) {
+export function LoginForm({ onDemoContinue, onAuthed }: LoginFormProps) {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -29,6 +30,7 @@ export function LoginForm({ onDemoContinue }: LoginFormProps) {
       } else {
         await signInWithEmail(email, password)
       }
+      onAuthed?.()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed')
     } finally {
@@ -40,7 +42,8 @@ export function LoginForm({ onDemoContinue }: LoginFormProps) {
     setError(null)
     setBusy(true)
     try {
-      await signInWithGoogle()
+      const user = await signInWithGoogle()
+      if (user) onAuthed?.()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Google sign in failed')
     } finally {
