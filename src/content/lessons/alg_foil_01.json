@@ -16,48 +16,95 @@
             "highlight": ["First", "Outer", "Inner", "Last"]
           },
           {
-            "title": "Example",
-            "body": "(x + 2)(x + 3): First is x·x = x². Outer is x·3. Inner is 2·x. Last is 2·3 = 6. Add them: x² + 3x + 2x + 6 = x² + 5x + 6.",
+            "title": "Combine the middle terms",
+            "body": "After FOIL you get four pieces. The Outer and Inner pieces both have an x, so add them together. Example: (x + 2)(x + 3) = x² + 3x + 2x + 6 = x² + 5x + 6. The coefficients are 1, 5, and 6.",
             "highlight": ["x²", "5x", "6"]
+          },
+          {
+            "title": "When x has a coefficient",
+            "body": "If a factor looks like 2x + 3, the two First terms multiply to give the x² coefficient. Example: (2x + 3)(x + 1) = 2x² + 2x + 3x + 3 = 2x² + 5x + 3.",
+            "highlight": ["2x²", "5x", "3"]
           }
         ]
       },
       "explanations": {
-        "correct": "Great — now try building a product yourself!"
+        "correct": "Great — now fill in the polynomial coefficients yourself!"
       }
     },
     {
-      "stepId": "step_foil_drag",
+      "stepId": "step_foil_coef_monic_1",
       "type": "foil-multiply",
-      "instruction": "Build (x + 2)(x + 3) by dragging the correct numbers into the boxes.",
+      "instruction": "Expand (x + 2)(x + 3). Drag coefficients into the polynomial.",
       "widgetConfig": {
-        "tileBank": ["1", "2", "3", "4", "5"],
-        "slotIds": ["slotA", "slotB"]
+        "factors": "(x + 2)(x + 3)",
+        "layout": ["{a}", "x²", "+", "{b}", "x", "+", "{c}"],
+        "slotIds": ["a", "b", "c"],
+        "tileBank": ["1", "2", "4", "5", "6"]
       },
       "validationRules": {
-        "expectedSlots": { "slotA": "2", "slotB": "3" }
+        "expectedSlots": { "a": "1", "b": "5", "c": "6" }
       },
       "explanations": {
-        "correct": "FOIL on (x + 2)(x + 3) gives x² + 5x + 6.",
-        "incomplete": "Drag numbers into both boxes.",
-        "generic_wrong": "The factors are (x + 2) and (x + 3)."
+        "correct": "Yes! x² + 5x + 6. The x² coefficient is 1, the middle is 3 + 2 = 5, and 2 · 3 = 6.",
+        "incomplete": "Fill all three boxes: x², x, and the constant.",
+        "generic_wrong": "FOIL: x·x = x², then 3x + 2x = 5x, then 2·3 = 6."
       }
     },
     {
-      "stepId": "step_foil_drag_02",
+      "stepId": "step_foil_coef_monic_2",
       "type": "foil-multiply",
-      "instruction": "Now build (x + 1)(x + 4).",
+      "instruction": "Expand (x + 1)(x + 4). Drag coefficients into the polynomial.",
       "widgetConfig": {
-        "tileBank": ["1", "2", "3", "4", "5"],
-        "slotIds": ["slotA", "slotB"]
+        "factors": "(x + 1)(x + 4)",
+        "layout": ["{a}", "x²", "+", "{b}", "x", "+", "{c}"],
+        "slotIds": ["a", "b", "c"],
+        "tileBank": ["1", "3", "4", "5", "6"]
       },
       "validationRules": {
-        "expectedSlots": { "slotA": "1", "slotB": "4" }
+        "expectedSlots": { "a": "1", "b": "5", "c": "4" }
       },
       "explanations": {
-        "correct": "Nice! (x + 1)(x + 4) expands to x² + 5x + 4.",
-        "incomplete": "Fill both slots.",
-        "generic_wrong": "Order doesn't matter: (x + 1)(x + 4) works."
+        "correct": "Correct! x² + 5x + 4. Middle: 4 + 1 = 5, constant: 1 · 4 = 4.",
+        "incomplete": "Fill all three boxes.",
+        "generic_wrong": "x·x = x², then 4x + 1x = 5x, then 1·4 = 4."
+      }
+    },
+    {
+      "stepId": "step_foil_coef_nonmonic_1",
+      "type": "foil-multiply",
+      "instruction": "Expand (2x + 3)(x + 1). Watch the x² coefficient!",
+      "widgetConfig": {
+        "factors": "(2x + 3)(x + 1)",
+        "layout": ["{a}", "x²", "+", "{b}", "x", "+", "{c}"],
+        "slotIds": ["a", "b", "c"],
+        "tileBank": ["1", "2", "3", "5", "6"]
+      },
+      "validationRules": {
+        "expectedSlots": { "a": "2", "b": "5", "c": "3" }
+      },
+      "explanations": {
+        "correct": "Nice! 2x² + 5x + 3. First: 2x·x = 2x², middle: 2x + 3x = 5x, last: 3·1 = 3.",
+        "incomplete": "Fill all three boxes.",
+        "generic_wrong": "First terms 2x·x give 2x². Outer + Inner = 2x + 3x = 5x. Last = 3."
+      }
+    },
+    {
+      "stepId": "step_foil_coef_nonmonic_2",
+      "type": "foil-multiply",
+      "instruction": "Expand (3x + 1)(x + 2).",
+      "widgetConfig": {
+        "factors": "(3x + 1)(x + 2)",
+        "layout": ["{a}", "x²", "+", "{b}", "x", "+", "{c}"],
+        "slotIds": ["a", "b", "c"],
+        "tileBank": ["1", "2", "3", "6", "7"]
+      },
+      "validationRules": {
+        "expectedSlots": { "a": "3", "b": "7", "c": "2" }
+      },
+      "explanations": {
+        "correct": "Excellent! 3x² + 7x + 2. First: 3x·x = 3x², middle: 6x + 1x = 7x, last: 1·2 = 2.",
+        "incomplete": "Fill all three boxes.",
+        "generic_wrong": "3x·x = 3x². Outer 3x·2 = 6x, Inner 1·x = x, so 6x + x = 7x. Last = 2."
       }
     }
   ]

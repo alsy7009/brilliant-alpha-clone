@@ -94,6 +94,8 @@ export interface LinearGraphConfig {
   mode: 'find-y-intercept' | 'find-x-intercept'
   tolerance?: number
   equationLabel?: string
+  /** When false, hide the plot and ask for the intercept from the equation alone. */
+  showGraph?: boolean
 }
 
 export interface GraphSelectOption {
@@ -118,8 +120,12 @@ export interface ExplanationSlideConfig {
 }
 
 export interface FoilMultiplyConfig {
+  /** The factored form shown as the prompt, e.g. "(x + 2)(x + 3)". */
+  factors: string
+  /** Tokens for the polynomial line. Tokens wrapped like "{a}" are drop slots; others are literal text. */
+  layout: string[]
+  slotIds: string[]
   tileBank: string[]
-  slotIds: [string, string]
 }
 
 export type WidgetConfig =
@@ -164,7 +170,7 @@ export interface SlotWidgetState {
 }
 
 export interface LinearGraphState {
-  placedPoint: { x: number; y: number } | null
+  typedValue: string | null
 }
 
 export interface GraphSelectState {

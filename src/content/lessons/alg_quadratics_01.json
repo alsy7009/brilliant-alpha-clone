@@ -5,6 +5,33 @@
   "order": 6,
   "steps": [
     {
+      "stepId": "step_quad_intro",
+      "type": "explanation-slide",
+      "instruction": "How factors tell you where a parabola crosses the x-axis",
+      "widgetConfig": {
+        "slides": [
+          {
+            "title": "Factors give the x-intercepts",
+            "body": "A parabola crosses the x-axis where y = 0. A product equals 0 only when one of its factors is 0. So for y = (x − 1)(x + 2), set each factor to 0: x − 1 = 0 gives x = 1, and x + 2 = 0 gives x = −2. Those are the x-intercepts (the roots).",
+            "highlight": ["y = 0", "x = 1", "x = −2"]
+          },
+          {
+            "title": "Flip the sign of the number",
+            "body": "Each root is the opposite sign of the number in the factor. (x − 1) gives the root x = +1, and (x + 2) gives x = −2. So the factors point straight to where the curve hits the x-axis.",
+            "highlight": ["x − 1 → +1", "x + 2 → −2"]
+          },
+          {
+            "title": "Up or down?",
+            "body": "If the quadratic is positive out front, the parabola opens upward (a smile). A negative in front, like y = −(x − 1)(x + 2), flips it to open downward (a frown). The x-intercepts stay the same either way.",
+            "highlight": ["opens up", "opens down"]
+          }
+        ]
+      },
+      "explanations": {
+        "correct": "Now pick the graph whose x-intercepts match the factors!"
+      }
+    },
+    {
       "stepId": "step_quad_select_01",
       "type": "graph-select",
       "instruction": "Which graph shows y = (x − 1)(x + 2)?",
@@ -14,7 +41,7 @@
           { "optionId": "a", "roots": [1, -2], "opens": "up" },
           { "optionId": "b", "roots": [-1, 2], "opens": "up" },
           { "optionId": "c", "roots": [1, -2], "opens": "down" },
-          { "optionId": "d", "roots": [2, -1], "opens": "up" }
+          { "optionId": "d", "roots": [-1, -2], "opens": "up" }
         ]
       },
       "validationRules": {
@@ -23,7 +50,7 @@
       "explanations": {
         "correct": "Roots at x = 1 and x = −2, opening upward.",
         "incomplete": "Tap the graph that matches the equation.",
-        "generic_wrong": "Find where y = 0: (x − 1)(x + 2) = 0 at x = 1 and x = −2."
+        "generic_wrong": "Set each factor to zero: x − 1 = 0 → x = 1, and x + 2 = 0 → x = −2."
       }
     },
     {
@@ -36,7 +63,7 @@
           { "optionId": "a", "roots": [1, -3], "opens": "up" },
           { "optionId": "b", "roots": [-1, 3], "opens": "up" },
           { "optionId": "c", "roots": [-1, 3], "opens": "down" },
-          { "optionId": "d", "roots": [3, -1], "opens": "up" }
+          { "optionId": "d", "roots": [1, 3], "opens": "up" }
         ]
       },
       "validationRules": {
@@ -45,7 +72,73 @@
       "explanations": {
         "correct": "Zeros at x = −1 and x = 3, parabola opens up.",
         "incomplete": "Select one of the four graphs.",
-        "generic_wrong": "Set each factor to zero: x = −1 or x = 3."
+        "generic_wrong": "Set each factor to zero: x + 1 = 0 → x = −1, and x − 3 = 0 → x = 3."
+      }
+    },
+    {
+      "stepId": "step_quad_select_03",
+      "type": "graph-select",
+      "instruction": "Which graph shows y = (x − 2)(x − 1)?",
+      "widgetConfig": {
+        "equationLabel": "y = (x − 2)(x − 1)",
+        "options": [
+          { "optionId": "a", "roots": [2, 1], "opens": "up" },
+          { "optionId": "b", "roots": [-2, -1], "opens": "up" },
+          { "optionId": "c", "roots": [2, 1], "opens": "down" },
+          { "optionId": "d", "roots": [2, 3], "opens": "up" }
+        ]
+      },
+      "validationRules": {
+        "correctOptionId": "a"
+      },
+      "explanations": {
+        "correct": "Both factors are positive subtractions, so the roots are x = 2 and x = 1.",
+        "incomplete": "Pick the graph that crosses at x = 1 and x = 2.",
+        "generic_wrong": "x − 2 = 0 → x = 2, and x − 1 = 0 → x = 1. Opens up."
+      }
+    },
+    {
+      "stepId": "step_quad_select_04",
+      "type": "graph-select",
+      "instruction": "Which graph matches y = (x + 2)(x + 3)?",
+      "widgetConfig": {
+        "equationLabel": "y = (x + 2)(x + 3)",
+        "options": [
+          { "optionId": "a", "roots": [2, 3], "opens": "up" },
+          { "optionId": "b", "roots": [-2, -3], "opens": "up" },
+          { "optionId": "c", "roots": [-2, -3], "opens": "down" },
+          { "optionId": "d", "roots": [-2, 3], "opens": "up" }
+        ]
+      },
+      "validationRules": {
+        "correctOptionId": "b"
+      },
+      "explanations": {
+        "correct": "Both factors add, so the roots are negative: x = −2 and x = −3.",
+        "incomplete": "Choose the graph with roots at x = −2 and x = −3.",
+        "generic_wrong": "x + 2 = 0 → x = −2, and x + 3 = 0 → x = −3."
+      }
+    },
+    {
+      "stepId": "step_quad_select_05",
+      "type": "graph-select",
+      "instruction": "Watch the sign! Which graph shows y = −(x − 1)(x + 2)?",
+      "widgetConfig": {
+        "equationLabel": "y = −(x − 1)(x + 2)",
+        "options": [
+          { "optionId": "a", "roots": [1, -2], "opens": "up" },
+          { "optionId": "b", "roots": [1, -2], "opens": "down" },
+          { "optionId": "c", "roots": [-1, 2], "opens": "down" },
+          { "optionId": "d", "roots": [-1, 2], "opens": "up" }
+        ]
+      },
+      "validationRules": {
+        "correctOptionId": "b"
+      },
+      "explanations": {
+        "correct": "Same roots (x = 1 and x = −2), but the minus sign flips it to open downward.",
+        "incomplete": "Find the matching graph.",
+        "generic_wrong": "Roots are still x = 1 and x = −2, but the leading − makes it open down."
       }
     }
   ]

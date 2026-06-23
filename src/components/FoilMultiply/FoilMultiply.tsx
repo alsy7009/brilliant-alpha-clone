@@ -12,6 +12,8 @@ interface FoilMultiplyProps {
   disabled?: boolean
 }
 
+const SLOT_TOKEN = /^\{(.+)\}$/
+
 export function FoilMultiply({
   config,
   state,
@@ -19,7 +21,6 @@ export function FoilMultiply({
   disabled = false,
 }: FoilMultiplyProps) {
   const [selectedTile, setSelectedTile] = useState<string | null>(null)
-  const [slotA, slotB] = config.slotIds
 
   const usedTiles = useMemo(
     () => new Set(Object.values(state.slots).filter(Boolean)),
@@ -62,32 +63,36 @@ export function FoilMultiply({
 
   return (
     <div className="foil-multiply">
-      <div className="foil-template">
-        <span>(x +</span>
-        <button
-          ref={registerSlot(slotA)}
-          type="button"
-          className={`foil-slot ${state.slots[slotA] ? 'filled' : ''} ${
-            selectedTile || dragTile ? 'drop-ready' : ''
-          } ${hoverSlot === slotA ? 'snap-hover' : ''}`}
-          onClick={() => handleSlot(slotA)}
-          disabled={disabled}
-        >
-          {state.slots[slotA] ?? '□'}
-        </button>
-        <span>)(x +</span>
-        <button
-          ref={registerSlot(slotB)}
-          type="button"
-          className={`foil-slot ${state.slots[slotB] ? 'filled' : ''} ${
-            selectedTile || dragTile ? 'drop-ready' : ''
-          } ${hoverSlot === slotB ? 'snap-hover' : ''}`}
-          onClick={() => handleSlot(slotB)}
-          disabled={disabled}
-        >
-          {state.slots[slotB] ?? '□'}
-        </button>
-        <span>)</span>
+      <p className="foil-factors">{config.factors} =</p>
+
+      <div className="foil-polynomial">
+        {config.layout.map((token, index) => {
+          const match = token.match(SLOT_TOKEN)
+          if (!match) {
+            return (
+              <span key={`lit-${index}`} className="poly-literal">
+                {token}
+              </span>
+            )
+          }
+          const slotId = match[1]
+          const value = state.slots[slotId]
+          return (
+            <button
+              key={slotId}
+              ref={registerSlot(slotId)}
+              type="button"
+              className={`poly-slot ${value ? 'filled' : ''} ${
+                selectedTile || dragTile ? 'drop-ready' : ''
+              } ${hoverSlot === slotId ? 'snap-hover' : ''}`}
+              onClick={() => handleSlot(slotId)}
+              disabled={disabled}
+              aria-label={`Coefficient slot ${slotId}${value ? `: ${value}` : ', empty'}`}
+            >
+              {value ?? '□'}
+            </button>
+          )
+        })}
       </div>
 
       <div className="tile-bank">
@@ -114,7 +119,7 @@ export function FoilMultiply({
         ↺ Start over
       </button>
 
-      <p className="tile-hint">Drag a number into a box — or tap a number, then tap a box.</p>
+      <p className="tile-hint">Drag a coefficient into each box — or tap a number, then tap a box.</p>
 
       <DragGhost tile={dragTile} pointer={pointer} />
     </div>

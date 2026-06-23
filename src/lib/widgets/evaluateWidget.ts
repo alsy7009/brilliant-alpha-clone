@@ -51,19 +51,19 @@ function evaluateLinearGraph(state: LinearGraphState, step: LessonStep): Validat
   const rules = step.validationRules
   const config = step.widgetConfig as LinearGraphConfig
   if (!rules || !isLinearGraphValidationRules(rules)) return 'generic_wrong'
-  if (!state.placedPoint) return 'incomplete'
 
-  const tol = rules.tolerance ?? config.tolerance ?? 0.75
-  const { x, y } = state.placedPoint
+  const raw = state.typedValue?.trim() ?? ''
+  if (raw === '' || raw === '-') return 'incomplete'
+
+  const value = Number(raw)
+  if (!Number.isInteger(value)) return 'wrong_intercept'
 
   if (config.mode === 'find-y-intercept' && rules.expectedYIntercept !== undefined) {
-    const dist = Math.hypot(x - 0, y - rules.expectedYIntercept)
-    return dist <= tol ? 'correct' : 'wrong_intercept'
+    return value === rules.expectedYIntercept ? 'correct' : 'wrong_intercept'
   }
 
   if (config.mode === 'find-x-intercept' && rules.expectedXIntercept !== undefined) {
-    const dist = Math.hypot(x - rules.expectedXIntercept, y - 0)
-    return dist <= tol ? 'correct' : 'wrong_intercept'
+    return value === rules.expectedXIntercept ? 'correct' : 'wrong_intercept'
   }
 
   return 'generic_wrong'

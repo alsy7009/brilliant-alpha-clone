@@ -7,45 +7,105 @@
     {
       "stepId": "step_linear_y_int",
       "type": "linear-graph",
-      "instruction": "The line shows y = 2x + 1. Tap where it crosses the y-axis.",
+      "instruction": "The line shows y = 2x + 1. Type the y-intercept (where it crosses the y-axis).",
       "widgetConfig": {
         "equation": { "slope": 2, "intercept": 1 },
-        "grid": { "xMin": -4, "xMax": 4, "yMin": -2, "yMax": 10 },
+        "grid": { "xMin": -4, "xMax": 4, "yMin": -4, "yMax": 8 },
         "mode": "find-y-intercept",
-        "tolerance": 0.75,
         "equationLabel": "y = 2x + 1"
       },
       "validationRules": {
-        "expectedYIntercept": 1,
-        "tolerance": 0.75
+        "expectedYIntercept": 1
       },
       "explanations": {
         "correct": "The y-intercept is 1 — that's where the line crosses the y-axis (x = 0).",
-        "wrong_intercept": "The y-intercept is on the vertical axis where x = 0.",
-        "incomplete": "Tap a point on the grid where the line meets the y-axis.",
-        "generic_wrong": "In y = mx + b, the number b tells you the y-intercept."
+        "wrong_intercept": "Not quite. The y-intercept is the y-value where x = 0. Read it off the graph.",
+        "incomplete": "Type a whole number for the y-intercept.",
+        "generic_wrong": "In y = mx + b, the number b is the y-intercept."
       }
     },
     {
       "stepId": "step_linear_x_int",
       "type": "linear-graph",
-      "instruction": "For y = 2x − 4, tap where the line crosses the x-axis.",
+      "instruction": "For y = 2x − 4, type the x-intercept (where the line crosses the x-axis).",
       "widgetConfig": {
         "equation": { "slope": 2, "intercept": -4 },
-        "grid": { "xMin": -2, "xMax": 6, "yMin": -6, "yMax": 6 },
+        "grid": { "xMin": -3, "xMax": 5, "yMin": -6, "yMax": 6 },
         "mode": "find-x-intercept",
-        "tolerance": 0.75,
         "equationLabel": "y = 2x − 4"
       },
       "validationRules": {
-        "expectedXIntercept": 2,
-        "tolerance": 0.75
+        "expectedXIntercept": 2
       },
       "explanations": {
         "correct": "The x-intercept is 2 — where y = 0.",
-        "wrong_intercept": "The x-intercept is on the horizontal axis where y = 0.",
-        "incomplete": "Tap where the line crosses the x-axis.",
+        "wrong_intercept": "Not quite. The x-intercept is the x-value where y = 0. Read it off the graph.",
+        "incomplete": "Type a whole number for the x-intercept.",
         "generic_wrong": "Set y = 0 and solve: 0 = 2x − 4, so x = 2."
+      }
+    },
+    {
+      "stepId": "step_intercept_rules",
+      "type": "explanation-slide",
+      "instruction": "Find intercepts using only the equation",
+      "widgetConfig": {
+        "slides": [
+          {
+            "title": "y-intercept: set x = 0",
+            "body": "The y-intercept is where the line touches the y-axis. That always happens when x = 0. In y = mx + b, plug in x = 0 and you get y = b. So the y-intercept is just b — the number with no x!",
+            "highlight": ["x = 0", "y = b"]
+          },
+          {
+            "title": "x-intercept: set y = 0",
+            "body": "The x-intercept is where the line touches the x-axis, which is when y = 0. Set y = 0 and solve for x. Example: y = 2x − 6 → 0 = 2x − 6 → 2x = 6 → x = 3.",
+            "highlight": ["y = 0", "solve for x"]
+          }
+        ]
+      },
+      "explanations": {
+        "correct": "Now try finding intercepts without a graph!"
+      }
+    },
+    {
+      "stepId": "step_linear_y_noplot",
+      "type": "linear-graph",
+      "instruction": "No graph this time! For y = 3x + 5, find the y-intercept using the equation.",
+      "widgetConfig": {
+        "equation": { "slope": 3, "intercept": 5 },
+        "grid": { "xMin": -4, "xMax": 4, "yMin": -2, "yMax": 10 },
+        "mode": "find-y-intercept",
+        "showGraph": false,
+        "equationLabel": "y = 3x + 5"
+      },
+      "validationRules": {
+        "expectedYIntercept": 5
+      },
+      "explanations": {
+        "correct": "Exactly! Set x = 0: y = 3(0) + 5 = 5. The y-intercept is b = 5.",
+        "wrong_intercept": "Set x = 0. In y = 3x + 5 that leaves y = 5 — the number b.",
+        "incomplete": "Type a whole number for the y-intercept.",
+        "generic_wrong": "The y-intercept is the b in y = mx + b."
+      }
+    },
+    {
+      "stepId": "step_linear_x_noplot",
+      "type": "linear-graph",
+      "instruction": "No graph! For y = 2x − 6, find the x-intercept using the equation.",
+      "widgetConfig": {
+        "equation": { "slope": 2, "intercept": -6 },
+        "grid": { "xMin": -2, "xMax": 6, "yMin": -8, "yMax": 6 },
+        "mode": "find-x-intercept",
+        "showGraph": false,
+        "equationLabel": "y = 2x − 6"
+      },
+      "validationRules": {
+        "expectedXIntercept": 3
+      },
+      "explanations": {
+        "correct": "Nice! Set y = 0: 0 = 2x − 6 → 2x = 6 → x = 3.",
+        "wrong_intercept": "Set y = 0 and solve: 0 = 2x − 6 → 2x = 6 → x = 3.",
+        "incomplete": "Type a whole number for the x-intercept.",
+        "generic_wrong": "To find the x-intercept, set y = 0 and solve for x."
       }
     }
   ]

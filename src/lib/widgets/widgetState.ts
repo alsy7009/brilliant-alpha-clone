@@ -30,7 +30,7 @@ export function initWidgetState(step: LessonStep): WidgetState {
       return createInitialSlotState(cfg.slotIds.map((id) => ({ slotId: id })))
     }
     case 'linear-graph':
-      return { placedPoint: null }
+      return { typedValue: null }
     case 'graph-select':
       return { selectedOptionId: null }
     case 'explanation-slide':

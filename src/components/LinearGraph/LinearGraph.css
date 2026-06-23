@@ -26,6 +26,39 @@
   background: #fafbfd;
   border-radius: 12px;
   border: 1px solid #d8e3f5;
-  cursor: crosshair;
   touch-action: manipulation;
+}
+
+.axis-label {
+  font-size: 9px;
+  fill: #8a93a3;
+  font-weight: 600;
+}
+
+.intercept-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1a2b4a;
+}
+
+.intercept-field {
+  width: 88px;
+  min-height: 44px;
+  padding: 0.4rem 0.6rem;
+  border: 2px solid #c8d4e8;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1a2b4a;
+}
+
+.intercept-field:focus {
+  outline: none;
+  border-color: #2d6cdf;
+  background: #f8fbff;
 }

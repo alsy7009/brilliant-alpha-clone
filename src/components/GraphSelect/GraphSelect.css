@@ -26,7 +26,6 @@
   border-radius: 12px;
   background: #fff;
   cursor: pointer;
-  min-height: 120px;
   transition: border-color 0.15s;
 }
 
@@ -42,7 +41,15 @@
 
 .mini-parabola {
   width: 100%;
-  height: 80px;
+  height: auto;
+  background: #fafbfd;
+  border-radius: 8px;
+}
+
+.mini-axis-label {
+  font-size: 7px;
+  fill: #8a93a3;
+  font-weight: 600;
 }
 
 .option-id {
