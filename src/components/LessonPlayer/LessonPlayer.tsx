@@ -23,12 +23,16 @@ export function LessonPlayer({ lesson, userId, onExit, onComplete }: LessonPlaye
   const [feedbackTone, setFeedbackTone] = useState<'success' | 'error' | 'neutral'>('neutral')
   const [loading, setLoading] = useState(true)
   const [celebrate, setCelebrate] = useState(false)
+  const [solved, setSolved] = useState(false)
 
   const step: LessonStep = lesson.steps[stepIndex]
+  const isLastStep = stepIndex >= lesson.steps.length - 1
 
   const resetWidgetState = useCallback((targetStep: LessonStep) => {
     setWidgetState(initWidgetState(targetStep))
     setFeedback(null)
+    setSolved(false)
+    setCelebrate(false)
   }, [])
 
   useEffect(() => {
@@ -67,21 +71,19 @@ export function LessonPlayer({ lesson, userId, onExit, onComplete }: LessonPlaye
     }
 
     if (outcome === 'correct') {
+      setSolved(true)
       const updated: UserProgress = await completeStep(userId, lesson, step.stepId)
       if (updated.isCompleted) {
         setCelebrate(true)
-        setTimeout(() => onComplete(lesson.lessonId), 1200)
-      } else if (stepIndex < lesson.steps.length - 1) {
-        setTimeout(() => goToStep(stepIndex + 1), 900)
       }
     }
   }
 
   const handleNext = () => {
-    if (stepIndex < lesson.steps.length - 1) {
-      goToStep(stepIndex + 1)
+    if (isLastStep) {
+      onComplete(lesson.lessonId)
     } else {
-      onExit()
+      goToStep(stepIndex + 1)
     }
   }
 
@@ -144,9 +146,9 @@ export function LessonPlayer({ lesson, userId, onExit, onComplete }: LessonPlaye
           type="button"
           className="secondary-button"
           onClick={handleNext}
-          disabled={stepIndex >= lesson.steps.length - 1}
+          disabled={isLastStep && !solved}
         >
-          Next
+          {isLastStep ? 'Finish' : 'Next'}
         </button>
       </footer>
     </div>
