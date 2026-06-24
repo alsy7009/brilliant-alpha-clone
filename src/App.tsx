@@ -33,6 +33,7 @@ function App() {
   const [avatarOverride, setAvatarOverrideState] = useState<string | null>(null)
   const [displayNameState, setDisplayNameState] = useState<string | null>(null)
   const [streak, setStreak] = useState(0)
+  const [confirmLinkEmail, setConfirmLinkEmail] = useState<string | null>(null)
 
   const userId = demoUser ? resolveUserId(null) : resolveUserId(authUser)
   const displayName =
@@ -82,7 +83,10 @@ function App() {
   useEffect(() => {
     let unsubscribe: (() => void) | undefined
 
-    void initAuthRedirect().then(() => {
+    void initAuthRedirect().then((res) => {
+      if (res.confirmLink) {
+        setConfirmLinkEmail(res.confirmLink.email)
+      }
       if (isDemoMode()) {
         setAuthReady(true)
         return
@@ -147,6 +151,7 @@ function App() {
       <div className="auth-screen">
         <LoginForm
           onAuthed={syncDisplayName}
+          initialConfirmEmail={confirmLinkEmail}
           onDemoContinue={() => {
             setDemoUser(true)
             setView('roadmap')

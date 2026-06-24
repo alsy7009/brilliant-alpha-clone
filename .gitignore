@@ -23,3 +23,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.vercel
+
+# Firebase
+.firebase
+firebase-debug.log
+firestore-debug.log
+*-debug.log
