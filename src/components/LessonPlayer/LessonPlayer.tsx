@@ -109,14 +109,14 @@ export function LessonPlayer({
   )
 
   if (loading) {
-    return <div className="lesson-player loading">Loading lesson…</div>
+    return <div className="lesson-player loading">LOADING…</div>
   }
 
   return (
     <div className="lesson-player">
       <header className="lesson-header">
         <button type="button" className="text-button" onClick={onExit}>
-          ← Back
+          ← Quit
         </button>
         <div className="lesson-meta">
           <h1>{lesson.title}</h1>
@@ -124,7 +124,7 @@ export function LessonPlayer({
             <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
           <p className="step-count">
-            Step {stepIndex + 1} of {lesson.steps.length}
+            Stage {stepIndex + 1} / {lesson.steps.length}
           </p>
         </div>
       </header>
@@ -141,7 +141,7 @@ export function LessonPlayer({
 
         {celebrate && (
           <div className="celebration" role="status">
-            Lesson complete!
+            ★ MISSION CLEARED! ★
           </div>
         )}
       </section>
@@ -153,7 +153,7 @@ export function LessonPlayer({
           onClick={() => goToStep(Math.max(0, stepIndex - 1))}
           disabled={stepIndex === 0}
         >
-          Previous
+          Back
         </button>
         <button
           type="button"
@@ -161,7 +161,7 @@ export function LessonPlayer({
           onClick={handleCheck}
           disabled={solved}
         >
-          {solved ? 'Correct ✓' : 'Check'}
+          {solved ? 'Nailed it ✓' : 'Fire!'}
         </button>
         <button
           type="button"
@@ -169,7 +169,7 @@ export function LessonPlayer({
           onClick={handleNext}
           disabled={isLastStep && !solved}
         >
-          {isLastStep ? 'Finish' : 'Next'}
+          {isLastStep ? 'Claim win' : 'Next'}
         </button>
       </footer>
     </div>

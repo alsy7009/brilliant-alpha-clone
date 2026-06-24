@@ -5,14 +5,16 @@
 }
 
 .roadmap-header h1 {
-  margin: 0 0 0.35rem;
-  font-size: 1.5rem;
-  color: #1a2b4a;
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: var(--c-yellow);
+  text-shadow: 2px 2px 0 var(--ink);
 }
 
 .roadmap-header p {
   margin: 0;
-  color: #556;
+  color: #d8d3f0;
+  font-size: 1.05rem;
 }
 
 .lesson-path {
@@ -35,68 +37,77 @@
   align-items: center;
   gap: 0.85rem;
   width: 100%;
-  min-height: 72px;
+  min-height: 76px;
   padding: 0.85rem 1rem;
-  border: 2px solid #d8e3f5;
-  border-radius: 14px;
-  background: #fff;
+  border: 3px solid var(--ink);
+  background: var(--panel);
+  box-shadow: var(--shadow-hard);
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
+  transition: transform 0.05s, box-shadow 0.05s;
 }
 
-.lesson-card:not(:disabled):hover {
-  border-color: #2d6cdf;
-  transform: translateY(-1px);
+.lesson-card:not(:disabled):active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 
 .lesson-card.completed {
-  border-color: #7ed321;
-  background: #f4fff0;
+  background: #eafce0;
+  border-color: var(--ink);
 }
 
 .lesson-card.locked {
-  opacity: 0.55;
+  opacity: 0.6;
   cursor: not-allowed;
+  box-shadow: var(--shadow-hard-sm);
 }
 
 .lesson-order {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #2d6cdf;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--ink);
+  background: var(--c-blue);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-family: var(--pixel-font);
+  font-size: 0.8rem;
   flex-shrink: 0;
 }
 
 .lesson-card.completed .lesson-order {
-  background: #4caf50;
+  background: var(--c-lime);
+  color: var(--ink);
 }
 
 .lesson-card-body {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.35rem;
 }
 
 .lesson-card-body strong {
-  color: #1a2b4a;
-  font-size: 1rem;
+  color: var(--ink);
+  font-family: var(--pixel-font);
+  font-size: 0.72rem;
+  line-height: 1.4;
 }
 
 .lesson-status {
-  font-size: 0.85rem;
-  color: #667;
+  font-family: var(--pixel-font);
+  font-size: 0.55rem;
+  color: #6a6488;
+}
+
+.lesson-card.completed .lesson-status {
+  color: #3a8a1e;
 }
 
 .path-connector {
-  width: 3px;
-  height: 20px;
-  background: #c8d4e8;
-  margin: 4px auto;
-  border-radius: 2px;
+  width: 4px;
+  height: 18px;
+  background: var(--c-yellow);
+  margin: 0 auto;
 }

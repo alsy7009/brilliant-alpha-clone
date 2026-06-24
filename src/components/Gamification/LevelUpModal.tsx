@@ -57,12 +57,12 @@ export function LevelUpModal({ displayName, photoURL }: LevelUpModalProps) {
           </div>
         </div>
 
-        <h2 className="levelup-title">Level Up!</h2>
-        <p className="levelup-sub">You reached Level {pendingLevelUp} 🎉</p>
+        <h2 className="levelup-title">LEVEL UP!</h2>
+        <p className="levelup-sub">You hit Level {pendingLevelUp}! ★</p>
 
         {rewards.length > 0 && (
           <>
-            <p className="levelup-prompt">Pick your reward decoration:</p>
+            <p className="levelup-prompt">Choose your loot:</p>
             <div className="levelup-rewards">
               {rewards.map((d) => (
                 <button
@@ -86,7 +86,7 @@ export function LevelUpModal({ displayName, photoURL }: LevelUpModalProps) {
         )}
 
         <button type="button" className="levelup-continue" onClick={dismissLevelUp}>
-          {getDecoration(equippedId).variant === 'none' ? 'Continue' : 'Equip & continue'}
+          {getDecoration(equippedId).variant === 'none' ? 'Let’s go!' : 'Equip & go!'}
         </button>
       </div>
     </div>

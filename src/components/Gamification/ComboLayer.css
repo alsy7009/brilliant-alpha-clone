@@ -20,19 +20,17 @@
 }
 
 .combo-xp {
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: #2db463;
-  text-shadow:
-    0 2px 0 #fff,
-    0 0 10px rgba(45, 180, 99, 0.5);
+  font-family: var(--pixel-font);
+  font-size: 1.1rem;
+  color: var(--c-lime);
+  text-shadow: 2px 2px 0 var(--ink);
 }
 
 .combo-multi {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #f5762a;
-  text-shadow: 0 1px 0 #fff;
+  font-family: var(--pixel-font);
+  font-size: 0.7rem;
+  color: var(--c-orange);
+  text-shadow: 2px 2px 0 var(--ink);
 }
 
 @keyframes combo-rise {

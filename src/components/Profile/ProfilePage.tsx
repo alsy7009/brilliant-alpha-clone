@@ -67,7 +67,7 @@ export function ProfilePage({
 
   return (
     <div className="profile-page">
-      <h1 className="profile-title">Your Profile</h1>
+      <h1 className="profile-title">★ Hero Profile</h1>
 
       <div className="profile-grid">
         {/* Profile card */}
@@ -118,7 +118,7 @@ export function ProfilePage({
           {uploadError && <p className="avatar-upload-error">{uploadError}</p>}
           <div className="profile-badges">
             <span className="profile-badge">
-              <LevelBadge level={level} size="sm" /> Level {level}
+              <LevelBadge level={level} size="sm" /> LVL {level}
             </span>
             <span className="profile-badge">
               <StreakFlame streak={streak} size={22} /> streak
@@ -132,7 +132,7 @@ export function ProfilePage({
 
         {/* Decoration customization */}
         <section className="profile-decorations">
-          <h3 className="section-heading">Avatar Decorations</h3>
+          <h3 className="section-heading">Gear Locker</h3>
           <div className="deco-grid">
             {decorations.map((d) => {
               const unlocked = unlockedIds.includes(d.id)
@@ -148,7 +148,7 @@ export function ProfilePage({
                   <AvatarDecoration name={displayName} photoURL={photoURL} variant={d.variant} size={64} />
                   <span className="deco-name">{d.name}</span>
                   <span className="deco-status">
-                    {isEquipped ? 'Equipped' : unlocked ? 'Tap to equip' : `Level ${d.unlockLevel}`}
+                    {isEquipped ? 'Equipped' : unlocked ? 'Tap to equip' : `🔒 LVL ${d.unlockLevel}`}
                   </span>
                 </button>
               )
@@ -159,18 +159,18 @@ export function ProfilePage({
         {/* History feed */}
         <section className="profile-history">
           <h3 className="section-heading">
-            Mastered Concepts <span className="history-count">{masteredCount}/{LESSONS.length}</span>
+            Trophies <span className="history-count">{masteredCount}/{LESSONS.length}</span>
           </h3>
           <ul className="history-feed">
             {mastered.map(({ lesson, completed, stepsDone, total }) => (
               <li key={lesson.lessonId} className={`history-item ${completed ? 'done' : ''}`}>
                 <span className="history-icon" aria-hidden="true">
-                  {completed ? '✓' : stepsDone > 0 ? '◐' : '○'}
+                  {completed ? '★' : stepsDone > 0 ? '▷' : '·'}
                 </span>
                 <span className="history-info">
                   <span className="history-name">{lesson.title}</span>
                   <span className="history-sub">
-                    {completed ? 'Mastered' : `${stepsDone}/${total} steps`}
+                    {completed ? 'CLEARED' : `${stepsDone}/${total} stages`}
                   </span>
                 </span>
               </li>

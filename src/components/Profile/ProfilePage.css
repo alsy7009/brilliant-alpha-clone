@@ -6,8 +6,9 @@
 
 .profile-title {
   margin: 0;
-  font-size: 1.5rem;
-  color: #1a2b4a;
+  font-size: 1.1rem;
+  color: var(--c-yellow);
+  text-shadow: 2px 2px 0 var(--ink);
 }
 
 .profile-grid {
@@ -19,10 +20,10 @@
 .profile-card,
 .profile-decorations,
 .profile-history {
-  background: #fff;
-  border-radius: 16px;
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard);
   padding: 1.25rem;
-  box-shadow: 0 4px 20px rgba(26, 43, 74, 0.07);
 }
 
 .profile-card {
@@ -88,8 +89,9 @@
 
 .profile-name {
   margin: 0;
-  font-size: 1.25rem;
-  color: #1a2b4a;
+  font-family: var(--pixel-font);
+  font-size: 0.85rem;
+  color: var(--ink);
 }
 
 .profile-badges {
@@ -103,12 +105,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: #f2f6fd;
-  border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #2a4068;
+  background: var(--panel-2);
+  border: 3px solid var(--ink);
+  padding: 0.3rem 0.6rem;
+  font-family: var(--pixel-font);
+  font-size: 0.55rem;
+  color: var(--ink);
 }
 
 .profile-xp {
@@ -118,17 +120,18 @@
 
 .section-heading {
   margin: 0 0 0.85rem;
-  font-size: 1.05rem;
-  color: #1a2b4a;
+  font-family: var(--pixel-font);
+  font-size: 0.75rem;
+  color: var(--ink);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .history-count {
-  font-size: 0.85rem;
-  color: #2d6cdf;
-  font-weight: 700;
+  font-family: var(--pixel-font);
+  font-size: 0.6rem;
+  color: var(--c-blue);
 }
 
 .deco-grid {
@@ -143,40 +146,42 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.85rem 0.5rem;
-  border: 2px solid #e3e9f2;
-  border-radius: 14px;
+  border: 3px solid var(--ink);
   background: #fff;
+  box-shadow: var(--shadow-hard-sm);
   cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
+  transition: transform 0.05s, box-shadow 0.05s;
 }
 
-.deco-option:not(:disabled):hover {
-  transform: translateY(-2px);
+.deco-option:not(:disabled):active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }
 
 .deco-option.equipped {
-  border-color: #2d6cdf;
-  background: #eef4ff;
+  background: var(--panel-2);
+  border-color: var(--c-blue);
 }
 
 .deco-option.locked {
   opacity: 0.55;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .deco-name {
-  font-weight: 700;
-  color: #1a2b4a;
-  font-size: 0.9rem;
+  font-family: var(--pixel-font);
+  color: var(--ink);
+  font-size: 0.6rem;
 }
 
 .deco-status {
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   color: #667;
 }
 
 .deco-option.equipped .deco-status {
-  color: #2d6cdf;
+  color: var(--c-blue);
   font-weight: 700;
 }
 
@@ -194,30 +199,30 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.6rem 0.75rem;
-  border-radius: 12px;
-  background: #f7f9fc;
+  border: 3px solid var(--ink);
+  background: #fff;
 }
 
 .history-item.done {
-  background: #f0fff4;
+  background: #eafce0;
 }
 
 .history-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  background: #e3e9f2;
+  background: var(--panel-2);
   color: #8a93a3;
   flex-shrink: 0;
 }
 
 .history-item.done .history-icon {
-  background: #4caf50;
-  color: #fff;
+  background: var(--c-lime);
+  color: var(--ink);
 }
 
 .history-info {
@@ -226,13 +231,14 @@
 }
 
 .history-name {
-  font-weight: 700;
-  color: #1a2b4a;
-  font-size: 0.95rem;
+  font-family: var(--pixel-font);
+  color: var(--ink);
+  font-size: 0.6rem;
+  line-height: 1.4;
 }
 
 .history-sub {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #667;
 }
 

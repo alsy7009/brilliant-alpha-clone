@@ -5,11 +5,32 @@
 }
 
 :root {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #1a2b4a;
-  background: #f4f7fc;
+  /* 8-bit arcade theme tokens */
+  --pixel-font: 'Press Start 2P', 'Courier New', monospace;
+  --body-font: 'VT323', ui-monospace, 'Courier New', monospace;
+
+  --arcade-bg: #14122b;
+  --arcade-bg-2: #1d1942;
+  --ink: #141026;
+  --panel: #fdfdf7;
+  --panel-2: #f0ecff;
+
+  --c-blue: #2f6bff;
+  --c-cyan: #2bd9d2;
+  --c-lime: #62d321;
+  --c-yellow: #ffd23f;
+  --c-orange: #ff7a18;
+  --c-red: #e23b3b;
+  --c-purple: #b15bff;
+
+  --shadow-hard: 4px 4px 0 var(--ink);
+  --shadow-hard-sm: 3px 3px 0 var(--ink);
+
+  font-family: var(--body-font);
+  font-size: 18px;
+  line-height: 1.4;
+  color: #1a1530;
+  background: var(--arcade-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -19,16 +40,82 @@
 body {
   margin: 0;
   min-width: 320px;
+  background-color: var(--arcade-bg);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0%, var(--arcade-bg-2), var(--arcade-bg) 70%);
+  background-size: 24px 24px, 24px 24px, 100% 100%;
 }
 
 #root {
   min-height: 100svh;
 }
 
+/* Pixel headings everywhere */
+h1,
+h2,
+h3 {
+  font-family: var(--pixel-font);
+  line-height: 1.35;
+  letter-spacing: 0.5px;
+}
+
 button {
-  font-family: inherit;
+  font-family: var(--pixel-font);
 }
 
 code {
   font-family: ui-monospace, Consolas, monospace;
+}
+
+/* Bigger base body text since VT323 runs small */
+p,
+span,
+label,
+li,
+input {
+  font-size: 1.05rem;
+}
+
+/* Reusable 8-bit primitives */
+.pixel-panel {
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  border-radius: 0;
+}
+
+.pixel-btn {
+  font-family: var(--pixel-font);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+  cursor: pointer;
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+
+.pixel-btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.pixel-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pixel-btn-primary {
+  background: var(--c-blue);
+  color: #fff;
+}
+
+.pixel-btn-go {
+  background: var(--c-lime);
+  color: var(--ink);
 }

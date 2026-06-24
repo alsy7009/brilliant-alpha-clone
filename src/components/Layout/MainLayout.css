@@ -1,6 +1,5 @@
 .main-layout {
   min-height: 100svh;
-  background: #f4f7fc;
 }
 
 /* ---------- Sidebar (desktop) ---------- */
@@ -13,16 +12,17 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.6rem 1rem;
-  background: #fff;
-  border-bottom: 1px solid #e6ecf5;
+  background: var(--ink);
+  border-bottom: 3px solid var(--c-yellow);
   position: sticky;
   top: 0;
   z-index: 20;
 }
 
 .ml-mobile-brand {
-  font-weight: 800;
-  color: #1a2b4a;
+  font-family: var(--pixel-font);
+  font-size: 0.72rem;
+  color: var(--c-yellow);
 }
 
 .ml-mobile-stats {
@@ -49,8 +49,8 @@
   left: 0;
   right: 0;
   display: flex;
-  background: #fff;
-  border-top: 1px solid #e6ecf5;
+  background: var(--ink);
+  border-top: 3px solid var(--c-yellow);
   padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0));
   z-index: 30;
 }
@@ -60,21 +60,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  min-height: 52px;
+  gap: 3px;
+  min-height: 54px;
   border: none;
   background: none;
-  color: #8a93a3;
-  font-size: 0.72rem;
-  font-weight: 600;
+  color: #8b86a8;
+  font-family: var(--pixel-font);
+  font-size: 0.5rem;
+  text-transform: uppercase;
   cursor: pointer;
-  border-radius: 10px;
-  transition: color 0.15s, background 0.15s;
+  transition: color 0.15s;
 }
 
 .ml-bottom-item.active {
-  color: #2d6cdf;
-  background: #eef4ff;
+  color: var(--c-yellow);
 }
 
 /* ---------- Desktop breakpoint ---------- */
@@ -94,18 +93,40 @@
     flex-direction: column;
     gap: 1.25rem;
     padding: 1.25rem 1rem;
-    background: #fff;
-    border-right: 1px solid #e6ecf5;
+    background: var(--ink);
+    border-right: 3px solid var(--c-yellow);
     position: sticky;
     top: 0;
     height: 100svh;
   }
 
   .ml-brand {
-    font-weight: 800;
-    font-size: 1.2rem;
-    color: #1a2b4a;
+    font-family: var(--pixel-font);
+    font-size: 0.8rem;
+    color: var(--c-yellow);
+    text-shadow: 2px 2px 0 #000;
     padding: 0.25rem 0.5rem;
+    line-height: 1.5;
+  }
+
+  .ml-name {
+    color: #fff !important;
+    font-family: var(--pixel-font);
+    font-size: 0.62rem;
+  }
+
+  .ml-level-text {
+    color: var(--c-cyan) !important;
+    font-family: var(--pixel-font);
+    font-size: 0.55rem;
+  }
+
+  .ml-streak-row {
+    color: #d8d3f0 !important;
+  }
+
+  .ml-streak-label {
+    font-size: 0.95rem;
   }
 
   .ml-profile-mini {
@@ -146,6 +167,11 @@
     padding: 0 0.5rem;
   }
 
+  .ml-xp .xp-bar-labels,
+  .ml-xp .xp-bar-count {
+    color: #d8d3f0;
+  }
+
   .ml-streak-row {
     display: flex;
     align-items: center;
@@ -167,36 +193,41 @@
     display: flex;
     align-items: center;
     gap: 0.65rem;
-    padding: 0.65rem 0.75rem;
-    border: none;
+    padding: 0.7rem 0.75rem;
+    border: 3px solid transparent;
     background: none;
-    border-radius: 12px;
-    color: #56607a;
-    font-weight: 600;
-    font-size: 0.95rem;
+    color: #b7b2d4;
+    font-family: var(--pixel-font);
+    font-size: 0.62rem;
+    text-transform: uppercase;
     cursor: pointer;
     text-align: left;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.1s, color 0.1s;
   }
 
   .ml-nav-item:hover {
-    background: #f2f6fd;
+    color: #fff;
   }
 
   .ml-nav-item.active {
-    background: #eef4ff;
-    color: #2d6cdf;
+    background: var(--c-blue);
+    border-color: var(--c-yellow);
+    color: #fff;
   }
 
   .ml-signout {
     margin-top: auto;
-    padding: 0.6rem;
-    border: 1px solid #d8e0ec;
-    border-radius: 10px;
-    background: #fff;
-    color: #56607a;
-    font-weight: 600;
+    padding: 0.7rem;
+    border: 3px solid var(--c-yellow);
+    background: transparent;
+    color: var(--c-yellow);
+    font-family: var(--pixel-font);
+    font-size: 0.58rem;
     cursor: pointer;
+  }
+
+  .ml-signout:active {
+    transform: translate(2px, 2px);
   }
 
   .ml-content {

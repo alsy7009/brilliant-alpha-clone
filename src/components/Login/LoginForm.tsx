@@ -54,16 +54,16 @@ export function LoginForm({ onDemoContinue, onAuthed }: LoginFormProps) {
   return (
     <div className="login-form">
       <div className="login-brand">
-        <h1>ActiveLearn</h1>
-        <p>Learn algebra by balancing equations — not by watching lectures.</p>
+        <h1>ALGEBRA QUEST</h1>
+        <p>Power up your math skills. Clear missions, earn XP, level up. ★</p>
       </div>
 
       {isDemoMode() && (
         <div className="demo-banner">
-          Firebase is not configured. Use demo mode to try the lesson locally, or add{' '}
-          <code>.env</code> credentials for full auth.
+          No save file detected. Jump in with DEMO MODE, or add{' '}
+          <code>.env</code> credentials to save your progress.
           <button type="button" className="demo-button" onClick={onDemoContinue}>
-            Continue in demo mode
+            ▶ Play Demo
           </button>
         </div>
       )}
@@ -71,11 +71,11 @@ export function LoginForm({ onDemoContinue, onAuthed }: LoginFormProps) {
       <form onSubmit={handleSubmit} className="auth-form">
         {mode === 'signup' && (
           <label>
-            Name
+            Hero name
             <input
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Alex"
+              placeholder="e.g. PixelMaster"
               autoComplete="name"
             />
           </label>
@@ -105,7 +105,7 @@ export function LoginForm({ onDemoContinue, onAuthed }: LoginFormProps) {
         {error && <p className="auth-error">{error}</p>}
 
         <button type="submit" className="primary-button" disabled={busy || isDemoMode()}>
-          {mode === 'signup' ? 'Create account' : 'Sign in'}
+          {mode === 'signup' ? '★ New Hero' : '▶ Press Start'}
         </button>
       </form>
 
@@ -123,7 +123,7 @@ export function LoginForm({ onDemoContinue, onAuthed }: LoginFormProps) {
         className="link-button"
         onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
       >
-        {mode === 'signin' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
+        {mode === 'signin' ? 'New player? Create a hero' : 'Got a save? Press Start'}
       </button>
     </div>
   )

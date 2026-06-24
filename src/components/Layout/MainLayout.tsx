@@ -23,7 +23,7 @@ interface MainLayoutProps {
 const NAV_ITEMS: { key: NavKey; label: string; icon: ReactNode }[] = [
   {
     key: 'dashboard',
-    label: 'Dashboard',
+    label: 'Missions',
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
         <path
@@ -39,7 +39,7 @@ const NAV_ITEMS: { key: NavKey; label: string; icon: ReactNode }[] = [
   },
   {
     key: 'profile',
-    label: 'Profile',
+    label: 'Hero',
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
         <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -72,7 +72,7 @@ export function MainLayout({
     <div className="main-layout">
       {/* Desktop sidebar */}
       <aside className="ml-sidebar">
-        <div className="ml-brand">ActiveLearn</div>
+        <div className="ml-brand">ALGEBRA QUEST</div>
 
         <div className="ml-profile-mini">
           <AvatarDecoration
@@ -85,7 +85,7 @@ export function MainLayout({
             <span className="ml-name">{displayName ?? 'Learner'}</span>
             <span className="ml-level-row">
               <LevelBadge level={level} size="sm" />
-              <span className="ml-level-text">Level {level}</span>
+              <span className="ml-level-text">LVL {level}</span>
             </span>
           </div>
         </div>
@@ -96,7 +96,7 @@ export function MainLayout({
 
         <div className="ml-streak-row">
           <StreakFlame streak={streak} size={26} />
-          <span className="ml-streak-label">day streak</span>
+          <span className="ml-streak-label">day streak {streak > 0 ? '— on fire!' : ''}</span>
         </div>
 
         <nav className="ml-nav">
@@ -114,13 +114,13 @@ export function MainLayout({
         </nav>
 
         <button type="button" className="ml-signout" onClick={onSignOut}>
-          {demoMode ? 'Exit demo' : 'Sign out'}
+          {demoMode ? 'Quit demo' : 'Log out'}
         </button>
       </aside>
 
       {/* Mobile minimized header */}
       <header className="ml-mobile-header">
-        <span className="ml-mobile-brand">ActiveLearn</span>
+        <span className="ml-mobile-brand">ALGEBRA QUEST</span>
         <div className="ml-mobile-stats">
           <StreakFlame streak={streak} size={24} />
           <LevelBadge level={level} size="sm" />

@@ -12,8 +12,8 @@ export function Roadmap({ progressList, onSelectLesson }: RoadmapProps) {
   return (
     <div className="roadmap">
       <header className="roadmap-header">
-        <h1>Algebra: Visual Equation Balancing</h1>
-        <p>Master isolating variables by keeping the scale balanced.</p>
+        <h1>★ Mission Map</h1>
+        <p>Clear each mission to unlock the next. Stack XP and level up!</p>
       </header>
 
       <ol className="lesson-path">
@@ -32,14 +32,14 @@ export function Roadmap({ progressList, onSelectLesson }: RoadmapProps) {
                 disabled={!unlocked}
                 onClick={() => onSelectLesson(lesson.lessonId)}
               >
-                <span className="lesson-order">{lesson.order}</span>
+                <span className="lesson-order">{!unlocked ? '🔒' : completed ? '★' : lesson.order}</span>
                 <div className="lesson-card-body">
                   <strong>{lesson.title}</strong>
                   <span className="lesson-status">
-                    {!unlocked && 'Locked'}
-                    {unlocked && completed && 'Completed'}
-                    {unlocked && inProgress && 'In progress'}
-                    {unlocked && !completed && !inProgress && 'Start'}
+                    {!unlocked && 'LOCKED'}
+                    {unlocked && completed && 'CLEARED ✓'}
+                    {unlocked && inProgress && '▶ CONTINUE'}
+                    {unlocked && !completed && !inProgress && '▶ PLAY'}
                   </span>
                 </div>
               </button>
