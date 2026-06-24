@@ -8,6 +8,7 @@ import { FoilMultiply } from '../FoilMultiply/FoilMultiply'
 import { GraphSelect } from '../GraphSelect/GraphSelect'
 import { LinearGraph } from '../LinearGraph/LinearGraph'
 import { PlotLine } from '../PlotLine/PlotLine'
+import { QuadExplore } from '../QuadExplore/QuadExplore'
 
 interface StepWidgetProps {
   step: LessonStep
@@ -63,6 +64,14 @@ export function StepWidget({ step, state, onStateChange }: StepWidgetProps) {
           config={step.widgetConfig as Parameters<typeof PlotLine>[0]['config']}
           state={state as Parameters<typeof PlotLine>[0]['state']}
           onStateChange={onStateChange as Parameters<typeof PlotLine>[0]['onStateChange']}
+        />
+      )
+    case 'quad-explore':
+      return (
+        <QuadExplore
+          config={step.widgetConfig as Parameters<typeof QuadExplore>[0]['config']}
+          state={state as Parameters<typeof QuadExplore>[0]['state']}
+          onStateChange={onStateChange as Parameters<typeof QuadExplore>[0]['onStateChange']}
         />
       )
     case 'graph-select':

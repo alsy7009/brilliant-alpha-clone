@@ -17,7 +17,8 @@ import {
   resolveUserId,
   subscribeToAuth,
 } from './lib/auth'
-import { fetchAllProgress, getGlobalStreak } from './lib/progress'
+import { fetchAllProgress } from './lib/progress'
+import { getDisplayStreak, recordActivityStreak } from './lib/streak'
 import { fileToResizedDataUrl, getAvatarOverride, setAvatarOverride } from './lib/avatar'
 import type { AppView, UserProgress } from './types/progress'
 import './App.css'
@@ -31,6 +32,7 @@ function App() {
   const [progressList, setProgressList] = useState<UserProgress[]>([])
   const [avatarOverride, setAvatarOverrideState] = useState<string | null>(null)
   const [displayNameState, setDisplayNameState] = useState<string | null>(null)
+  const [streak, setStreak] = useState(0)
 
   const userId = demoUser ? resolveUserId(null) : resolveUserId(authUser)
   const displayName =
@@ -45,6 +47,18 @@ function App() {
   useEffect(() => {
     setAvatarOverrideState(getAvatarOverride(userId))
   }, [userId])
+
+  // Display the saved streak on login (starts at 0; only a completed question bumps it).
+  useEffect(() => {
+    if (!authReady) return
+    if (!authUser && !demoUser) return
+    setStreak(getDisplayStreak(userId))
+  }, [authReady, authUser, demoUser, userId])
+
+  const handleStepComplete = useCallback(() => {
+    setStreak(recordActivityStreak(userId))
+    void refreshProgress()
+  }, [userId, refreshProgress])
 
   // Keep the display name in sync once the auth profile carries it.
   useEffect(() => {
@@ -114,6 +128,7 @@ function App() {
     setView('login')
     setProgressList([])
     setDisplayNameState(null)
+    setStreak(0)
   }
 
   const handleNavigate = (key: NavKey) => {
@@ -148,7 +163,7 @@ function App() {
       key={userId}
       userId={userId}
       progressList={progressList}
-      streak={getGlobalStreak(progressList)}
+      streak={streak}
     >
       <MainLayout
         active={activeNav}
@@ -176,7 +191,7 @@ function App() {
           <LessonPlayer
             lesson={activeLesson}
             userId={userId}
-            onStepComplete={() => void refreshProgress()}
+            onStepComplete={handleStepComplete}
             onExit={() => {
               setView('roadmap')
               void refreshProgress()

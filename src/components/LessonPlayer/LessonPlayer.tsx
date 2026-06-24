@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Lesson, LessonStep, WidgetState } from '../../types/lesson'
-import type { UserProgress } from '../../types/progress'
 import { evaluateWidget, getStepExplanation } from '../../lib/widgets/evaluateWidget'
 import { initWidgetState } from '../../lib/widgets/widgetState'
 import { completeStep, fetchLessonProgress } from '../../lib/progress'
@@ -87,7 +86,7 @@ export function LessonPlayer({
       console.warn(`Feedback latency ${elapsed.toFixed(1)}ms exceeds 100ms target`)
     }
 
-    if (step.type !== 'explanation-slide') {
+    if (step.type !== 'explanation-slide' && step.type !== 'quad-explore') {
       registerAnswer(outcome === 'correct')
     }
 
@@ -95,9 +94,11 @@ export function LessonPlayer({
       setSolved(true)
       markSession()
       setBurstKey((k) => k + 1)
-      const updated: UserProgress = await completeStep(userId, lesson, step.stepId)
+      await completeStep(userId, lesson, step.stepId)
       onStepComplete?.()
-      if (updated.isCompleted) {
+      // Trophy only when the final step is cleared this session — not when
+      // replaying an earlier step of an already-completed lesson.
+      if (isLastStep) {
         setCelebrate(true)
       }
     } else if (outcome !== 'incomplete') {
@@ -172,14 +173,13 @@ export function LessonPlayer({
         >
           {solved ? 'Nailed it ✓' : 'Fire!'}
         </button>
-        <button
-          type="button"
-          className="secondary-button"
-          onClick={handleNext}
-          disabled={isLastStep && !solved}
-        >
-          {isLastStep ? 'Claim win' : 'Next'}
-        </button>
+        {!isLastStep ? (
+          <button type="button" className="secondary-button" onClick={handleNext}>
+            Next
+          </button>
+        ) : (
+          <span className="footer-spacer" aria-hidden="true" />
+        )}
       </footer>
 
       {celebrate && (

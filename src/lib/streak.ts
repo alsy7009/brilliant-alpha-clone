@@ -33,6 +33,64 @@ export function computeStreak(
   return { streakCount: 1, lastActiveTimestamp: now.toISOString() }
 }
 
+const STREAK_KEY_PREFIX = 'activelearn_streak_'
+
+interface StreakRecord {
+  date: string
+  streak: number
+}
+
+function readStreak(userId: string): StreakRecord | null {
+  try {
+    const raw = localStorage.getItem(STREAK_KEY_PREFIX + userId)
+    return raw ? (JSON.parse(raw) as StreakRecord) : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Streak for display only — does NOT change anything.
+ * 0 if the user has never completed a question, or if a day was missed.
+ */
+export function getDisplayStreak(userId: string, now = new Date()): number {
+  const rec = readStreak(userId)
+  if (!rec) return 0
+  const today = toDateKey(now)
+  const last = toDateKey(new Date(rec.date))
+  if (last === today) return rec.streak
+
+  const yesterday = new Date(now)
+  yesterday.setDate(yesterday.getDate() - 1)
+  if (last === toDateKey(yesterday)) return rec.streak // still alive, continues today
+
+  return 0 // a day was missed → broken
+}
+
+/**
+ * Call when the learner completes a question. Bumps the daily streak:
+ * 0 → 1 on first activity, +1 on a new consecutive day, resets to 1 after a gap.
+ */
+export function recordActivityStreak(userId: string, now = new Date()): number {
+  const rec = readStreak(userId)
+  const today = toDateKey(now)
+
+  let streak = 1
+  if (rec) {
+    const last = toDateKey(new Date(rec.date))
+    if (last === today) {
+      streak = Math.max(1, rec.streak)
+    } else {
+      const yesterday = new Date(now)
+      yesterday.setDate(yesterday.getDate() - 1)
+      streak = last === toDateKey(yesterday) ? rec.streak + 1 : 1
+    }
+  }
+
+  localStorage.setItem(STREAK_KEY_PREFIX + userId, JSON.stringify({ date: now.toISOString(), streak }))
+  return streak
+}
+
 export function isLocalMode(): boolean {
   return !import.meta.env.VITE_FIREBASE_API_KEY
 }

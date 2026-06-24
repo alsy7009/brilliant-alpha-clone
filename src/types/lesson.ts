@@ -5,6 +5,7 @@ export type StepType =
   | 'expression-evaluate'
   | 'linear-graph'
   | 'plot-line'
+  | 'quad-explore'
   | 'graph-select'
   | 'explanation-slide'
   | 'foil-multiply'
@@ -114,6 +115,21 @@ export interface PlotLineState {
   points: GridPoint[]
 }
 
+export interface QuadExploreConfig {
+  /** [min, max] inclusive ranges for the sliders (integer steps). */
+  aRange: [number, number]
+  bRange: [number, number]
+  cRange: [number, number]
+  initial: { a: number; b: number; c: number }
+  grid: { xMin: number; xMax: number; yMin: number; yMax: number }
+}
+
+export interface QuadExploreState {
+  a: number
+  b: number
+  c: number
+}
+
 export interface GraphSelectOption {
   optionId: string
   roots: [number, number]
@@ -151,6 +167,7 @@ export type WidgetConfig =
   | ExpressionEvaluateConfig
   | LinearGraphConfig
   | PlotLineConfig
+  | QuadExploreConfig
   | GraphSelectConfig
   | ExplanationSlideConfig
   | FoilMultiplyConfig
@@ -204,6 +221,7 @@ export type WidgetState =
   | SlotWidgetState
   | LinearGraphState
   | PlotLineState
+  | QuadExploreState
   | GraphSelectState
   | ExplanationSlideState
 

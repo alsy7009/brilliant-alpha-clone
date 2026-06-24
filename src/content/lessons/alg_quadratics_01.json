@@ -5,6 +5,48 @@
   "order": 5,
   "steps": [
     {
+      "stepId": "step_quad_what_is",
+      "type": "explanation-slide",
+      "instruction": "What is a quadratic?",
+      "widgetConfig": {
+        "slides": [
+          {
+            "title": "Quadratics make parabolas",
+            "body": "A quadratic is an expression where the highest power of x is x² (x squared). When you graph one, you always get a smooth U-shaped curve called a parabola. Example: y = x² − 4.",
+            "highlight": ["x²", "parabola"]
+          },
+          {
+            "title": "Two forms of a quadratic",
+            "body": "Standard form is y = ax² + bx + c. Factored form is y = a(x − r)(x − s), which shows the x-intercepts (AKA solutions or roots) r and s right away. The number a out front is called the leading coefficient, and it may be equal to 1!",
+            "highlight": ["ax² + bx + c", "a(x − r)(x − s)"]
+          },
+          {
+            "title": "Monic vs non-monic",
+            "body": "If the leading coefficient a equals 1, it's a monic quadratic (like y = x² + 5x + 6). If a is any other number — 2, −3, and so on — it's non-monic (like y = 2x² + 5x + 3). The value of a also shapes the curve: a > 0 opens up (smile), a < 0 opens down (frown), and a bigger size makes it narrower.",
+            "highlight": ["a = 1 → monic", "a ≠ 1 → non-monic"]
+          }
+        ]
+      },
+      "explanations": {
+        "correct": "Now let's play with one!"
+      }
+    },
+    {
+      "stepId": "step_quad_explore",
+      "type": "quad-explore",
+      "instruction": "Drag the sliders to build a(x − b)(x − c). Watch the polynomial and the parabola change — try making it open up, open down, and move the roots!",
+      "widgetConfig": {
+        "aRange": [-3, 3],
+        "bRange": [-5, 5],
+        "cRange": [-5, 5],
+        "initial": { "a": 1, "b": -2, "c": 2 },
+        "grid": { "xMin": -6, "xMax": 6, "yMin": -8, "yMax": 8 }
+      },
+      "explanations": {
+        "correct": "Awesome experimenting! Notice how a flips the curve and b, c set the x-intercepts."
+      }
+    },
+    {
       "stepId": "step_quad_intro",
       "type": "explanation-slide",
       "instruction": "How factors tell you where a parabola crosses the x-axis",

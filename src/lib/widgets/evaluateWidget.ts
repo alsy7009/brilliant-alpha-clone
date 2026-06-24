@@ -46,6 +46,9 @@ export function evaluateWidget(step: LessonStep, state: WidgetState): Validation
       return evaluateGraphSelect(state as GraphSelectState, step)
     case 'explanation-slide':
       return isExplanationComplete(step, state) ? 'correct' : 'incomplete'
+    case 'quad-explore':
+      // Free-play sandbox — always accepted once they press FIRE!.
+      return 'correct'
     default:
       return 'generic_wrong'
   }
@@ -95,7 +98,7 @@ function evaluateGraphSelect(state: GraphSelectState, step: LessonStep): Validat
 export function getStepExplanation(step: LessonStep, outcome: ValidationOutcome): string {
   if (step.type === 'explanation-slide' && outcome === 'incomplete') {
     const cfg = step.widgetConfig as ExplanationSlideConfig
-    return `Tap Continue to read all ${cfg.slides.length} slides, then press Check.`
+    return `Tap Continue to read all ${cfg.slides.length} slides, then press FIRE!`
   }
   return getExplanation(step, outcome)
 }

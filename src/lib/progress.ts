@@ -93,12 +93,16 @@ export async function completeStep(
   const streak = computeStreak(current.streakCount, current.lastActiveTimestamp)
   const nextStep = lesson.steps[stepIndex + 1]
 
+  // Once a lesson is completed it stays completed, even if the learner replays
+  // an earlier step after quitting mid-review.
+  const isCompleted = current.isCompleted || isLastStep
+
   const updated: UserProgress = {
     ...current,
     completedSteps,
     streakCount: streak.streakCount,
     lastActiveTimestamp: streak.lastActiveTimestamp,
-    isCompleted: isLastStep,
+    isCompleted,
     currentStepId: isLastStep ? stepId : (nextStep?.stepId ?? stepId),
   }
 

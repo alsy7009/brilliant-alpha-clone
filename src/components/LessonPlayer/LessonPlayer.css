@@ -21,10 +21,10 @@
 
 .lesson-meta h1 {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   color: var(--c-yellow);
   text-shadow: 2px 2px 0 var(--ink);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .progress-bar {
@@ -68,7 +68,7 @@
 
 .instruction {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.4rem;
   line-height: 1.5;
   color: #221d3a;
   font-weight: 600;

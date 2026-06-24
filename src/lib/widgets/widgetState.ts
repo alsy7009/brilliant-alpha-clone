@@ -6,6 +6,7 @@ import type {
   GraphSelectConfig,
   LessonStep,
   LinearGraphConfig,
+  QuadExploreConfig,
   ScaleBalanceConfig,
   VisualIntroConfig,
   WidgetState,
@@ -33,6 +34,10 @@ export function initWidgetState(step: LessonStep): WidgetState {
       return { typedValue: null }
     case 'plot-line':
       return { points: [] }
+    case 'quad-explore': {
+      const cfg = step.widgetConfig as QuadExploreConfig
+      return { ...cfg.initial }
+    }
     case 'graph-select':
       return { selectedOptionId: null }
     case 'explanation-slide':

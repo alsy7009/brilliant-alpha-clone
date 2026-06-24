@@ -57,7 +57,7 @@ export function ExplanationSlide({
         </button>
       )}
       {isLast && (
-        <p className="slide-done-hint">Press <strong>Check</strong> when you are ready to practice.</p>
+        <p className="slide-done-hint">Press <strong>FIRE!</strong> when you are ready to practice.</p>
       )}
     </div>
   )
