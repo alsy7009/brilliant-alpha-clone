@@ -37,9 +37,12 @@ export function LessonPlayer({
   const [shake, setShake] = useState(false)
   const [flash, setFlash] = useState(false)
   const [burstKey, setBurstKey] = useState(0)
+  const [completedStepIds, setCompletedStepIds] = useState<Set<string>>(new Set())
 
   const step: LessonStep = lesson.steps[stepIndex]
   const isLastStep = stepIndex >= lesson.steps.length - 1
+  // Can advance only after finishing the current step — unless it was completed before.
+  const canAdvance = solved || completedStepIds.has(step.stepId)
 
   const resetWidgetState = useCallback((targetStep: LessonStep) => {
     setWidgetState(initWidgetState(targetStep))
@@ -55,13 +58,16 @@ export function LessonPlayer({
     setLoading(true)
     ;(async () => {
       let resumeStepId: string | null = null
+      let completed: string[] = []
       try {
         const progress = await fetchLessonProgress(userId, lesson)
         resumeStepId = progress.currentStepId
+        completed = progress.completedSteps ?? []
       } catch {
         resumeStepId = null
       }
       if (cancelled) return
+      setCompletedStepIds(new Set(completed))
       const resumeIndex = lesson.steps.findIndex((s) => s.stepId === resumeStepId)
       const index = resumeIndex >= 0 ? resumeIndex : 0
       setStepIndex(index)
@@ -97,6 +103,7 @@ export function LessonPlayer({
 
     if (outcome === 'correct') {
       setSolved(true)
+      setCompletedStepIds((prev) => new Set(prev).add(step.stepId))
       markSession()
       setBurstKey((k) => k + 1)
       await completeStep(userId, lesson, step.stepId)
@@ -179,7 +186,12 @@ export function LessonPlayer({
           {solved ? 'Nailed it ✓' : 'Fire!'}
         </button>
         {!isLastStep ? (
-          <button type="button" className="secondary-button" onClick={handleNext}>
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={handleNext}
+            disabled={!canAdvance}
+          >
             Next
           </button>
         ) : (
