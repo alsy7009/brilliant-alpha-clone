@@ -185,6 +185,12 @@
   font-weight: 700;
 }
 
+.history-empty {
+  margin: 0;
+  color: #778;
+  font-size: 1.05rem;
+}
+
 .history-feed {
   list-style: none;
   margin: 0;

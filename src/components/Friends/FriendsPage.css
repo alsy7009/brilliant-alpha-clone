@@ -110,6 +110,120 @@
   background: #fff;
 }
 
+.friend-row-button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+  transition: transform 0.05s, box-shadow 0.05s;
+  font-family: inherit;
+}
+
+.friend-row-button:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.friend-chevron {
+  margin-left: auto;
+  font-size: 1.6rem;
+  color: #9aa3b0;
+  font-weight: 800;
+}
+
+.friend-back {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: var(--c-yellow);
+  font-family: var(--pixel-font);
+  font-size: 0.6rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+
+.friend-detail-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.friend-detail-name {
+  margin: 0;
+  font-family: var(--pixel-font);
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.friend-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.friend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--panel-2);
+  border: 3px solid var(--ink);
+  padding: 0.3rem 0.6rem;
+  font-family: var(--pixel-font);
+  font-size: 0.55rem;
+  color: var(--ink);
+}
+
+.trophy-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.trophy-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 3px solid var(--ink);
+  background: #fff;
+}
+
+.trophy-card.earned {
+  background: #fff7e0;
+}
+
+.trophy-card.locked {
+  opacity: 0.55;
+}
+
+.trophy-emblem {
+  font-size: 1.4rem;
+}
+
+.trophy-name {
+  font-family: var(--pixel-font);
+  font-size: 0.6rem;
+  color: var(--ink);
+  flex: 1;
+  line-height: 1.4;
+}
+
+.trophy-state {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #8a7a3a;
+}
+
+.trophy-card.locked .trophy-state {
+  color: #889;
+}
+
 .friend-info {
   display: flex;
   flex-direction: column;

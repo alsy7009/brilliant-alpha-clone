@@ -50,7 +50,7 @@ const NAV_ITEMS: { key: NavKey; label: string; icon: ReactNode }[] = [
   },
   {
     key: 'profile',
-    label: 'Hero',
+    label: 'Profile',
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
         <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="2" />

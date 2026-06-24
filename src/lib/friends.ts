@@ -34,6 +34,7 @@ export interface FriendProfile {
   level: number
   streak: number
   lessonsCompleted: number
+  completedLessons: string[]
   equippedDecoration: string
 }
 
@@ -42,6 +43,7 @@ export interface UserStats {
   level: number
   streak: number
   lessonsCompleted: number
+  completedLessons: string[]
 }
 
 function pairId(a: string, b: string): string {
@@ -72,6 +74,7 @@ function toProfile(id: string, data: Record<string, unknown>): FriendProfile {
     level: (data.level as number) ?? 1,
     streak: (data.streak as number) ?? 0,
     lessonsCompleted: (data.lessonsCompleted as number) ?? 0,
+    completedLessons: (data.completedLessons as string[]) ?? [],
     equippedDecoration: (data.equippedDecoration as string) ?? 'none',
   }
 }

@@ -156,26 +156,28 @@ export function ProfilePage({
           </div>
         </section>
 
-        {/* History feed */}
+        {/* Trophies — earned only */}
         <section className="profile-history">
           <h3 className="section-heading">
-            Trophies <span className="history-count">{masteredCount}/{LESSONS.length}</span>
+            Trophies <span className="history-count">{masteredCount}</span>
           </h3>
-          <ul className="history-feed">
-            {mastered.map(({ lesson, completed, stepsDone, total }) => (
-              <li key={lesson.lessonId} className={`history-item ${completed ? 'done' : ''}`}>
-                <span className="history-icon" aria-hidden="true">
-                  {completed ? '★' : stepsDone > 0 ? '▷' : '·'}
-                </span>
-                <span className="history-info">
-                  <span className="history-name">{lesson.title}</span>
-                  <span className="history-sub">
-                    {completed ? 'CLEARED' : `${stepsDone}/${total} stages`}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
+          {masteredCount === 0 ? (
+            <p className="history-empty">No trophies yet — clear a mission to earn one!</p>
+          ) : (
+            <ul className="history-feed">
+              {mastered
+                .filter((m) => m.completed)
+                .map(({ lesson }) => (
+                  <li key={lesson.lessonId} className="history-item done">
+                    <span className="history-icon" aria-hidden="true">🏆</span>
+                    <span className="history-info">
+                      <span className="history-name">{lesson.title}</span>
+                      <span className="history-sub">CLEARED</span>
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          )}
         </section>
       </div>
     </div>

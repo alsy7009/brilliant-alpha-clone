@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { User } from 'firebase/auth'
-import { getLessonById } from './content/catalog'
+import { getLessonById, LESSONS } from './content/catalog'
 import { LessonPlayer } from './components/LessonPlayer/LessonPlayer'
 import { LoginForm } from './components/Login/LoginForm'
 import { Roadmap } from './components/Roadmap/Roadmap'
@@ -69,8 +69,17 @@ function App() {
     if (isDemoMode() || !authUser) return
     const totalXp = totalXpFromProgress(progressList)
     const { level } = levelInfoFromXp(totalXp)
-    const lessonsCompleted = progressList.filter((p) => p.isCompleted).length
-    void updateUserStats(authUser.uid, { totalXp, level, streak, lessonsCompleted })
+    const validLessonIds = new Set(LESSONS.map((l) => l.lessonId))
+    const completed = progressList.filter(
+      (p) => p.isCompleted && validLessonIds.has(p.lessonId),
+    )
+    void updateUserStats(authUser.uid, {
+      totalXp,
+      level,
+      streak,
+      lessonsCompleted: completed.length,
+      completedLessons: completed.map((p) => p.lessonId),
+    })
   }, [authUser, progressList, streak])
 
   // Keep the display name in sync once the auth profile carries it.

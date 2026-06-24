@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { LESSONS } from '../../content/catalog'
+
+const LESSON_IDS = new Set(LESSONS.map((l) => l.lessonId))
 import { isDemoMode } from '../../lib/auth'
 import { getDecoration } from '../../lib/gamification'
 import {
@@ -27,6 +30,7 @@ export function FriendsPage({ me }: FriendsPageProps) {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState<FriendProfile | null>(null)
 
   const refresh = useCallback(async () => {
     const [f, inc] = await Promise.all([getFriends(me.uid), getIncomingRequests(me.uid)])
@@ -44,6 +48,56 @@ export function FriendsPage({ me }: FriendsPageProps) {
       <div className="friends-page">
         <h1 className="friends-title">★ Friends</h1>
         <p className="friends-demo">Sign in with an account to add friends and compare stats.</p>
+      </div>
+    )
+  }
+
+  if (selected) {
+    const earned = new Set(selected.completedLessons.filter((id) => LESSON_IDS.has(id)))
+    const deco = getDecoration(selected.equippedDecoration)
+    return (
+      <div className="friends-page">
+        <button type="button" className="friend-back" onClick={() => setSelected(null)}>
+          ← Back to friends
+        </button>
+
+        <section className="friends-card friend-detail-card">
+          <AvatarDecoration
+            name={selected.displayName}
+            photoURL={selected.photoURL}
+            variant={deco.variant}
+            size={108}
+          />
+          <h2 className="friend-detail-name">{selected.displayName}</h2>
+          <div className="friend-detail-badges">
+            <span className="friend-badge">
+              <LevelBadge level={selected.level} size="sm" /> Lv {selected.level}
+            </span>
+            <span className="friend-badge">
+              <StreakFlame streak={selected.streak} size={20} /> streak
+            </span>
+            <span className="friend-badge">{selected.totalXp} XP</span>
+          </div>
+        </section>
+
+        <section className="friends-card">
+          <h3 className="friends-heading">
+            Trophies <span className="friends-count">{earned.size}</span>
+          </h3>
+          {earned.size === 0 ? (
+            <p className="friends-demo">No trophies earned yet.</p>
+          ) : (
+            <div className="trophy-scroll">
+              {LESSONS.filter((lesson) => earned.has(lesson.lessonId)).map((lesson) => (
+                <div key={lesson.lessonId} className="trophy-card earned">
+                  <span className="trophy-emblem" aria-hidden="true">🏆</span>
+                  <span className="trophy-name">{lesson.title}</span>
+                  <span className="trophy-state">Earned</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     )
   }
@@ -152,22 +206,31 @@ export function FriendsPage({ me }: FriendsPageProps) {
         ) : (
           <ul className="friends-list">
             {friends.map((f) => (
-              <li key={f.userId} className="friend-row">
-                <AvatarDecoration
-                  name={f.displayName}
-                  photoURL={f.photoURL}
-                  variant={getDecoration(f.equippedDecoration).variant}
-                  size={52}
-                />
-                <div className="friend-info">
-                  <span className="friend-name">{f.displayName}</span>
-                  <span className="friend-stats">
-                    <LevelBadge level={f.level} size="sm" /> Lv {f.level}
-                    <StreakFlame streak={f.streak} size={18} />
-                    <span className="friend-xp">{f.totalXp} XP</span>
-                  </span>
-                  <span className="friend-sub">{f.lessonsCompleted} missions cleared</span>
-                </div>
+              <li key={f.userId}>
+                <button
+                  type="button"
+                  className="friend-row friend-row-button"
+                  onClick={() => setSelected(f)}
+                >
+                  <AvatarDecoration
+                    name={f.displayName}
+                    photoURL={f.photoURL}
+                    variant={getDecoration(f.equippedDecoration).variant}
+                    size={52}
+                  />
+                  <div className="friend-info">
+                    <span className="friend-name">{f.displayName}</span>
+                    <span className="friend-stats">
+                      <LevelBadge level={f.level} size="sm" /> Lv {f.level}
+                      <StreakFlame streak={f.streak} size={18} />
+                      <span className="friend-xp">{f.totalXp} XP</span>
+                    </span>
+                    <span className="friend-sub">
+                      {f.completedLessons.filter((id) => LESSON_IDS.has(id)).length} missions cleared
+                    </span>
+                  </div>
+                  <span className="friend-chevron" aria-hidden="true">›</span>
+                </button>
               </li>
             ))}
           </ul>
