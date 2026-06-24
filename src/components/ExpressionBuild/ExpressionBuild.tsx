@@ -10,6 +10,7 @@ interface ExpressionBuildProps {
   state: ExpressionBuildState
   onStateChange: (state: ExpressionBuildState) => void
   disabled?: boolean
+  slotFeedback?: Record<string, boolean> | null
 }
 
 function isVariable(tile: string, config: ExpressionBuildConfig): boolean {
@@ -21,6 +22,7 @@ export function ExpressionBuild({
   state,
   onStateChange,
   disabled = false,
+  slotFeedback,
 }: ExpressionBuildProps) {
   const [selectedTile, setSelectedTile] = useState<string | null>(null)
 
@@ -124,6 +126,8 @@ export function ExpressionBuild({
             )
           }
           const value = state.slots[key]
+          const fb = slotFeedback?.[key]
+          const fbClass = fb === undefined ? '' : fb ? 'slot-correct' : 'slot-wrong'
           return (
             <button
               key={key}
@@ -131,7 +135,7 @@ export function ExpressionBuild({
               type="button"
               className={`expression-slot ${value ? 'filled' : ''} ${
                 selectedTile || dragTile ? 'drop-ready' : ''
-              } ${hoverSlot === key ? 'snap-hover' : ''}`}
+              } ${hoverSlot === key ? 'snap-hover' : ''} ${fbClass}`}
               onClick={() => handleSlotClick(key)}
               disabled={disabled}
               aria-label={`Slot ${key}${value ? `: ${value}` : ', empty'}`}

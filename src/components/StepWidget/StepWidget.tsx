@@ -14,9 +14,10 @@ interface StepWidgetProps {
   step: LessonStep
   state: WidgetState
   onStateChange: (state: WidgetState) => void
+  slotFeedback?: Record<string, boolean> | null
 }
 
-export function StepWidget({ step, state, onStateChange }: StepWidgetProps) {
+export function StepWidget({ step, state, onStateChange, slotFeedback }: StepWidgetProps) {
   switch (step.type) {
     case 'visual-intro':
       return (
@@ -40,6 +41,7 @@ export function StepWidget({ step, state, onStateChange }: StepWidgetProps) {
           config={step.widgetConfig as Parameters<typeof ExpressionBuild>[0]['config']}
           state={state as Parameters<typeof ExpressionBuild>[0]['state']}
           onStateChange={onStateChange as Parameters<typeof ExpressionBuild>[0]['onStateChange']}
+          slotFeedback={slotFeedback}
         />
       )
     case 'expression-evaluate':
@@ -48,6 +50,7 @@ export function StepWidget({ step, state, onStateChange }: StepWidgetProps) {
           config={step.widgetConfig as Parameters<typeof ExpressionEvaluate>[0]['config']}
           state={state as Parameters<typeof ExpressionEvaluate>[0]['state']}
           onStateChange={onStateChange as Parameters<typeof ExpressionEvaluate>[0]['onStateChange']}
+          slotFeedback={slotFeedback}
         />
       )
     case 'linear-graph':
@@ -96,6 +99,7 @@ export function StepWidget({ step, state, onStateChange }: StepWidgetProps) {
           config={step.widgetConfig as Parameters<typeof FoilMultiply>[0]['config']}
           state={state as Parameters<typeof FoilMultiply>[0]['state']}
           onStateChange={onStateChange as Parameters<typeof FoilMultiply>[0]['onStateChange']}
+          slotFeedback={slotFeedback}
         />
       )
     default:

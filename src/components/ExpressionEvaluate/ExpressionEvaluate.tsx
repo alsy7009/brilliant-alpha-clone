@@ -10,6 +10,7 @@ interface ExpressionEvaluateProps {
   state: SlotWidgetState
   onStateChange: (state: SlotWidgetState) => void
   disabled?: boolean
+  slotFeedback?: Record<string, boolean> | null
 }
 
 export function ExpressionEvaluate({
@@ -17,6 +18,7 @@ export function ExpressionEvaluate({
   state,
   onStateChange,
   disabled = false,
+  slotFeedback,
 }: ExpressionEvaluateProps) {
   const [selectedTile, setSelectedTile] = useState<string | null>(null)
   const color = config.visualModel.variableColor ?? '#9b59b6'
@@ -85,6 +87,8 @@ export function ExpressionEvaluate({
           const slotId = config.slotIds[i]
           const value = state.slots[slotId]
           const parts = label.split('□')
+          const fb = slotFeedback?.[slotId]
+          const fbClass = fb === undefined ? '' : fb ? 'slot-correct' : 'slot-wrong'
           return (
             <span key={slotId} className="eval-label-group">
               {parts[0]}
@@ -93,7 +97,7 @@ export function ExpressionEvaluate({
                 type="button"
                 className={`eval-slot ${value ? 'filled' : ''} ${
                   selectedTile || dragTile ? 'drop-ready' : ''
-                } ${hoverSlot === slotId ? 'snap-hover' : ''}`}
+                } ${hoverSlot === slotId ? 'snap-hover' : ''} ${fbClass}`}
                 onClick={() => handleSlotClick(slotId)}
                 disabled={disabled}
               >

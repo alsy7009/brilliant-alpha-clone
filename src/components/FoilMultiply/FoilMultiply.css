@@ -64,6 +64,20 @@
   transition: transform 0.1s;
 }
 
+.poly-slot.slot-correct {
+  border-style: solid;
+  border-color: #2db463;
+  background: #d8f9c8;
+  color: #1b5b2a;
+}
+
+.poly-slot.slot-wrong {
+  border-style: solid;
+  border-color: #e23b3b;
+  background: #ffdcd2;
+  color: #8b2a1a;
+}
+
 .foil-multiply .tile-bank {
   display: flex;
   flex-wrap: wrap;

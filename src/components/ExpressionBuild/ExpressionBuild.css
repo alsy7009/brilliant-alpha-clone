@@ -102,6 +102,20 @@
   transform: scale(1.08);
 }
 
+.expression-slot.slot-correct {
+  border-style: solid;
+  border-color: #2db463;
+  background: #d8f9c8;
+  color: #1b5b2a;
+}
+
+.expression-slot.slot-wrong {
+  border-style: solid;
+  border-color: #e23b3b;
+  background: #ffdcd2;
+  color: #8b2a1a;
+}
+
 .expression-slot:disabled {
   cursor: not-allowed;
   opacity: 0.6;

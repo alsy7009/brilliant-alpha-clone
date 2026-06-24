@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Lesson, LessonStep, WidgetState } from '../../types/lesson'
-import { evaluateWidget, getStepExplanation } from '../../lib/widgets/evaluateWidget'
+import { buildFeedback, checkStep } from '../../lib/widgets/checkStep'
 import { initWidgetState } from '../../lib/widgets/widgetState'
 import { completeStep, fetchLessonProgress } from '../../lib/progress'
 import { useGamification } from '../../context/GamificationContext'
@@ -38,6 +38,8 @@ export function LessonPlayer({
   const [flash, setFlash] = useState(false)
   const [burstKey, setBurstKey] = useState(0)
   const [completedStepIds, setCompletedStepIds] = useState<Set<string>>(new Set())
+  const [attempts, setAttempts] = useState(0)
+  const [slotFeedback, setSlotFeedback] = useState<Record<string, boolean> | null>(null)
 
   const step: LessonStep = lesson.steps[stepIndex]
   const isLastStep = stepIndex >= lesson.steps.length - 1
@@ -51,6 +53,15 @@ export function LessonPlayer({
     setCelebrate(false)
     setShake(false)
     setFlash(false)
+    setAttempts(0)
+    setSlotFeedback(null)
+  }, [])
+
+  // Editing the widget clears the previous check's coloring/feedback.
+  const updateWidgetState = useCallback((next: WidgetState) => {
+    setWidgetState(next)
+    setSlotFeedback(null)
+    setFeedback(null)
   }, [])
 
   useEffect(() => {
@@ -84,41 +95,53 @@ export function LessonPlayer({
     resetWidgetState(lesson.steps[index])
   }
 
+  const isScored = step.type !== 'explanation-slide' && step.type !== 'quad-explore'
+
   const handleCheck = async () => {
     if (solved) return
     const start = performance.now()
-    const outcome = evaluateWidget(step, widgetState)
-    const message = getStepExplanation(step, outcome)
-    setFeedback(message)
-    setFeedbackTone(outcome === 'correct' ? 'success' : 'error')
+    const result = checkStep(step, widgetState)
 
     const elapsed = performance.now() - start
     if (elapsed > 100) {
       console.warn(`Feedback latency ${elapsed.toFixed(1)}ms exceeds 100ms target`)
     }
 
-    if (step.type !== 'explanation-slide' && step.type !== 'quad-explore') {
-      registerAnswer(outcome === 'correct')
+    if (result.status === 'incomplete') {
+      setSlotFeedback(null)
+      setFeedback(buildFeedback(step, widgetState, attempts).message)
+      setFeedbackTone('neutral')
+      return
     }
 
-    if (outcome === 'correct') {
+    setSlotFeedback(result.slotResults)
+
+    if (result.status === 'correct') {
+      setFeedback(buildFeedback(step, widgetState, attempts).message)
+      setFeedbackTone('success')
+      if (isScored) registerAnswer(true)
       setSolved(true)
       setCompletedStepIds((prev) => new Set(prev).add(step.stepId))
       markSession()
       setBurstKey((k) => k + 1)
       await completeStep(userId, lesson, step.stepId)
       onStepComplete?.()
-      // Trophy only when the final step is cleared this session — not when
-      // replaying an earlier step of an already-completed lesson.
       if (isLastStep) {
         setCelebrate(true)
       }
-    } else if (outcome !== 'incomplete') {
-      setShake(true)
-      setFlash(true)
-      window.setTimeout(() => setShake(false), 450)
-      window.setTimeout(() => setFlash(false), 350)
+      return
     }
+
+    // Wrong answer → escalate hints by attempt count.
+    const nextAttempts = attempts + 1
+    setAttempts(nextAttempts)
+    if (isScored) registerAnswer(false)
+    setFeedback(buildFeedback(step, widgetState, nextAttempts).message)
+    setFeedbackTone('error')
+    setShake(true)
+    setFlash(true)
+    window.setTimeout(() => setShake(false), 450)
+    window.setTimeout(() => setFlash(false), 350)
   }
 
   const handleNext = () => {
@@ -159,7 +182,12 @@ export function LessonPlayer({
       <section className="lesson-body">
         <CoinBurst fireKey={burstKey} />
         <p className="instruction">{step.instruction}</p>
-        <StepWidget step={step} state={widgetState} onStateChange={setWidgetState} />
+        <StepWidget
+          step={step}
+          state={widgetState}
+          onStateChange={updateWidgetState}
+          slotFeedback={slotFeedback}
+        />
 
         {feedback && (
           <div className={`feedback feedback-${feedbackTone}`} role="status">

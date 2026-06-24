@@ -10,6 +10,7 @@ interface FoilMultiplyProps {
   state: SlotWidgetState
   onStateChange: (state: SlotWidgetState) => void
   disabled?: boolean
+  slotFeedback?: Record<string, boolean> | null
 }
 
 const SLOT_TOKEN = /^\{(.+)\}$/
@@ -19,6 +20,7 @@ export function FoilMultiply({
   state,
   onStateChange,
   disabled = false,
+  slotFeedback,
 }: FoilMultiplyProps) {
   const [selectedTile, setSelectedTile] = useState<string | null>(null)
 
@@ -77,6 +79,8 @@ export function FoilMultiply({
           }
           const slotId = match[1]
           const value = state.slots[slotId]
+          const fb = slotFeedback?.[slotId]
+          const fbClass = fb === undefined ? '' : fb ? 'slot-correct' : 'slot-wrong'
           return (
             <button
               key={slotId}
@@ -84,7 +88,7 @@ export function FoilMultiply({
               type="button"
               className={`poly-slot ${value ? 'filled' : ''} ${
                 selectedTile || dragTile ? 'drop-ready' : ''
-              } ${hoverSlot === slotId ? 'snap-hover' : ''}`}
+              } ${hoverSlot === slotId ? 'snap-hover' : ''} ${fbClass}`}
               onClick={() => handleSlot(slotId)}
               disabled={disabled}
               aria-label={`Coefficient slot ${slotId}${value ? `: ${value}` : ', empty'}`}
