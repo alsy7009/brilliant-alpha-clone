@@ -91,7 +91,12 @@ export function MainLayout({
         </div>
 
         <div className="ml-xp">
-          <XpBar level={level} xpIntoLevel={xpIntoLevel} xpForNext={xpForNext} />
+          <XpBar
+            level={level}
+            xpIntoLevel={xpIntoLevel}
+            xpForNext={xpForNext}
+            showLevel={false}
+          />
         </div>
 
         <div className="ml-streak-row">

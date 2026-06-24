@@ -5,15 +5,22 @@ interface XpBarProps {
   xpIntoLevel: number
   xpForNext: number
   compact?: boolean
+  showLevel?: boolean
 }
 
-export function XpBar({ level, xpIntoLevel, xpForNext, compact = false }: XpBarProps) {
+export function XpBar({
+  level,
+  xpIntoLevel,
+  xpForNext,
+  compact = false,
+  showLevel = true,
+}: XpBarProps) {
   const pct = Math.max(0, Math.min(100, Math.round((xpIntoLevel / xpForNext) * 100)))
   return (
     <div className={`xp-bar ${compact ? 'xp-bar-compact' : ''}`}>
       {!compact && (
         <div className="xp-bar-labels">
-          <span>Level {level}</span>
+          {showLevel && <span>Level {level}</span>}
           <span className="xp-bar-count">
             {xpIntoLevel} / {xpForNext} XP to Level {level + 1}
           </span>

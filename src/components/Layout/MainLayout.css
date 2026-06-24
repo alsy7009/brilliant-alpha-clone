@@ -167,9 +167,20 @@
     padding: 0 0.5rem;
   }
 
-  .ml-xp .xp-bar-labels,
-  .ml-xp .xp-bar-count {
+  .ml-xp .xp-bar-labels {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    font-size: 0.42rem;
+    line-height: 1.5;
     color: #d8d3f0;
+  }
+
+  .ml-xp .xp-bar-count {
+    font-size: 0.42rem;
+    line-height: 1.5;
+    text-align: left;
+    color: #b7b2d4;
   }
 
   .ml-streak-row {

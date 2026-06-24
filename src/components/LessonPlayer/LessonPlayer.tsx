@@ -6,6 +6,8 @@ import { initWidgetState } from '../../lib/widgets/widgetState'
 import { completeStep, fetchLessonProgress } from '../../lib/progress'
 import { useGamification } from '../../context/GamificationContext'
 import { StepWidget } from '../StepWidget/StepWidget'
+import { CoinBurst } from '../Effects/CoinBurst'
+import { TrophyOverlay } from '../Effects/TrophyOverlay'
 import './LessonPlayer.css'
 
 interface LessonPlayerProps {
@@ -33,6 +35,9 @@ export function LessonPlayer({
   const [loading, setLoading] = useState(true)
   const [celebrate, setCelebrate] = useState(false)
   const [solved, setSolved] = useState(false)
+  const [shake, setShake] = useState(false)
+  const [flash, setFlash] = useState(false)
+  const [burstKey, setBurstKey] = useState(0)
 
   const step: LessonStep = lesson.steps[stepIndex]
   const isLastStep = stepIndex >= lesson.steps.length - 1
@@ -42,6 +47,8 @@ export function LessonPlayer({
     setFeedback(null)
     setSolved(false)
     setCelebrate(false)
+    setShake(false)
+    setFlash(false)
   }, [])
 
   useEffect(() => {
@@ -87,11 +94,17 @@ export function LessonPlayer({
     if (outcome === 'correct') {
       setSolved(true)
       markSession()
+      setBurstKey((k) => k + 1)
       const updated: UserProgress = await completeStep(userId, lesson, step.stepId)
       onStepComplete?.()
       if (updated.isCompleted) {
         setCelebrate(true)
       }
+    } else if (outcome !== 'incomplete') {
+      setShake(true)
+      setFlash(true)
+      window.setTimeout(() => setShake(false), 450)
+      window.setTimeout(() => setFlash(false), 350)
     }
   }
 
@@ -113,7 +126,8 @@ export function LessonPlayer({
   }
 
   return (
-    <div className="lesson-player">
+    <div className={`lesson-player ${shake ? 'fx-shake' : ''}`}>
+      {flash && <div className="fx-flash" />}
       <header className="lesson-header">
         <button type="button" className="text-button" onClick={onExit}>
           ← Quit
@@ -130,18 +144,13 @@ export function LessonPlayer({
       </header>
 
       <section className="lesson-body">
+        <CoinBurst fireKey={burstKey} />
         <p className="instruction">{step.instruction}</p>
         <StepWidget step={step} state={widgetState} onStateChange={setWidgetState} />
 
         {feedback && (
           <div className={`feedback feedback-${feedbackTone}`} role="status">
             {feedback}
-          </div>
-        )}
-
-        {celebrate && (
-          <div className="celebration" role="status">
-            ★ MISSION CLEARED! ★
           </div>
         )}
       </section>
@@ -172,6 +181,10 @@ export function LessonPlayer({
           {isLastStep ? 'Claim win' : 'Next'}
         </button>
       </footer>
+
+      {celebrate && (
+        <TrophyOverlay onClaim={() => onComplete(lesson.lessonId)} />
+      )}
     </div>
   )
 }
