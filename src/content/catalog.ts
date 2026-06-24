@@ -1,10 +1,9 @@
 import type { Lesson } from '../types/lesson'
-import lesson01 from './lessons/alg_balancing_01.json'
-import lesson02 from './lessons/alg_expressions_01.json'
-import lesson03 from './lessons/alg_evaluate_01.json'
-import lesson04 from './lessons/alg_linear_01.json'
-import lesson05 from './lessons/alg_foil_01.json'
-import lesson06 from './lessons/alg_quadratics_01.json'
+import lesson01 from './lessons/alg_expressions_01.json'
+import lesson02 from './lessons/alg_evaluate_01.json'
+import lesson03 from './lessons/alg_linear_01.json'
+import lesson04 from './lessons/alg_foil_01.json'
+import lesson05 from './lessons/alg_quadratics_01.json'
 
 export const LESSONS: Lesson[] = [
   lesson01,
@@ -12,7 +11,6 @@ export const LESSONS: Lesson[] = [
   lesson03,
   lesson04,
   lesson05,
-  lesson06,
 ].sort((a, b) => a.order - b.order) as Lesson[]
 
 export function getLessonById(lessonId: string): Lesson | undefined {

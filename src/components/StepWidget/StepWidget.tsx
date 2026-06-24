@@ -7,6 +7,7 @@ import { VisualIntro } from '../EquationScale/VisualIntro'
 import { FoilMultiply } from '../FoilMultiply/FoilMultiply'
 import { GraphSelect } from '../GraphSelect/GraphSelect'
 import { LinearGraph } from '../LinearGraph/LinearGraph'
+import { PlotLine } from '../PlotLine/PlotLine'
 
 interface StepWidgetProps {
   step: LessonStep
@@ -54,6 +55,14 @@ export function StepWidget({ step, state, onStateChange }: StepWidgetProps) {
           config={step.widgetConfig as Parameters<typeof LinearGraph>[0]['config']}
           state={state as Parameters<typeof LinearGraph>[0]['state']}
           onStateChange={onStateChange as Parameters<typeof LinearGraph>[0]['onStateChange']}
+        />
+      )
+    case 'plot-line':
+      return (
+        <PlotLine
+          config={step.widgetConfig as Parameters<typeof PlotLine>[0]['config']}
+          state={state as Parameters<typeof PlotLine>[0]['state']}
+          onStateChange={onStateChange as Parameters<typeof PlotLine>[0]['onStateChange']}
         />
       )
     case 'graph-select':

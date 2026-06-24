@@ -31,6 +31,8 @@ export function initWidgetState(step: LessonStep): WidgetState {
     }
     case 'linear-graph':
       return { typedValue: null }
+    case 'plot-line':
+      return { points: [] }
     case 'graph-select':
       return { selectedOptionId: null }
     case 'explanation-slide':

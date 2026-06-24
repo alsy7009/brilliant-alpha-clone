@@ -2,8 +2,35 @@
   "lessonId": "alg_linear_01",
   "title": "Graphing Linear Equations",
   "subject": "algebra",
-  "order": 4,
+  "order": 3,
   "steps": [
+    {
+      "stepId": "step_slope_intercept_intro",
+      "type": "explanation-slide",
+      "instruction": "Reading a line: y = mx + b",
+      "widgetConfig": {
+        "slides": [
+          {
+            "title": "Every line is y = mx + b",
+            "body": "A straight line can be written as y = mx + b. The two letters m and b tell you everything you need to draw it.",
+            "highlight": ["m", "b"]
+          },
+          {
+            "title": "b is the y-intercept",
+            "body": "b is where the line crosses the y-axis (when x = 0). In y = 2x + 1, b = 1, so the line passes through the point (0, 1).",
+            "highlight": ["b = 1", "(0, 1)"]
+          },
+          {
+            "title": "m is the slope",
+            "body": "m is the slope — how steep the line is. It means 'rise over run': go up m units for every 1 unit you move right. In y = 2x + 1, m = 2, so from (0, 1) you go up 2 and right 1 to reach (1, 3).",
+            "highlight": ["m = 2", "up 2, right 1"]
+          }
+        ]
+      },
+      "explanations": {
+        "correct": "Great — now let's read m and b off some graphs!"
+      }
+    },
     {
       "stepId": "step_linear_y_int",
       "type": "linear-graph",
@@ -106,6 +133,36 @@
         "wrong_intercept": "Set y = 0 and solve: 0 = 2x − 6 → 2x = 6 → x = 3.",
         "incomplete": "Type a whole number for the x-intercept.",
         "generic_wrong": "To find the x-intercept, set y = 0 and solve for x."
+      }
+    },
+    {
+      "stepId": "step_plot_line_1",
+      "type": "plot-line",
+      "instruction": "Plot the line y = x + 2. Place 2 dots, click one of them again to unplace it.",
+      "widgetConfig": {
+        "equation": { "slope": 1, "intercept": 2 },
+        "grid": { "xMin": -5, "xMax": 5, "yMin": -4, "yMax": 8 },
+        "equationLabel": "y = x + 2"
+      },
+      "explanations": {
+        "correct": "Perfect! Both dots sit on y = x + 2 — for example (0, 2) and (1, 3).",
+        "incomplete": "Place 2 dots on the line. Click a dot again to remove it.",
+        "generic_wrong": "Each point must satisfy y = x + 2. Try (0, 2): y = 0 + 2 = 2."
+      }
+    },
+    {
+      "stepId": "step_plot_line_2",
+      "type": "plot-line",
+      "instruction": "Plot the line y = 2x − 1. Place 2 dots, click one of them again to unplace it.",
+      "widgetConfig": {
+        "equation": { "slope": 2, "intercept": -1 },
+        "grid": { "xMin": -4, "xMax": 4, "yMin": -6, "yMax": 8 },
+        "equationLabel": "y = 2x − 1"
+      },
+      "explanations": {
+        "correct": "Nice! Both dots are on y = 2x − 1 — for example (0, −1) and (1, 1).",
+        "incomplete": "Place 2 dots on the line. Click a dot again to remove it.",
+        "generic_wrong": "Each point must satisfy y = 2x − 1. Try (0, −1): y = 2(0) − 1 = −1."
       }
     }
   ]

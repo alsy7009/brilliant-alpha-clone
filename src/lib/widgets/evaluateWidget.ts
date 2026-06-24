@@ -4,6 +4,8 @@ import type {
   LessonStep,
   LinearGraphConfig,
   LinearGraphState,
+  PlotLineConfig,
+  PlotLineState,
   SlotWidgetState,
   ValidationOutcome,
   WidgetState,
@@ -38,6 +40,8 @@ export function evaluateWidget(step: LessonStep, state: WidgetState): Validation
       return evaluateSlots(state as SlotWidgetState, step)
     case 'linear-graph':
       return evaluateLinearGraph(state as LinearGraphState, step)
+    case 'plot-line':
+      return evaluatePlotLine(state as PlotLineState, step)
     case 'graph-select':
       return evaluateGraphSelect(state as GraphSelectState, step)
     case 'explanation-slide':
@@ -67,6 +71,18 @@ function evaluateLinearGraph(state: LinearGraphState, step: LessonStep): Validat
   }
 
   return 'generic_wrong'
+}
+
+function evaluatePlotLine(state: PlotLineState, step: LessonStep): ValidationOutcome {
+  const config = step.widgetConfig as PlotLineConfig
+  if (state.points.length < 2) return 'incomplete'
+
+  const [a, b] = state.points
+  if (a.x === b.x && a.y === b.y) return 'generic_wrong'
+
+  const { slope, intercept } = config.equation
+  const onLine = (p: { x: number; y: number }) => p.y === slope * p.x + intercept
+  return onLine(a) && onLine(b) ? 'correct' : 'generic_wrong'
 }
 
 function evaluateGraphSelect(state: GraphSelectState, step: LessonStep): ValidationOutcome {

@@ -2,7 +2,7 @@
   "lessonId": "alg_foil_01",
   "title": "The FOIL Method",
   "subject": "algebra",
-  "order": 5,
+  "order": 4,
   "steps": [
     {
       "stepId": "step_foil_intro",

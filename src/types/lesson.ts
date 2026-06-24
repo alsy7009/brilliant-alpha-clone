@@ -4,6 +4,7 @@ export type StepType =
   | 'expression-build'
   | 'expression-evaluate'
   | 'linear-graph'
+  | 'plot-line'
   | 'graph-select'
   | 'explanation-slide'
   | 'foil-multiply'
@@ -98,6 +99,21 @@ export interface LinearGraphConfig {
   showGraph?: boolean
 }
 
+export interface PlotLineConfig {
+  equation: { slope: number; intercept: number }
+  grid: { xMin: number; xMax: number; yMin: number; yMax: number }
+  equationLabel?: string
+}
+
+export interface GridPoint {
+  x: number
+  y: number
+}
+
+export interface PlotLineState {
+  points: GridPoint[]
+}
+
 export interface GraphSelectOption {
   optionId: string
   roots: [number, number]
@@ -134,6 +150,7 @@ export type WidgetConfig =
   | ExpressionBuildConfig
   | ExpressionEvaluateConfig
   | LinearGraphConfig
+  | PlotLineConfig
   | GraphSelectConfig
   | ExplanationSlideConfig
   | FoilMultiplyConfig
@@ -186,6 +203,7 @@ export type WidgetState =
   | VisualIntroState
   | SlotWidgetState
   | LinearGraphState
+  | PlotLineState
   | GraphSelectState
   | ExplanationSlideState
 
