@@ -41,9 +41,13 @@ export async function fetchAllProgress(userId: string): Promise<UserProgress[]> 
     return Object.values(all).filter((p) => p.userId === userId)
   }
 
-  const q = query(collection(db, 'user_progress'), where('userId', '==', userId))
-  const snapshot = await getDocs(q)
-  return snapshot.docs.map((d) => d.data() as UserProgress)
+  try {
+    const q = query(collection(db, 'user_progress'), where('userId', '==', userId))
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map((d) => d.data() as UserProgress)
+  } catch {
+    return []
+  }
 }
 
 export async function fetchLessonProgress(
@@ -57,12 +61,17 @@ export async function fetchLessonProgress(
     return all[docId] ?? emptyProgress(userId, lesson)
   }
 
-  const ref = doc(db, 'user_progress', docId)
-  const snapshot = await getDoc(ref)
-  if (!snapshot.exists()) {
+  try {
+    const ref = doc(db, 'user_progress', docId)
+    const snapshot = await getDoc(ref)
+    if (!snapshot.exists()) {
+      return emptyProgress(userId, lesson)
+    }
+    return snapshot.data() as UserProgress
+  } catch {
+    // Missing doc / transient read error → start fresh rather than hang.
     return emptyProgress(userId, lesson)
   }
-  return snapshot.data() as UserProgress
 }
 
 export async function saveLessonProgress(progress: UserProgress): Promise<void> {

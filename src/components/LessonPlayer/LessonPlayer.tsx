@@ -52,12 +52,17 @@ export function LessonPlayer({
 
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
     ;(async () => {
-      const progress = await fetchLessonProgress(userId, lesson)
+      let resumeStepId: string | null = null
+      try {
+        const progress = await fetchLessonProgress(userId, lesson)
+        resumeStepId = progress.currentStepId
+      } catch {
+        resumeStepId = null
+      }
       if (cancelled) return
-      const resumeIndex = lesson.steps.findIndex(
-        (s) => s.stepId === progress.currentStepId,
-      )
+      const resumeIndex = lesson.steps.findIndex((s) => s.stepId === resumeStepId)
       const index = resumeIndex >= 0 ? resumeIndex : 0
       setStepIndex(index)
       resetWidgetState(lesson.steps[index])
