@@ -6,6 +6,7 @@ import { LoginForm } from './components/Login/LoginForm'
 import { Roadmap } from './components/Roadmap/Roadmap'
 import { MainLayout, type NavKey } from './components/Layout/MainLayout'
 import { ProfilePage } from './components/Profile/ProfilePage'
+import { FriendsPage } from './components/Friends/FriendsPage'
 import { LevelUpModal } from './components/Gamification/LevelUpModal'
 import { ComboLayer } from './components/Gamification/ComboLayer'
 import { GamificationProvider } from './context/GamificationContext'
@@ -19,6 +20,8 @@ import {
 } from './lib/auth'
 import { fetchAllProgress } from './lib/progress'
 import { getDisplayStreak, recordActivityStreak } from './lib/streak'
+import { updateUserStats } from './lib/friends'
+import { levelInfoFromXp, totalXpFromProgress } from './lib/gamification'
 import { fileToResizedDataUrl, getAvatarOverride, setAvatarOverride } from './lib/avatar'
 import type { AppView, UserProgress } from './types/progress'
 import './App.css'
@@ -60,6 +63,15 @@ function App() {
     setStreak(recordActivityStreak(userId))
     void refreshProgress()
   }, [userId, refreshProgress])
+
+  // Mirror the player's stats onto their user doc so friends can see them.
+  useEffect(() => {
+    if (isDemoMode() || !authUser) return
+    const totalXp = totalXpFromProgress(progressList)
+    const { level } = levelInfoFromXp(totalXp)
+    const lessonsCompleted = progressList.filter((p) => p.isCompleted).length
+    void updateUserStats(authUser.uid, { totalXp, level, streak, lessonsCompleted })
+  }, [authUser, progressList, streak])
 
   // Keep the display name in sync once the auth profile carries it.
   useEffect(() => {
@@ -137,7 +149,7 @@ function App() {
 
   const handleNavigate = (key: NavKey) => {
     setActiveLessonId(null)
-    setView(key === 'profile' ? 'profile' : 'roadmap')
+    setView(key === 'profile' ? 'profile' : key === 'friends' ? 'friends' : 'roadmap')
   }
 
   const activeLesson = activeLessonId ? getLessonById(activeLessonId) : undefined
@@ -161,7 +173,8 @@ function App() {
     )
   }
 
-  const activeNav: NavKey = view === 'profile' ? 'profile' : 'dashboard'
+  const activeNav: NavKey =
+    view === 'profile' ? 'profile' : view === 'friends' ? 'friends' : 'dashboard'
 
   return (
     <GamificationProvider
@@ -189,6 +202,17 @@ function App() {
             photoURL={photoURL}
             progressList={progressList}
             onAvatarFile={handleAvatarFile}
+          />
+        )}
+
+        {view === 'friends' && (
+          <FriendsPage
+            me={{
+              uid: userId,
+              name: displayName ?? 'Learner',
+              email: authUser?.email ?? '',
+              photoURL,
+            }}
           />
         )}
 

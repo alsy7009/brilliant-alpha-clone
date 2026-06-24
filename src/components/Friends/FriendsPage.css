@@ -1,0 +1,176 @@
+.friends-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.friends-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--c-yellow);
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+.friends-demo {
+  color: #d8d3f0;
+  font-size: 1.05rem;
+}
+
+.friends-card {
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  padding: 1rem;
+}
+
+.friends-heading {
+  margin: 0 0 0.75rem;
+  font-family: var(--pixel-font);
+  font-size: 0.7rem;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.friends-count {
+  font-family: var(--pixel-font);
+  font-size: 0.6rem;
+  color: #fff;
+  background: var(--c-blue);
+  border: 2px solid var(--ink);
+  padding: 0.1rem 0.4rem;
+}
+
+.friends-add {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.friends-add input {
+  flex: 1;
+  min-width: 160px;
+  min-height: 46px;
+  padding: 0.5rem 0.75rem;
+  border: 3px solid var(--ink);
+  font-family: var(--body-font);
+  font-size: 1.15rem;
+  background: #fff;
+}
+
+.friends-send {
+  min-height: 46px;
+  border: 3px solid var(--ink);
+  background: var(--c-lime);
+  color: var(--ink);
+  font-family: var(--pixel-font);
+  font-size: 0.6rem;
+  box-shadow: var(--shadow-hard-sm);
+  cursor: pointer;
+}
+
+.friends-send:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.friends-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.friends-ok {
+  margin: 0.6rem 0 0;
+  color: #1b6b3a;
+  font-size: 0.9rem;
+}
+
+.friends-err {
+  margin: 0.6rem 0 0;
+  color: #c0392b;
+  font-size: 0.9rem;
+}
+
+.friends-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.friend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem;
+  border: 3px solid var(--ink);
+  background: #fff;
+}
+
+.friend-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.friend-name {
+  font-family: var(--pixel-font);
+  font-size: 0.62rem;
+  color: var(--ink);
+}
+
+.friend-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #2a4068;
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+
+.friend-xp {
+  color: #2db463;
+}
+
+.friend-sub {
+  font-size: 0.9rem;
+  color: #778;
+}
+
+.friend-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-direction: column;
+}
+
+.req-accept,
+.req-deny {
+  min-height: 36px;
+  border: 2px solid var(--ink);
+  font-family: var(--pixel-font);
+  font-size: 0.52rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+
+.req-accept {
+  background: var(--c-lime);
+  color: var(--ink);
+}
+
+.req-deny {
+  background: #ffdcd2;
+  color: #8b2a1a;
+}
+
+.req-accept:disabled,
+.req-deny:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

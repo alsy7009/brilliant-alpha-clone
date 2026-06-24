@@ -6,7 +6,7 @@ import { StreakFlame } from '../Gamification/StreakFlame'
 import { XpBar } from '../Gamification/XpBar'
 import './MainLayout.css'
 
-export type NavKey = 'dashboard' | 'profile'
+export type NavKey = 'dashboard' | 'friends' | 'profile'
 
 interface MainLayoutProps {
   active: NavKey
@@ -34,6 +34,17 @@ const NAV_ITEMS: { key: NavKey; label: string; icon: ReactNode }[] = [
           strokeLinejoin="round"
           strokeLinecap="round"
         />
+      </svg>
+    ),
+  },
+  {
+    key: 'friends',
+    label: 'Friends',
+    icon: (
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" strokeWidth="2" />
+        <path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M16 5.5a3.5 3.5 0 0 1 0 6.8M17.5 14.5c2.8.4 4.5 2.3 4.5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       </svg>
     ),
   },

@@ -205,10 +205,12 @@ export async function upsertUserProfile(
   if (!isFirebaseConfigured) return
 
   // Firestore rejects `undefined` field values, so only include photoURL when set.
+  const email = user.email ?? ''
   const baseFields = {
     userId: user.uid,
     displayName: displayName ?? user.displayName ?? 'Learner',
-    email: user.email ?? '',
+    email,
+    emailLower: email.trim().toLowerCase(), // for friend lookup by email
     authProvider: provider,
     ...(user.photoURL ? { photoURL: user.photoURL } : {}),
   }
@@ -223,6 +225,7 @@ export async function upsertUserProfile(
       {
         displayName: baseFields.displayName,
         email: baseFields.email,
+        emailLower: baseFields.emailLower,
         ...(user.photoURL ? { photoURL: user.photoURL } : {}),
       },
       { merge: true },

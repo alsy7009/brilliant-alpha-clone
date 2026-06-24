@@ -18,4 +18,4 @@ export interface UserProgress {
   lastActiveTimestamp: string
 }
 
-export type AppView = 'login' | 'roadmap' | 'lesson' | 'profile'
+export type AppView = 'login' | 'roadmap' | 'lesson' | 'profile' | 'friends'
