@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { isDemoMode } from '../../lib/auth'
+import { getDecoration } from '../../lib/gamification'
 import {
   acceptFriendRequest,
   denyFriendRequest,
@@ -152,7 +153,12 @@ export function FriendsPage({ me }: FriendsPageProps) {
           <ul className="friends-list">
             {friends.map((f) => (
               <li key={f.userId} className="friend-row">
-                <AvatarDecoration name={f.displayName} photoURL={f.photoURL} variant="none" size={48} />
+                <AvatarDecoration
+                  name={f.displayName}
+                  photoURL={f.photoURL}
+                  variant={getDecoration(f.equippedDecoration).variant}
+                  size={52}
+                />
                 <div className="friend-info">
                   <span className="friend-name">{f.displayName}</span>
                   <span className="friend-stats">

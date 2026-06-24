@@ -20,6 +20,7 @@ import {
   type Decoration,
   type LevelInfo,
 } from '../lib/gamification'
+import { persistDecoration } from '../lib/friends'
 
 const EQUIP_KEY_PREFIX = 'activelearn_equipped_decoration_'
 
@@ -89,9 +90,15 @@ export function GamificationProvider({ userId, progressList, streak, children }:
     (id: string) => {
       setEquippedId(id)
       localStorage.setItem(equipKey, id)
+      void persistDecoration(userId, id)
     },
-    [equipKey],
+    [equipKey, userId],
   )
+
+  // Mirror the current decoration to Firestore so friends can see it.
+  useEffect(() => {
+    void persistDecoration(userId, unlockedIds.includes(equippedId) ? equippedId : 'none')
+  }, [userId, equippedId, unlockedIds])
 
   const resetCombo = useCallback(() => setComboCount(0), [])
 

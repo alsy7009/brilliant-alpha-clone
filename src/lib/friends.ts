@@ -34,6 +34,7 @@ export interface FriendProfile {
   level: number
   streak: number
   lessonsCompleted: number
+  equippedDecoration: string
 }
 
 export interface UserStats {
@@ -71,6 +72,17 @@ function toProfile(id: string, data: Record<string, unknown>): FriendProfile {
     level: (data.level as number) ?? 1,
     streak: (data.streak as number) ?? 0,
     lessonsCompleted: (data.lessonsCompleted as number) ?? 0,
+    equippedDecoration: (data.equippedDecoration as string) ?? 'none',
+  }
+}
+
+/** Persist the equipped avatar decoration so friends can see it. */
+export async function persistDecoration(uid: string, decorationId: string): Promise<void> {
+  if (!isFirebaseConfigured) return
+  try {
+    await setDoc(doc(db, 'users', uid), { equippedDecoration: decorationId }, { merge: true })
+  } catch {
+    // non-critical
   }
 }
 
