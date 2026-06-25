@@ -1,4 +1,5 @@
 import type {
+  ExpressionEvaluateConfig,
   LessonStep,
   PlotLineConfig,
   SlotWidgetState,
@@ -75,10 +76,13 @@ function conceptHint(step: LessonStep, slotId: string): string {
       if (slotId === 'var') return 'Use the letter printed on the bars.'
       if (slotId === 'const') return 'Count the small unit squares.'
       return ''
-    case 'expression-evaluate':
-      if (slotId === 'sub') return 'Plug the given number in for the variable.'
-      if (slotId === 'result') return 'Multiply first, then add.'
+    case 'expression-evaluate': {
+      const cfg = step.widgetConfig as ExpressionEvaluateConfig
+      const v = cfg.substitute?.variable ?? 'the variable'
+      if (slotId === 'sub') return `Plug in the number given for ${v} (it's in the question).`
+      if (slotId === 'result') return `Multiply first, then add — work through ${cfg.expression}.`
       return ''
+    }
     default:
       return ''
   }
