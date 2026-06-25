@@ -75,7 +75,7 @@ export function LevelUpModal({ displayName, photoURL }: LevelUpModalProps) {
                     name={displayName}
                     photoURL={photoURL}
                     variant={d.variant}
-                    size={64}
+                    size={52}
                   />
                   <span className="reward-name">{d.name}</span>
                   <span className="reward-blurb">{d.blurb}</span>

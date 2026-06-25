@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Lesson, LessonStep, WidgetState } from '../../types/lesson'
 import { buildFeedback, checkStep } from '../../lib/widgets/checkStep'
 import { initWidgetState } from '../../lib/widgets/widgetState'
@@ -24,8 +24,9 @@ export function LessonPlayer({
   onComplete,
   onStepComplete,
 }: LessonPlayerProps) {
-  const { registerAnswer, markSession } = useGamification()
+  const { registerAnswer, markSession, registerLessonComplete } = useGamification()
   const [stepIndex, setStepIndex] = useState(0)
+  const alreadyCompletedRef = useRef(false)
   const [widgetState, setWidgetState] = useState<WidgetState>(() =>
     initWidgetState(lesson.steps[0]),
   )
@@ -74,6 +75,7 @@ export function LessonPlayer({
         const progress = await fetchLessonProgress(userId, lesson)
         resumeStepId = progress.currentStepId
         completed = progress.completedSteps ?? []
+        alreadyCompletedRef.current = progress.isCompleted
       } catch {
         resumeStepId = null
       }
@@ -119,7 +121,7 @@ export function LessonPlayer({
     if (result.status === 'correct') {
       setFeedback(buildFeedback(step, widgetState, attempts).message)
       setFeedbackTone('success')
-      if (isScored) registerAnswer(true)
+      if (isScored) registerAnswer(true, attempts === 0)
       setSolved(true)
       setCompletedStepIds((prev) => new Set(prev).add(step.stepId))
       markSession()
@@ -128,6 +130,11 @@ export function LessonPlayer({
       onStepComplete?.()
       if (isLastStep) {
         setCelebrate(true)
+        // Count toward daily goals only the first time this lesson is finished.
+        if (!alreadyCompletedRef.current) {
+          alreadyCompletedRef.current = true
+          registerLessonComplete()
+        }
       }
       return
     }
@@ -135,7 +142,7 @@ export function LessonPlayer({
     // Wrong answer → escalate hints by attempt count.
     const nextAttempts = attempts + 1
     setAttempts(nextAttempts)
-    if (isScored) registerAnswer(false)
+    if (isScored) registerAnswer(false, false)
     setFeedback(buildFeedback(step, widgetState, nextAttempts).message)
     setFeedbackTone('error')
     setShake(true)

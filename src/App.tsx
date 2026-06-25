@@ -21,6 +21,7 @@ import {
 import { fetchAllProgress } from './lib/progress'
 import { getDisplayStreak, recordActivityStreak } from './lib/streak'
 import { updateUserStats } from './lib/friends'
+import { getBonusXp } from './lib/rewards'
 import { levelInfoFromXp, totalXpFromProgress } from './lib/gamification'
 import { fileToResizedDataUrl, getAvatarOverride, setAvatarOverride } from './lib/avatar'
 import type { AppView, UserProgress } from './types/progress'
@@ -67,7 +68,7 @@ function App() {
   // Mirror the player's stats onto their user doc so friends can see them.
   useEffect(() => {
     if (isDemoMode() || !authUser) return
-    const totalXp = totalXpFromProgress(progressList)
+    const totalXp = totalXpFromProgress(progressList) + getBonusXp(authUser.uid)
     const { level } = levelInfoFromXp(totalXp)
     const validLessonIds = new Set(LESSONS.map((l) => l.lessonId))
     const completed = progressList.filter(

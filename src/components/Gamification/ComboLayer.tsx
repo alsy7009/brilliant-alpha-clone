@@ -2,8 +2,8 @@ import { useGamification } from '../../context/GamificationContext'
 import './ComboLayer.css'
 
 /**
- * Renders floating "+XP Combo!" popups anchored near the top-center of the
- * active lesson area. Driven by the gamification combo queue.
+ * Floating reward popups near the top-center of the screen — combos and goal
+ * rewards both surface here.
  */
 export function ComboLayer() {
   const { combos } = useGamification()
@@ -12,8 +12,8 @@ export function ComboLayer() {
     <div className="combo-layer" aria-hidden="true">
       {combos.map((c) => (
         <div key={c.id} className="combo-popup">
-          <span className="combo-xp">+{c.xp} XP</span>
-          {c.combo > 1 && <span className="combo-multi">{c.combo}× Combo!</span>}
+          <span className="combo-xp">{c.title}</span>
+          {c.subtitle && <span className="combo-multi">{c.subtitle}</span>}
         </div>
       ))}
     </div>

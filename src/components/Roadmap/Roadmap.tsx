@@ -1,6 +1,7 @@
 import { LESSONS } from '../../content/catalog'
 import type { UserProgress } from '../../types/progress'
 import { isLessonUnlocked } from '../../lib/progress'
+import { GoalsCard } from '../Gamification/GoalsCard'
 import './Roadmap.css'
 
 interface RoadmapProps {
@@ -15,6 +16,8 @@ export function Roadmap({ progressList, onSelectLesson }: RoadmapProps) {
         <h1>★ Mission Map</h1>
         <p>Clear each mission to unlock the next. Stack XP and level up!</p>
       </header>
+
+      <GoalsCard />
 
       <ol className="lesson-path">
         {LESSONS.map((lesson) => {
