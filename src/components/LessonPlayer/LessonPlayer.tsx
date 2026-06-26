@@ -289,7 +289,13 @@ export function LessonPlayer({
             answerSummary: summary.answer,
             wrongSummary: summary.wrong,
           }
-          return <TutorChat context={ctx} onClose={() => setShowTutor(false)} />
+          return (
+            <TutorChat
+              context={ctx}
+              onClose={() => setShowTutor(false)}
+              sessionId={`${lesson.lessonId}:${step.stepId}`}
+            />
+          )
         })()}
     </div>
   )

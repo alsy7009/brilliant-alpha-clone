@@ -5,6 +5,27 @@ import './TutorChat.css'
 interface TutorChatProps {
   context: TutorContext
   onClose: () => void
+  /** Stable id for this chat (e.g. the step id) so the session survives closing. */
+  sessionId: string
+}
+
+const SESSION_PREFIX = 'bolt-chat:'
+
+function loadSession(id: string): ChatMsg[] {
+  try {
+    const raw = sessionStorage.getItem(SESSION_PREFIX + id)
+    return raw ? (JSON.parse(raw) as ChatMsg[]) : []
+  } catch {
+    return []
+  }
+}
+
+function saveSession(id: string, messages: ChatMsg[]) {
+  try {
+    sessionStorage.setItem(SESSION_PREFIX + id, JSON.stringify(messages))
+  } catch {
+    // storage full or unavailable — chat just won't persist, no big deal
+  }
 }
 
 function BoltFace() {
@@ -20,8 +41,8 @@ function BoltFace() {
   )
 }
 
-export function TutorChat({ context, onClose }: TutorChatProps) {
-  const [messages, setMessages] = useState<ChatMsg[]>([])
+export function TutorChat({ context, onClose, sessionId }: TutorChatProps) {
+  const [messages, setMessages] = useState<ChatMsg[]>(() => loadSession(sessionId))
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -30,6 +51,8 @@ export function TutorChat({ context, onClose }: TutorChatProps) {
   useEffect(() => {
     if (openedRef.current) return
     openedRef.current = true
+    // Resume a saved session instead of greeting again.
+    if (messages.length > 0) return
     setBusy(true)
     tutorOpener(context)
       .then((reply) => setMessages([{ role: 'assistant', content: reply }]))
@@ -37,12 +60,16 @@ export function TutorChat({ context, onClose }: TutorChatProps) {
         setMessages([
           {
             role: 'assistant',
-            content: `Hey champ! I'm ${TUTOR_NAME} ⚡ Tell me what part feels tricky and we'll crack it together.`,
+            content: `${TUTOR_NAME} here, mission leader on comms ⚡ Tell me where you're stuck, recruit, and we'll clear this objective together.`,
           },
         ]),
       )
       .finally(() => setBusy(false))
-  }, [context])
+  }, [context, messages.length])
+
+  useEffect(() => {
+    if (messages.length > 0) saveSession(sessionId, messages)
+  }, [sessionId, messages])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight })
@@ -77,7 +104,7 @@ export function TutorChat({ context, onClose }: TutorChatProps) {
           </span>
           <div className="tutor-id">
             <span className="tutor-title">{TUTOR_NAME}</span>
-            <span className="tutor-tag">your math buddy</span>
+            <span className="tutor-tag">mission leader</span>
           </div>
           <button type="button" className="tutor-close" onClick={onClose} aria-label="Close chat">
             ✕
@@ -90,7 +117,9 @@ export function TutorChat({ context, onClose }: TutorChatProps) {
               {m.content}
             </div>
           ))}
-          {busy && <div className="tutor-msg tutor-assistant tutor-typing">Bolt is thinking…</div>}
+          {busy && (
+            <div className="tutor-msg tutor-assistant tutor-typing">{TUTOR_NAME} is reading the mission…</div>
+          )}
         </div>
 
         <form
