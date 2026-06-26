@@ -165,6 +165,29 @@ Add the hosting domain to Google OAuth authorized domains if Google sign-in fail
 
 ---
 
+## AI tutor (Phase 2) — OpenAI via Cloud Functions
+
+The OpenAI key is **never** a client env var. It lives as a server-side secret used by the
+`aiChat` Cloud Function (in `functions/`), which the browser calls. Requires the **Blaze** plan.
+
+One-time setup:
+
+```bash
+# 1. Install function deps (already done if you ran npm install in functions/)
+cd functions && npm install && cd ..
+
+# 2. Store your OpenAI key as a secret (you'll be prompted to paste it — input is hidden)
+firebase functions:secrets:set OPENAI_API_KEY
+
+# 3. Deploy the function
+firebase deploy --only functions
+```
+
+To update the key later, re-run step 2 and redeploy. The client auto-detects AI when Firebase
+is configured (`isAiEnabled()` in `src/lib/ai.ts`); no client `.env` change is needed.
+
+---
+
 ## Troubleshooting
 
 | Problem | Fix |

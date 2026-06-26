@@ -1,7 +1,10 @@
 import type {
   ExpressionEvaluateConfig,
+  GraphSelectState,
   LessonStep,
+  LinearGraphState,
   PlotLineConfig,
+  PlotLineState,
   SlotWidgetState,
   WidgetState,
 } from '../../types/lesson'
@@ -197,4 +200,54 @@ export function buildFeedback(
   // Non-slot widgets: use authored outcome explanations for the early attempts.
   const outcome = evaluateWidget(step, state)
   return { message: getExplanation(step, outcome), revealed: false }
+}
+
+/** Plain-language summary of what the learner entered and what's wrong — for the AI tutor. */
+export function summarizeAttempt(
+  step: LessonStep,
+  state: WidgetState,
+): { answer: string; wrong: string } {
+  const check = checkStep(step, state)
+
+  if (isSlotStep(step) && check.slotResults) {
+    const slots = (state as SlotWidgetState).slots
+    const answer = Object.keys(check.slotResults)
+      .map((k) => `${slotLabel(step, k)} = ${slots[k] ?? 'blank'}`)
+      .join(', ')
+    const wrongIds = Object.keys(check.slotResults).filter((k) => !check.slotResults![k])
+    const wrong = wrongIds.length
+      ? `The ${joinLabels(wrongIds.map((k) => slotLabel(step, k)))} is wrong.`
+      : 'Some boxes are still empty.'
+    return { answer: answer || 'nothing yet', wrong }
+  }
+
+  switch (step.type) {
+    case 'linear-graph': {
+      const typed = (state as LinearGraphState).typedValue
+      return {
+        answer: typed ? `they entered ${typed}` : 'nothing yet',
+        wrong: check.status === 'correct' ? 'nothing' : 'That intercept value is not correct.',
+      }
+    }
+    case 'plot-line': {
+      const pts = (state as PlotLineState).points
+      return {
+        answer: pts.length ? pts.map((p) => `(${p.x}, ${p.y})`).join(' and ') : 'no points placed',
+        wrong:
+          check.status === 'correct'
+            ? 'nothing'
+            : 'At least one point is not on the line for the equation.',
+      }
+    }
+    case 'graph-select': {
+      const sel = (state as GraphSelectState).selectedOptionId
+      return {
+        answer: sel ? `they chose graph ${sel.toUpperCase()}` : 'no graph selected',
+        wrong:
+          check.status === 'correct' ? 'nothing' : "That graph's roots/opening don't match.",
+      }
+    }
+    default:
+      return { answer: 'their current attempt', wrong: 'It is not correct yet.' }
+  }
 }
