@@ -39,6 +39,8 @@ interface LessonPlayerProps {
   onExit: () => void
   onComplete: (lessonId: string) => void
   onStepComplete?: () => void
+  /** Ephemeral lessons (e.g. AI practice drills) skip Firestore progress persistence. */
+  ephemeral?: boolean
 }
 
 export function LessonPlayer({
@@ -47,6 +49,7 @@ export function LessonPlayer({
   onExit,
   onComplete,
   onStepComplete,
+  ephemeral = false,
 }: LessonPlayerProps) {
   const { registerAnswer, markSession, registerLessonComplete } = useGamification()
   const [stepIndex, setStepIndex] = useState(0)
@@ -94,6 +97,15 @@ export function LessonPlayer({
   useEffect(() => {
     let cancelled = false
     setLoading(true)
+    // Ephemeral drills always start fresh at step 0 with no saved progress.
+    if (ephemeral) {
+      setCompletedStepIds(new Set())
+      alreadyCompletedRef.current = false
+      setStepIndex(0)
+      resetWidgetState(lesson.steps[0])
+      setLoading(false)
+      return
+    }
     ;(async () => {
       let resumeStepId: string | null = null
       let completed: string[] = []
@@ -116,7 +128,7 @@ export function LessonPlayer({
     return () => {
       cancelled = true
     }
-  }, [lesson, userId, resetWidgetState])
+  }, [lesson, userId, resetWidgetState, ephemeral])
 
   const goToStep = (index: number) => {
     setStepIndex(index)
@@ -152,12 +164,14 @@ export function LessonPlayer({
       setCompletedStepIds((prev) => new Set(prev).add(step.stepId))
       markSession()
       setBurstKey((k) => k + 1)
-      await completeStep(userId, lesson, step.stepId)
+      if (!ephemeral) {
+        await completeStep(userId, lesson, step.stepId)
+      }
       onStepComplete?.()
       if (isLastStep) {
         setCelebrate(true)
-        // Count toward daily goals only the first time this lesson is finished.
-        if (!alreadyCompletedRef.current) {
+        // Count toward daily goals only the first time a real lesson is finished.
+        if (!ephemeral && !alreadyCompletedRef.current) {
           alreadyCompletedRef.current = true
           registerLessonComplete()
         }

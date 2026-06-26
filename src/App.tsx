@@ -7,6 +7,7 @@ import { Roadmap } from './components/Roadmap/Roadmap'
 import { MainLayout, type NavKey } from './components/Layout/MainLayout'
 import { ProfilePage } from './components/Profile/ProfilePage'
 import { FriendsPage } from './components/Friends/FriendsPage'
+import { PracticePage } from './components/Practice/PracticePage'
 import { LevelUpModal } from './components/Gamification/LevelUpModal'
 import { ComboLayer } from './components/Gamification/ComboLayer'
 import { GamificationProvider } from './context/GamificationContext'
@@ -24,6 +25,7 @@ import { updateUserStats } from './lib/friends'
 import { getBonusXp } from './lib/rewards'
 import { levelInfoFromXp, totalXpFromProgress } from './lib/gamification'
 import { fileToResizedDataUrl, getAvatarOverride, setAvatarOverride } from './lib/avatar'
+import type { Lesson } from './types/lesson'
 import type { AppView, UserProgress } from './types/progress'
 import './App.css'
 
@@ -33,6 +35,7 @@ function App() {
   const [demoUser, setDemoUser] = useState(false)
   const [view, setView] = useState<AppView>('login')
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
+  const [practiceLesson, setPracticeLesson] = useState<Lesson | null>(null)
   const [progressList, setProgressList] = useState<UserProgress[]>([])
   const [avatarOverride, setAvatarOverrideState] = useState<string | null>(null)
   const [displayNameState, setDisplayNameState] = useState<string | null>(null)
@@ -159,7 +162,16 @@ function App() {
 
   const handleNavigate = (key: NavKey) => {
     setActiveLessonId(null)
-    setView(key === 'profile' ? 'profile' : key === 'friends' ? 'friends' : 'roadmap')
+    setPracticeLesson(null)
+    setView(
+      key === 'profile'
+        ? 'profile'
+        : key === 'friends'
+          ? 'friends'
+          : key === 'practice'
+            ? 'practice'
+            : 'roadmap',
+    )
   }
 
   const activeLesson = activeLessonId ? getLessonById(activeLessonId) : undefined
@@ -184,7 +196,15 @@ function App() {
   }
 
   const activeNav: NavKey =
-    view === 'profile' ? 'profile' : view === 'friends' ? 'friends' : 'dashboard'
+    view === 'profile'
+      ? 'profile'
+      : view === 'friends'
+        ? 'friends'
+        : view === 'practice'
+          ? 'practice'
+          : 'dashboard'
+
+  const inPracticeDrill = view === 'practice' && practiceLesson !== null
 
   return (
     <GamificationProvider
@@ -200,7 +220,7 @@ function App() {
         photoURL={photoURL}
         demoMode={demoUser || isDemoMode()}
         onSignOut={() => void handleSignOut()}
-        immersive={view === 'lesson'}
+        immersive={view === 'lesson' || inPracticeDrill}
       >
         {view === 'roadmap' && (
           <Roadmap progressList={progressList} onSelectLesson={openLesson} />
@@ -223,6 +243,22 @@ function App() {
               email: authUser?.email ?? '',
               photoURL,
             }}
+          />
+        )}
+
+        {view === 'practice' && !practiceLesson && (
+          <PracticePage onStart={(lesson) => setPracticeLesson(lesson)} />
+        )}
+
+        {view === 'practice' && practiceLesson && (
+          <LessonPlayer
+            key={practiceLesson.lessonId}
+            lesson={practiceLesson}
+            userId={userId}
+            ephemeral
+            onStepComplete={handleStepComplete}
+            onExit={() => setPracticeLesson(null)}
+            onComplete={() => setPracticeLesson(null)}
           />
         )}
 

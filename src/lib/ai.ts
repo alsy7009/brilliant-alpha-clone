@@ -63,6 +63,25 @@ What's off: ${ctx.wrongSummary}`,
   })
 }
 
+/**
+ * Ask the model for a JSON object. Returns the parsed value, or null if the call
+ * fails or the response isn't valid JSON. Callers should have a non-AI fallback.
+ */
+export async function aiJson(system: string, user: string): Promise<unknown | null> {
+  try {
+    const text = await callOpenAI(
+      [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      { temperature: 0.85, json: true },
+    )
+    return JSON.parse(text)
+  } catch {
+    return null
+  }
+}
+
 /** An opening, context-aware nudge from the tutor when the chat is first opened. */
 export async function tutorOpener(ctx: TutorContext): Promise<string> {
   return askTutor(
