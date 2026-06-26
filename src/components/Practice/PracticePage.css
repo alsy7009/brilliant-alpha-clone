@@ -19,7 +19,7 @@
 
 .practice-sub {
   margin: 0;
-  color: #2a2440;
+  color: #eceaf7;
   font-size: 1.15rem;
   max-width: 60ch;
 }
@@ -104,23 +104,26 @@
 
 .count-row {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.6rem;
 }
 
-.count-chip {
-  min-width: 56px;
+.count-input {
+  width: 90px;
   min-height: 46px;
+  padding: 0.3rem 0.6rem;
   font-family: var(--pixel-font);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
+  text-align: center;
   border: 3px solid var(--ink);
   background: #fff;
   color: var(--ink);
   box-shadow: var(--shadow-hard-sm);
-  cursor: pointer;
 }
 
-.count-chip.on {
-  background: var(--c-yellow);
+.count-help {
+  font-size: 1.05rem;
+  color: #3a3357;
 }
 
 .practice-generate {
@@ -144,6 +147,27 @@
 .practice-generate:disabled {
   filter: grayscale(0.6) brightness(0.9);
   cursor: not-allowed;
+}
+
+.practice-card.recommended {
+  border-color: var(--c-yellow);
+  box-shadow: 4px 4px 0 var(--c-orange);
+  background: #fffdf2;
+}
+
+.rec-line {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #2a2440;
+}
+
+.rec-line b {
+  color: var(--c-orange);
+}
+
+.rec-btn {
+  background: var(--c-yellow);
+  color: var(--ink);
 }
 
 .practice-error {

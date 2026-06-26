@@ -1,7 +1,10 @@
 import type { UserProgress } from '../types/progress'
 
 /** XP awarded per completed lesson step. */
-export const XP_PER_STEP = 20
+export const XP_PER_STEP = 10
+
+/** Small flat XP for finishing a full practice drill — far less than a real lesson. */
+export const XP_PER_DRILL = 5
 
 /** Bonus XP per consecutive correct answer in a session combo (combo of n → +COMBO_BONUS*(n-1)). */
 export const COMBO_BONUS = 5

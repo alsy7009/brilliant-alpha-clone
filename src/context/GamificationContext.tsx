@@ -15,6 +15,7 @@ import {
   levelInfoFromXp,
   totalXpFromProgress,
   unlockedDecorationIds,
+  XP_PER_DRILL,
   type Decoration,
   type LevelInfo,
 } from '../lib/gamification'
@@ -60,6 +61,8 @@ interface GamificationValue extends LevelInfo {
   registerAnswer: (correct: boolean, firstTry: boolean) => void
   /** Call when a lesson is fully completed for the first time. */
   registerLessonComplete: () => void
+  /** Call when an ephemeral practice drill is finished — awards a small flat XP. */
+  registerDrillComplete: () => void
   markSession: () => void
   pendingLevelUp: number | null
   dismissLevelUp: () => void
@@ -188,6 +191,12 @@ export function GamificationProvider({ userId, progressList, streak, children }:
     })
   }, [addBonus, pushReward, userId])
 
+  const registerDrillComplete = useCallback(() => {
+    sessionStartedRef.current = true
+    addBonus(XP_PER_DRILL)
+    pushReward(`+${XP_PER_DRILL} XP`, 'Drill cleared! ⚡')
+  }, [addBonus, pushReward])
+
   const dismissLevelUp = useCallback(() => setPendingLevelUp(null), [])
 
   const todaysGoal = getTodaysGoal()
@@ -211,6 +220,7 @@ export function GamificationProvider({ userId, progressList, streak, children }:
     goals,
     registerAnswer,
     registerLessonComplete,
+    registerDrillComplete,
     markSession,
     pendingLevelUp,
     dismissLevelUp,

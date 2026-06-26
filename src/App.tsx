@@ -247,7 +247,7 @@ function App() {
         )}
 
         {view === 'practice' && !practiceLesson && (
-          <PracticePage onStart={(lesson) => setPracticeLesson(lesson)} />
+          <PracticePage userId={userId} onStart={(lesson) => setPracticeLesson(lesson)} />
         )}
 
         {view === 'practice' && practiceLesson && (

@@ -4,6 +4,7 @@ import { buildFeedback, checkStep, summarizeAttempt } from '../../lib/widgets/ch
 import { initWidgetState } from '../../lib/widgets/widgetState'
 import { completeStep, fetchLessonProgress } from '../../lib/progress'
 import { isAiEnabled, TUTOR_NAME, type TutorContext } from '../../lib/ai'
+import { recordMastery, recordStruggle, topicForStepType } from '../../lib/weakAreas'
 import { useGamification } from '../../context/GamificationContext'
 import { StepWidget } from '../StepWidget/StepWidget'
 import { CoinBurst } from '../Effects/CoinBurst'
@@ -51,7 +52,8 @@ export function LessonPlayer({
   onStepComplete,
   ephemeral = false,
 }: LessonPlayerProps) {
-  const { registerAnswer, markSession, registerLessonComplete } = useGamification()
+  const { registerAnswer, markSession, registerLessonComplete, registerDrillComplete } =
+    useGamification()
   const [stepIndex, setStepIndex] = useState(0)
   const alreadyCompletedRef = useRef(false)
   const [widgetState, setWidgetState] = useState<WidgetState>(() =>
@@ -159,7 +161,12 @@ export function LessonPlayer({
     if (result.status === 'correct') {
       setFeedback(buildFeedback(step, widgetState, attempts).message)
       setFeedbackTone('success')
-      if (isScored) registerAnswer(true, attempts === 0)
+      if (isScored) {
+        registerAnswer(true, attempts === 0)
+        // A clean first-try solve gently decays that topic's struggle score.
+        const topic = topicForStepType(step.type)
+        if (topic && attempts === 0) recordMastery(userId, topic)
+      }
       setSolved(true)
       setCompletedStepIds((prev) => new Set(prev).add(step.stepId))
       markSession()
@@ -170,8 +177,11 @@ export function LessonPlayer({
       onStepComplete?.()
       if (isLastStep) {
         setCelebrate(true)
-        // Count toward daily goals only the first time a real lesson is finished.
-        if (!ephemeral && !alreadyCompletedRef.current) {
+        if (ephemeral) {
+          // Practice drills give a small flat XP, no daily-goal credit.
+          registerDrillComplete()
+        } else if (!alreadyCompletedRef.current) {
+          // Count toward daily goals only the first time a real lesson is finished.
           alreadyCompletedRef.current = true
           registerLessonComplete()
         }
@@ -182,7 +192,12 @@ export function LessonPlayer({
     // Wrong answer → escalate hints by attempt count.
     const nextAttempts = attempts + 1
     setAttempts(nextAttempts)
-    if (isScored) registerAnswer(false, false)
+    if (isScored) {
+      registerAnswer(false, false)
+      // Remember this topic as a trouble spot for Bolt's recommended review.
+      const topic = topicForStepType(step.type)
+      if (topic) recordStruggle(userId, topic)
+    }
     setFeedback(buildFeedback(step, widgetState, nextAttempts).message)
     setFeedbackTone('error')
     setShake(true)

@@ -299,6 +299,46 @@ function interleave(items: { topic: TopicId; spec: RawSpec }[]): { topic: TopicI
 export interface GenerateOptions {
   topics: TopicId[]
   count: number
+  /** Optional per-topic weighting (higher = more questions). Used by Recommended review. */
+  weights?: Partial<Record<TopicId, number>>
+  /** Title for the generated drill (e.g. "Recommended Review"). */
+  title?: string
+}
+
+/**
+ * Decide the topic for each of `count` questions. Without weights this is an even
+ * round-robin; with weights it uses D'Hondt apportionment so weaker topics get
+ * proportionally more questions while everything still mixes.
+ */
+function buildTopicMultiset(
+  topics: TopicId[],
+  count: number,
+  weights?: Partial<Record<TopicId, number>>,
+): TopicId[] {
+  if (topics.length === 0) return []
+  const w = topics.map((t) => (weights ? Math.max(0, weights[t] ?? 0) : 1))
+  const total = w.reduce((a, b) => a + b, 0)
+  const weightArr = total > 0 ? w : topics.map(() => 1)
+
+  const assigned = topics.map(() => 0)
+  for (let n = 0; n < count; n++) {
+    let best = 0
+    let bestScore = -Infinity
+    for (let i = 0; i < topics.length; i++) {
+      const score = weightArr[i] / (assigned[i] + 1)
+      if (score > bestScore) {
+        bestScore = score
+        best = i
+      }
+    }
+    assigned[best] += 1
+  }
+
+  const out: TopicId[] = []
+  topics.forEach((t, i) => {
+    for (let k = 0; k < assigned[i]; k++) out.push(t)
+  })
+  return out
 }
 
 /**
@@ -309,26 +349,31 @@ export interface GenerateOptions {
  */
 export async function generatePracticeLesson(opts: GenerateOptions): Promise<Lesson> {
   const topics = opts.topics.length ? opts.topics : (['evaluate'] as TopicId[])
-  const count = clamp(opts.count, 3, 16)
+  const count = clamp(opts.count, 5, 20)
 
-  let specs: { topic: TopicId; spec: RawSpec }[] = []
+  // How many questions each topic gets (weighted toward weak areas when provided).
+  const multiset = buildTopicMultiset(topics, count, opts.weights)
 
+  // Ask Bolt for varied numbers; pool the specs by topic so we can match the multiset.
+  const pool: Partial<Record<TopicId, RawSpec[]>> = {}
   if (isAiEnabled()) {
-    specs = await requestAiSpecs(topics, count)
+    const aiSpecs = await requestAiSpecs(topics, count)
+    for (const s of aiSpecs) {
+      ;(pool[s.topic] ??= []).push(s.spec)
+    }
   }
-  // Top up (or fully fill) with locally generated specs if AI gave too few.
-  while (specs.length < count) {
-    const topic = topics[specs.length % topics.length]
-    specs.push({ topic, spec: {} })
-  }
-  specs = specs.slice(0, count)
 
-  const ordered = interleave(specs)
+  const items = multiset.map((topic) => ({
+    topic,
+    spec: pool[topic]?.shift() ?? {},
+  }))
+
+  const ordered = interleave(items)
   const steps = ordered.map((o, i) => buildStep(o.topic, o.spec, i))
 
   return {
     lessonId: `practice_${Date.now()}`,
-    title: 'Mixed Drills',
+    title: opts.title ?? 'Mixed Drills',
     subject: 'algebra',
     order: 999,
     steps,
