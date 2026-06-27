@@ -1,38 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Lesson, LessonStep, WidgetState } from '../../types/lesson'
-import { buildFeedback, checkStep, summarizeAttempt } from '../../lib/widgets/checkStep'
+import { buildFeedback, checkStep } from '../../lib/widgets/checkStep'
 import { initWidgetState } from '../../lib/widgets/widgetState'
 import { completeStep, fetchLessonProgress } from '../../lib/progress'
-import { isAiEnabled, TUTOR_NAME, type TutorContext } from '../../lib/ai'
 import { recordMastery, recordStruggle, topicForStepType } from '../../lib/weakAreas'
 import { useGamification } from '../../context/GamificationContext'
 import { StepWidget } from '../StepWidget/StepWidget'
 import { CoinBurst } from '../Effects/CoinBurst'
 import { TrophyOverlay } from '../Effects/TrophyOverlay'
-import { TutorChat } from '../Tutor/TutorChat'
 import './LessonPlayer.css'
-
-function expressionContext(step: LessonStep): string | undefined {
-  const c = step.widgetConfig as unknown as Record<string, unknown>
-  switch (step.type) {
-    case 'foil-multiply':
-      return c.factors as string
-    case 'expression-evaluate': {
-      const sub = c.substitute as { variable: string; value: number } | undefined
-      return sub ? `${c.expression} for ${sub.variable} = ${sub.value}` : (c.expression as string)
-    }
-    case 'linear-graph':
-    case 'plot-line':
-    case 'graph-select':
-      return c.equationLabel as string | undefined
-    case 'expression-build': {
-      const m = c.visualModel as { variable: string; variableCount: number; constantCount: number } | undefined
-      return m ? `${m.variableCount} "${m.variable}" bars and ${m.constantCount} unit squares` : undefined
-    }
-    default:
-      return undefined
-  }
-}
 
 interface LessonPlayerProps {
   lesson: Lesson
@@ -70,7 +46,6 @@ export function LessonPlayer({
   const [completedStepIds, setCompletedStepIds] = useState<Set<string>>(new Set())
   const [attempts, setAttempts] = useState(0)
   const [slotFeedback, setSlotFeedback] = useState<Record<string, boolean> | null>(null)
-  const [showTutor, setShowTutor] = useState(false)
 
   const step: LessonStep = lesson.steps[stepIndex]
   const isLastStep = stepIndex >= lesson.steps.length - 1
@@ -86,7 +61,6 @@ export function LessonPlayer({
     setFlash(false)
     setAttempts(0)
     setSlotFeedback(null)
-    setShowTutor(false)
   }, [])
 
   // Editing the widget clears the previous check's coloring/feedback.
@@ -256,22 +230,6 @@ export function LessonPlayer({
             {feedback}
           </div>
         )}
-
-        {isScored && isAiEnabled() && !solved && (
-          <button
-            type="button"
-            className="ask-bolt"
-            onClick={() => setShowTutor(true)}
-            disabled={attempts === 0}
-            title={
-              attempts === 0
-                ? `Make a first attempt before asking ${TUTOR_NAME}!`
-                : `Ask ${TUTOR_NAME} for a hint`
-            }
-          >
-            ⚡ Ask {TUTOR_NAME} if you're stuck
-          </button>
-        )}
       </section>
 
       <footer className="lesson-footer">
@@ -308,24 +266,6 @@ export function LessonPlayer({
       {celebrate && (
         <TrophyOverlay onClaim={() => onComplete(lesson.lessonId)} />
       )}
-
-      {showTutor &&
-        (() => {
-          const summary = summarizeAttempt(step, widgetState)
-          const ctx: TutorContext = {
-            instruction: step.instruction,
-            expression: expressionContext(step),
-            answerSummary: summary.answer,
-            wrongSummary: summary.wrong,
-          }
-          return (
-            <TutorChat
-              context={ctx}
-              onClose={() => setShowTutor(false)}
-              sessionId={`${lesson.lessonId}:${step.stepId}`}
-            />
-          )
-        })()}
     </div>
   )
 }

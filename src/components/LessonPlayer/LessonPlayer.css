@@ -74,31 +74,6 @@
   font-weight: 600;
 }
 
-.ask-bolt {
-  align-self: center;
-  min-height: 44px;
-  padding: 0.5rem 1rem;
-  border: 3px solid var(--ink);
-  background: var(--c-cyan);
-  color: var(--ink);
-  font-family: var(--pixel-font);
-  font-size: 0.6rem;
-  box-shadow: var(--shadow-hard-sm);
-  cursor: pointer;
-  transition: transform 0.05s, box-shadow 0.05s;
-}
-
-.ask-bolt:active:not(:disabled) {
-  transform: translate(3px, 3px);
-  box-shadow: none;
-}
-
-.ask-bolt:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
 .feedback {
   padding: 0.85rem 1rem;
   border: 3px solid var(--ink);
