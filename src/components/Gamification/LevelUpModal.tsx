@@ -1,18 +1,18 @@
 import { useMemo } from 'react'
 import { getDecoration, useGamification } from '../../context/GamificationContext'
 import { rewardsForLevel } from '../../lib/gamification'
-import { AvatarDecoration } from './AvatarDecoration'
+import type { Loadout } from '../../lib/tank'
+import { TankBadge } from '../Tank/TankSprite'
 import { LevelBadge } from './LevelBadge'
 import './LevelUpModal.css'
 
 interface LevelUpModalProps {
-  displayName?: string
-  photoURL?: string
+  loadout?: Loadout
 }
 
 const PARTICLE_COLORS = ['#ffd166', '#06d6a0', '#4ad7ff', '#f78fb3', '#b15bff', '#ff9d2e']
 
-export function LevelUpModal({ displayName, photoURL }: LevelUpModalProps) {
+export function LevelUpModal({ loadout }: LevelUpModalProps) {
   const { pendingLevelUp, dismissLevelUp, equip, equippedId } = useGamification()
 
   const particles = useMemo(() => {
@@ -71,12 +71,7 @@ export function LevelUpModal({ displayName, photoURL }: LevelUpModalProps) {
                   className={`levelup-reward ${equippedId === d.id ? 'chosen' : ''}`}
                   onClick={() => equip(d.id)}
                 >
-                  <AvatarDecoration
-                    name={displayName}
-                    photoURL={photoURL}
-                    variant={d.variant}
-                    size={52}
-                  />
+                  {loadout && <TankBadge loadout={loadout} variant={d.variant} size={52} />}
                   <span className="reward-name">{d.name}</span>
                   <span className="reward-blurb">{d.blurb}</span>
                 </button>

@@ -972,3 +972,41 @@ const WIDGETS: Record<StepType, React.ComponentType<WidgetProps>> = {
 }
 ```
 
+---
+
+## 17. Game Mode — Tank Battle Arena (`game` branch)
+
+The `game` branch reskins the optional combat mode into a **military tank battle** (Prodigy-style):
+solve generated math problems to fire attacks at a convoy of enemy units. All art is
+**original, hand-authored inline SVG** (`src/components/Tank/TankSprite.tsx`) — no third-party
+sprites are bundled or fetched, so there are **no asset-licensing obligations** and it works
+fully offline.
+
+**Player tanks** (`src/lib/tank.ts`) — selectable classes with distinct stats + a passive
+ability, unlocked as the commander ranks up:
+
+| Tank | Unlock | HP | Damage | Crit | Ability |
+|------|--------|----|--------|------|---------|
+| Ranger | LV1 | 100 | ×1.0 | +5% | Field Kit (light armor) |
+| Scout | LV2 | 80 | ×0.95 | +22% | Recon Optics (crit) |
+| Juggernaut | LV4 | 150 | ×1.25 | — | Armor Plating (−5 dmg/hit) |
+| Vanguard | LV6 | 120 | ×1.15 | +10% | Nanorepair (+5 HP/turn) |
+
+Hull HP also scales with level (`baseHp + (level−1)×8`). Six camo colors are cosmetic.
+
+**Attacks** (`src/lib/battle.ts`) unlock with level and have cooldowns: Cannon Shot (LV1),
+Smoke Screen / shield (LV1), Drone Strike (LV2), Field Repair / heal (LV3), Artillery
+Barrage / high-risk (LV4), EMP Blast / stun (LV6), Airstrike (LV8). Enemies escalate
+Recon Drone → Armored Jeep → Gun Turret → Enemy Tank → War Machine boss.
+
+### Asset references (evaluated; not bundled)
+
+Open, permissively-licensed libraries reviewed before choosing custom SVG:
+
+- **Kenney Game Assets** (incl. Topdown Tanks) — CC0 1.0 — https://kenney.nl/assets · https://creativecommons.org/publicdomain/zero/1.0/
+- **OpenGameArt** (CC0/CC-BY tank & vehicle sprites) — https://opengameart.org/
+- **Open Peeps** by Pablo Stanley — CC0 1.0 — https://www.openpeeps.com/
+- **DiceBear** (avatar toolkit; MIT core, per-style licenses) — https://www.dicebear.com/licenses/
+
+The earlier photo-upload and SVG face-designer avatars were removed in favor of the tank loadout.
+

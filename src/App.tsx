@@ -26,7 +26,7 @@ import { getDisplayStreak, recordActivityStreak } from './lib/streak'
 import { updateUserStats } from './lib/friends'
 import { getBonusXp } from './lib/rewards'
 import { levelInfoFromXp, totalXpFromProgress } from './lib/gamification'
-import { fileToResizedDataUrl, getAvatarOverride, setAvatarOverride } from './lib/avatar'
+import { getLoadout, setLoadout, type Loadout } from './lib/tank'
 import type { Lesson } from './types/lesson'
 import type { AppView, UserProgress } from './types/progress'
 import './App.css'
@@ -39,7 +39,7 @@ function App() {
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
   const [practiceLesson, setPracticeLesson] = useState<Lesson | null>(null)
   const [progressList, setProgressList] = useState<UserProgress[]>([])
-  const [avatarOverride, setAvatarOverrideState] = useState<string | null>(null)
+  const [loadout, setLoadoutState] = useState<Loadout>(() => getLoadout('local'))
   const [displayNameState, setDisplayNameState] = useState<string | null>(null)
   const [streak, setStreak] = useState(0)
   const [confirmLinkEmail, setConfirmLinkEmail] = useState<string | null>(null)
@@ -47,7 +47,14 @@ function App() {
   const userId = demoUser ? resolveUserId(null) : resolveUserId(authUser)
   const displayName =
     displayNameState ?? authUser?.displayName ?? (demoUser ? 'Demo Learner' : undefined)
-  const photoURL = avatarOverride ?? authUser?.photoURL ?? undefined
+
+  const handleLoadoutChange = useCallback(
+    (next: Loadout) => {
+      setLoadoutState(next)
+      setLoadout(userId, next)
+    },
+    [userId],
+  )
 
   const refreshProgress = useCallback(async () => {
     const list = await fetchAllProgress(userId)
@@ -55,7 +62,7 @@ function App() {
   }, [userId])
 
   useEffect(() => {
-    setAvatarOverrideState(getAvatarOverride(userId))
+    setLoadoutState(getLoadout(userId))
   }, [userId])
 
   // Display the saved streak on login (starts at 0; only a completed question bumps it).
@@ -97,15 +104,6 @@ function App() {
     const current = getCurrentUser()
     if (current?.displayName) setDisplayNameState(current.displayName)
   }, [])
-
-  const handleAvatarFile = useCallback(
-    async (file: File) => {
-      const dataUrl = await fileToResizedDataUrl(file)
-      setAvatarOverride(userId, dataUrl)
-      setAvatarOverrideState(dataUrl)
-    },
-    [userId],
-  )
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined
@@ -225,10 +223,10 @@ function App() {
         active={activeNav}
         onNavigate={handleNavigate}
         displayName={displayName}
-        photoURL={photoURL}
         demoMode={demoUser || isDemoMode()}
         onSignOut={() => void handleSignOut()}
         immersive={immersive}
+        loadout={loadout}
       >
         {view === 'roadmap' && (
           <Roadmap
@@ -255,15 +253,15 @@ function App() {
         )}
 
         {view === 'battle' && (
-          <BattleArena userId={userId} onExit={() => setView('roadmap')} />
+          <BattleArena userId={userId} loadout={loadout} onExit={() => setView('roadmap')} />
         )}
 
         {view === 'profile' && (
           <ProfilePage
             displayName={displayName}
-            photoURL={photoURL}
             progressList={progressList}
-            onAvatarFile={handleAvatarFile}
+            loadout={loadout}
+            onLoadoutChange={handleLoadoutChange}
           />
         )}
 
@@ -273,7 +271,6 @@ function App() {
               uid: userId,
               name: displayName ?? 'Learner',
               email: authUser?.email ?? '',
-              photoURL,
             }}
           />
         )}
@@ -312,7 +309,7 @@ function App() {
       </MainLayout>
 
       <ComboLayer />
-      <LevelUpModal displayName={displayName} photoURL={photoURL} />
+      <LevelUpModal loadout={loadout} />
     </GamificationProvider>
   )
 }

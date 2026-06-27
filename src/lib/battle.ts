@@ -1,95 +1,150 @@
-/** Data + pure helpers for the math battle arena (Prodigy-style). */
+/** Data + pure helpers for the military math battle (tanks vs. enemy units). */
 
-export type Element = 'fire' | 'ice' | 'bolt' | 'heal'
+export type AttackKind = 'damage' | 'heal' | 'shield'
 
-export interface Spell {
+export interface Attack {
   id: string
   name: string
   icon: string
-  element: Element
-  /** Base damage dealt on a correct cast (heal spells use `heal` instead). */
+  kind: AttackKind
+  /** Base damage before the tank's damage multiplier (damage attacks). */
   damage: number
-  /** HP restored (heal spell). */
+  /** HP restored (heal attacks). */
   heal?: number
-  /** Shield points that absorb the enemy's next hit (frost). */
+  /** Shield points that absorb the enemy's next hit (shield attacks). */
   shield?: number
-  /** Self-damage if the cast misses (high-risk spells). */
+  /** Self-damage if the attack misses (overheat on risky ordnance). */
   backfire?: number
+  /** If set, a hit makes the enemy skip its next counterattack (stun turns). */
+  stun?: number
+  /** Turns this attack is locked after use (0 = always ready). */
+  cooldown: number
+  /** Commander level required to unlock this attack. */
+  unlockLevel: number
   color: string
   blurb: string
 }
 
-export const SPELLS: Spell[] = [
+export const ATTACKS: Attack[] = [
   {
-    id: 'fireball',
-    name: 'Fireball',
-    icon: '🔥',
-    element: 'fire',
+    id: 'cannon',
+    name: 'Cannon Shot',
+    icon: '💥',
+    kind: 'damage',
     damage: 22,
+    cooldown: 0,
+    unlockLevel: 1,
     color: '#ff7a18',
-    blurb: 'Reliable blast of flame.',
+    blurb: 'Reliable main-gun round. Always ready.',
   },
   {
-    id: 'frost',
-    name: 'Frost Shield',
-    icon: '❄️',
-    element: 'ice',
-    damage: 14,
-    shield: 12,
-    color: '#2bd9d2',
-    blurb: 'Hits + blocks the next attack.',
-  },
-  {
-    id: 'thunder',
-    name: 'Thunderstrike',
-    icon: '⚡',
-    element: 'bolt',
-    damage: 38,
-    backfire: 16,
-    color: '#ffd23f',
-    blurb: 'Huge damage — but a miss shocks YOU.',
-  },
-  {
-    id: 'mend',
-    name: 'Mend',
-    icon: '✨',
-    element: 'heal',
+    id: 'smoke',
+    name: 'Smoke Screen',
+    icon: '🛡️',
+    kind: 'shield',
     damage: 0,
-    heal: 26,
+    shield: 16,
+    cooldown: 2,
+    unlockLevel: 1,
+    color: '#8a93a3',
+    blurb: 'Deploy cover — absorbs the next enemy hit.',
+  },
+  {
+    id: 'drone',
+    name: 'Drone Strike',
+    icon: '🛩️',
+    kind: 'damage',
+    damage: 34,
+    cooldown: 2,
+    unlockLevel: 2,
+    color: '#2bd9d2',
+    blurb: 'Call in a UAV for heavy precision damage.',
+  },
+  {
+    id: 'repair',
+    name: 'Field Repair',
+    icon: '🔧',
+    kind: 'heal',
+    damage: 0,
+    heal: 30,
+    cooldown: 3,
+    unlockLevel: 3,
     color: '#62d321',
-    blurb: 'Restore your own HP.',
+    blurb: 'Patch your hull and restore HP.',
+  },
+  {
+    id: 'artillery',
+    name: 'Artillery Barrage',
+    icon: '🎯',
+    kind: 'damage',
+    damage: 32,
+    backfire: 14,
+    cooldown: 3,
+    unlockLevel: 4,
+    color: '#ffd23f',
+    blurb: 'Massive shelling — but a miss overheats YOU.',
+  },
+  {
+    id: 'emp',
+    name: 'EMP Blast',
+    icon: '⚡',
+    kind: 'damage',
+    damage: 20,
+    stun: 1,
+    cooldown: 4,
+    unlockLevel: 6,
+    color: '#b15bff',
+    blurb: 'Fries circuits — enemy skips its next attack.',
+  },
+  {
+    id: 'airstrike',
+    name: 'Airstrike',
+    icon: '✈️',
+    kind: 'damage',
+    damage: 55,
+    cooldown: 5,
+    unlockLevel: 8,
+    color: '#e23b3b',
+    blurb: 'Devastating bombing run. Late-game finisher.',
   },
 ]
 
-export type MonsterKind = 'slime' | 'bat' | 'golem' | 'dragon'
+/** Attacks the commander has unlocked at the given level. */
+export function availableAttacks(level: number): Attack[] {
+  return ATTACKS.filter((a) => a.unlockLevel <= level)
+}
+
+export type EnemyKind = 'drone' | 'jeep' | 'turret' | 'tank' | 'warmachine'
 
 export interface Enemy {
   id: string
   name: string
-  kind: MonsterKind
+  kind: EnemyKind
   maxHp: number
   attack: number
   color: string
 }
 
-/** The wave of foes, escalating to a dragon boss. */
+/** The enemy convoy, escalating to a War Machine boss. */
 export const ENEMY_WAVE: Enemy[] = [
-  { id: 'e1', name: 'Goo Slime', kind: 'slime', maxHp: 45, attack: 8, color: '#62d321' },
-  { id: 'e2', name: 'Cave Bat', kind: 'bat', maxHp: 60, attack: 12, color: '#b15bff' },
-  { id: 'e3', name: 'Stone Golem', kind: 'golem', maxHp: 85, attack: 16, color: '#9aa3b0' },
-  { id: 'e4', name: 'Ember Dragon', kind: 'dragon', maxHp: 120, attack: 22, color: '#e23b3b' },
+  { id: 'e1', name: 'Recon Drone', kind: 'drone', maxHp: 45, attack: 8, color: '#9aa3b0' },
+  { id: 'e2', name: 'Armored Jeep', kind: 'jeep', maxHp: 65, attack: 12, color: '#6b7a3a' },
+  { id: 'e3', name: 'Gun Turret', kind: 'turret', maxHp: 90, attack: 16, color: '#7d6b53' },
+  { id: 'e4', name: 'Enemy Tank', kind: 'tank', maxHp: 115, attack: 20, color: '#7a2230' },
+  { id: 'e5', name: 'War Machine', kind: 'warmachine', maxHp: 160, attack: 26, color: '#3a2550' },
 ]
 
-export const PLAYER_MAX_HP = 100
+/** Base critical-hit chance before the tank's bonus. */
+export const BASE_CRIT = 0.18
 
-export interface CastResult {
+export interface DamageResult {
   damage: number
   crit: boolean
 }
 
-/** Damage for a correct cast: base spell damage, with a chance to crit. */
-export function rollDamage(spell: Spell): CastResult {
-  const crit = Math.random() < 0.28
-  const dmg = Math.round(spell.damage * (crit ? 1.7 : 1))
+/** Roll damage for a hit: base × tank multiplier, with a chance to crit (1.7×). */
+export function rollDamage(base: number, damageMult: number, critBonus: number): DamageResult {
+  const crit = Math.random() < BASE_CRIT + critBonus
+  const dmg = Math.round(base * damageMult * (crit ? 1.7 : 1))
   return { damage: dmg, crit }
 }

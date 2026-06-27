@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { Decoration } from '../../lib/gamification'
 import './AvatarDecoration.css'
 
@@ -6,13 +7,20 @@ interface AvatarDecorationProps {
   photoURL?: string
   variant: Decoration['variant']
   size?: number
+  /** Custom face content (e.g. a designed SVG character). Overrides photo/default. */
+  face?: ReactNode
 }
 
-function DefaultPersonIcon() {
+function DefaultTankIcon() {
   return (
     <svg viewBox="0 0 24 24" className="avatar-default-icon" aria-hidden="true">
-      <circle cx="12" cy="8.5" r="4" fill="#c2c9d6" />
-      <path d="M3.5 21c0-4.4 4-7 8.5-7s8.5 2.6 8.5 7z" fill="#c2c9d6" />
+      <rect x="3" y="13" width="15" height="4" rx="2" fill="#9aa3b0" />
+      <circle cx="6" cy="15" r="1.4" fill="#5a6470" />
+      <circle cx="9.5" cy="15" r="1.4" fill="#5a6470" />
+      <circle cx="13" cy="15" r="1.4" fill="#5a6470" />
+      <path d="M5 13 L7 9 L15 9 L16.5 13 Z" fill="#c2c9d6" />
+      <rect x="9" y="6" width="6" height="4" rx="1" fill="#c2c9d6" />
+      <rect x="14" y="7" width="8" height="2" rx="1" fill="#9aa3b0" />
     </svg>
   )
 }
@@ -22,6 +30,7 @@ export function AvatarDecoration({
   photoURL,
   variant,
   size = 96,
+  face,
 }: AvatarDecorationProps) {
   return (
     <div
@@ -58,11 +67,13 @@ export function AvatarDecoration({
         </span>
       )}
 
-      <div className={`avatar-core ${photoURL ? '' : 'avatar-core-empty'}`}>
-        {photoURL ? (
+      <div className={`avatar-core ${face || photoURL ? '' : 'avatar-core-empty'}`}>
+        {face ? (
+          face
+        ) : photoURL ? (
           <img src={photoURL} alt={name ?? 'avatar'} className="avatar-img" />
         ) : (
-          <DefaultPersonIcon />
+          <DefaultTankIcon />
         )}
       </div>
     </div>

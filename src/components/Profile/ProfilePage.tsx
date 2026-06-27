@@ -1,8 +1,17 @@
-import { useRef, useState, type ChangeEvent } from 'react'
 import { LESSONS } from '../../content/catalog'
-import { getDecoration, useGamification } from '../../context/GamificationContext'
+import { useGamification } from '../../context/GamificationContext'
 import type { UserProgress } from '../../types/progress'
-import { AvatarDecoration } from '../Gamification/AvatarDecoration'
+import {
+  baseHpForLevel,
+  CAMO,
+  camoColor,
+  getTank,
+  TANKS,
+  type Loadout,
+  type TankKind,
+} from '../../lib/tank'
+import { ATTACKS, BASE_CRIT } from '../../lib/battle'
+import { PlayerTank, TankBadge } from '../Tank/TankSprite'
 import { LevelBadge } from '../Gamification/LevelBadge'
 import { StreakFlame } from '../Gamification/StreakFlame'
 import { XpBar } from '../Gamification/XpBar'
@@ -10,35 +19,17 @@ import './ProfilePage.css'
 
 interface ProfilePageProps {
   displayName?: string
-  photoURL?: string
   progressList: UserProgress[]
-  onAvatarFile?: (file: File) => Promise<void>
+  loadout: Loadout
+  onLoadoutChange: (next: Loadout) => void
 }
 
 export function ProfilePage({
   displayName,
-  photoURL,
   progressList,
-  onAvatarFile,
+  loadout,
+  onLoadoutChange,
 }: ProfilePageProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [uploadError, setUploadError] = useState<string | null>(null)
-  const [uploading, setUploading] = useState(false)
-
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    event.target.value = '' // allow re-selecting the same file
-    if (!file || !onAvatarFile) return
-    setUploadError(null)
-    setUploading(true)
-    try {
-      await onAvatarFile(file)
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : 'Upload failed.')
-    } finally {
-      setUploading(false)
-    }
-  }
   const {
     level,
     xpIntoLevel,
@@ -51,71 +42,27 @@ export function ProfilePage({
     equip,
   } = useGamification()
 
-  const equipped = getDecoration(equippedId)
+  const tank = getTank(loadout.tankId)
 
-  const mastered = LESSONS.map((lesson) => {
-    const p = progressList.find((x) => x.lessonId === lesson.lessonId)
-    return {
-      lesson,
-      completed: p?.isCompleted ?? false,
-      stepsDone: p?.completedSteps.length ?? 0,
-      total: lesson.steps.length,
-    }
-  })
+  const masteredCount = LESSONS.filter(
+    (l) => progressList.find((p) => p.lessonId === l.lessonId)?.isCompleted,
+  ).length
 
-  const masteredCount = mastered.filter((m) => m.completed).length
+  const selectTank = (id: TankKind) => onLoadoutChange({ ...loadout, tankId: id })
+  const selectCamo = (id: string) => onLoadoutChange({ ...loadout, camo: id })
 
   return (
     <div className="profile-page">
-      <h1 className="profile-title">★ Hero Profile</h1>
+      <h1 className="profile-title">★ Command Center</h1>
 
       <div className="profile-grid">
-        {/* Profile card */}
+        {/* Commander card */}
         <section className="profile-card">
-          <div className="profile-avatar-wrap">
-            <AvatarDecoration
-              name={displayName}
-              photoURL={photoURL}
-              variant={equipped.variant}
-              size={120}
-            />
-            <button
-              type="button"
-              className="avatar-upload-btn"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              aria-label="Upload profile photo"
-              title="Upload profile photo"
-            >
-              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                <path
-                  d="M4 7h3l2-2h6l2 2h3v12H4z"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                />
-                <circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="avatar-file-input"
-              onChange={handleFileChange}
-            />
+          <div className="commander-tank">
+            <PlayerTank kind={tank.id} color={camoColor(loadout.camo)} size={150} />
           </div>
-          <h2 className="profile-name">{displayName ?? 'Learner'}</h2>
-          <button
-            type="button"
-            className="avatar-upload-link"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-          >
-            {uploading ? 'Uploading…' : photoURL ? 'Change photo' : 'Upload photo'}
-          </button>
-          {uploadError && <p className="avatar-upload-error">{uploadError}</p>}
+          <h2 className="profile-name">{displayName ?? 'Commander'}</h2>
+          <p className="commander-tankname">{tank.name} · {baseHpForLevel(tank, level)} HP</p>
           <div className="profile-badges">
             <span className="profile-badge">
               <LevelBadge level={level} size="sm" /> LVL {level}
@@ -130,9 +77,82 @@ export function ProfilePage({
           </div>
         </section>
 
-        {/* Decoration customization */}
+        {/* Tank hangar */}
+        <section className="profile-character">
+          <h3 className="section-heading">Tank Hangar</h3>
+          <div className="tank-grid">
+            {TANKS.map((t) => {
+              const locked = level < t.unlockLevel
+              const selected = loadout.tankId === t.id
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`tank-card ${selected ? 'selected' : ''} ${locked ? 'locked' : ''}`}
+                  onClick={() => !locked && selectTank(t.id)}
+                  disabled={locked}
+                >
+                  <div className="tank-card-art">
+                    <PlayerTank kind={t.id} color={camoColor(loadout.camo)} size={84} />
+                  </div>
+                  <span className="tank-card-name">{t.name}</span>
+                  <div className="tank-stats">
+                    <span title="Hull HP">❤️ {baseHpForLevel(t, level)}</span>
+                    <span title="Damage">⚔️ ×{t.damageMult}</span>
+                    <span title="Crit chance">🎯 {Math.round((BASE_CRIT + t.critBonus) * 100)}%</span>
+                  </div>
+                  <span className="tank-ability">{t.ability}</span>
+                  {locked && <span className="tank-lock">🔒 Unlocks at LVL {t.unlockLevel}</span>}
+                  {selected && !locked && <span className="tank-deployed">✓ Deployed</span>}
+                </button>
+              )
+            })}
+          </div>
+
+          <p className="customizer-label">Camo</p>
+          <div className="customizer-row">
+            {CAMO.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                className={`swatch ${loadout.camo === c.id ? 'selected' : ''}`}
+                style={{ background: c.color }}
+                onClick={() => selectCamo(c.id)}
+                title={c.name}
+                aria-label={c.name}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Arsenal */}
+        <section className="profile-arsenal">
+          <h3 className="section-heading">Arsenal</h3>
+          <p className="arsenal-hint">Rank up to unlock heavier ordnance.</p>
+          <div className="arsenal-list">
+            {ATTACKS.map((a) => {
+              const locked = level < a.unlockLevel
+              return (
+                <div key={a.id} className={`arsenal-item ${locked ? 'locked' : ''}`}>
+                  <span className="arsenal-icon" style={{ background: locked ? '#b9bec7' : a.color }}>
+                    {a.icon}
+                  </span>
+                  <span className="arsenal-info">
+                    <span className="arsenal-name">{a.name}</span>
+                    <span className="arsenal-blurb">{a.blurb}</span>
+                  </span>
+                  <span className="arsenal-status">
+                    {locked ? `LVL ${a.unlockLevel}` : '✓'}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* Insignia (decorations) */}
         <section className="profile-decorations">
-          <h3 className="section-heading">Gear Locker</h3>
+          <h3 className="section-heading">Insignia</h3>
           <div className="deco-grid">
             {decorations.map((d) => {
               const unlocked = unlockedIds.includes(d.id)
@@ -145,7 +165,7 @@ export function ProfilePage({
                   onClick={() => unlocked && equip(d.id)}
                   disabled={!unlocked}
                 >
-                  <AvatarDecoration name={displayName} photoURL={photoURL} variant={d.variant} size={64} />
+                  <TankBadge loadout={loadout} variant={d.variant} size={64} />
                   <span className="deco-name">{d.name}</span>
                   <span className="deco-status">
                     {isEquipped ? 'Equipped' : unlocked ? 'Tap to equip' : `🔒 LVL ${d.unlockLevel}`}
@@ -156,26 +176,26 @@ export function ProfilePage({
           </div>
         </section>
 
-        {/* Trophies — earned only */}
+        {/* Medals (trophies) */}
         <section className="profile-history">
           <h3 className="section-heading">
-            Trophies <span className="history-count">{masteredCount}</span>
+            Medals <span className="history-count">{masteredCount}</span>
           </h3>
           {masteredCount === 0 ? (
-            <p className="history-empty">No trophies yet — clear a mission to earn one!</p>
+            <p className="history-empty">No medals yet — clear a mission to earn one!</p>
           ) : (
             <ul className="history-feed">
-              {mastered
-                .filter((m) => m.completed)
-                .map(({ lesson }) => (
-                  <li key={lesson.lessonId} className="history-item done">
-                    <span className="history-icon" aria-hidden="true">🏆</span>
-                    <span className="history-info">
-                      <span className="history-name">{lesson.title}</span>
-                      <span className="history-sub">CLEARED</span>
-                    </span>
-                  </li>
-                ))}
+              {LESSONS.filter(
+                (l) => progressList.find((p) => p.lessonId === l.lessonId)?.isCompleted,
+              ).map((lesson) => (
+                <li key={lesson.lessonId} className="history-item done">
+                  <span className="history-icon" aria-hidden="true">🎖️</span>
+                  <span className="history-info">
+                    <span className="history-name">{lesson.title}</span>
+                    <span className="history-sub">CLEARED</span>
+                  </span>
+                </li>
+              ))}
             </ul>
           )}
         </section>

@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import { useGamification, getDecoration } from '../../context/GamificationContext'
+import type { Loadout } from '../../lib/tank'
+import { TankBadge } from '../Tank/TankSprite'
 import { AvatarDecoration } from '../Gamification/AvatarDecoration'
 import { LevelBadge } from '../Gamification/LevelBadge'
 import { StreakFlame } from '../Gamification/StreakFlame'
@@ -12,7 +14,7 @@ interface MainLayoutProps {
   active: NavKey
   onNavigate: (key: NavKey) => void
   displayName?: string
-  photoURL?: string
+  loadout?: Loadout
   demoMode?: boolean
   onSignOut: () => void
   children: ReactNode
@@ -102,7 +104,7 @@ export function MainLayout({
   active,
   onNavigate,
   displayName,
-  photoURL,
+  loadout,
   demoMode,
   onSignOut,
   children,
@@ -118,12 +120,11 @@ export function MainLayout({
         <div className="ml-brand">ALGEBRA QUEST</div>
 
         <div className="ml-profile-mini">
-          <AvatarDecoration
-            name={displayName}
-            photoURL={photoURL}
-            variant={decoration.variant}
-            size={72}
-          />
+          {loadout ? (
+            <TankBadge loadout={loadout} variant={decoration.variant} size={72} />
+          ) : (
+            <AvatarDecoration name={displayName} variant={decoration.variant} size={72} />
+          )}
           <div className="ml-profile-meta">
             <span className="ml-name">{displayName ?? 'Learner'}</span>
             <span className="ml-level-row">
