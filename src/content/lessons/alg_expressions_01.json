@@ -2,7 +2,7 @@
   "lessonId": "alg_expressions_01",
   "title": "Constructing Expressions",
   "subject": "algebra",
-  "order": 1,
+  "order": 2,
   "steps": [
     {
       "stepId": "step_expr_build_01",

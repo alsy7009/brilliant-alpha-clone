@@ -1,0 +1,149 @@
+{
+  "lessonId": "alg_balancing_01",
+  "title": "Intro to Equation Scales",
+  "subject": "algebra",
+  "order": 1,
+  "steps": [
+    {
+      "stepId": "step_00_variable_intro",
+      "type": "explanation-slide",
+      "instruction": "First, what is a variable?",
+      "widgetConfig": {
+        "slides": [
+          {
+            "title": "What is a variable?",
+            "body": "A variable is just a letter (like x) that stands for a number we don't know yet. Think of it as a mystery number waiting to be discovered!",
+            "highlight": ["variable", "mystery number"]
+          },
+          {
+            "title": "Why use a letter?",
+            "body": "Instead of saying 'some number plus 3 equals 7', we write x + 3 = 7. The x holds the spot for the missing number until we figure it out.",
+            "highlight": ["x + 3 = 7"]
+          },
+          {
+            "title": "Solving = finding the value",
+            "body": "Solving an equation means working out what number the variable equals. The trick: keep both sides balanced, like a scale, and the mystery number reveals itself.",
+            "highlight": ["balanced"]
+          }
+        ]
+      },
+      "explanations": {
+        "correct": "Nice — now let's see balancing in action!"
+      }
+    },
+    {
+      "stepId": "step_01_concept",
+      "type": "visual-intro",
+      "instruction": "A scale is balanced when both sides hold the same weight. Use + and − until both sides match and the scale is level.",
+      "widgetConfig": {
+        "leftWeight": 5,
+        "rightWeight": 3,
+        "isInteractive": true
+      },
+      "explanations": {
+        "correct": "The scale is level! Equal weight on both sides means it's balanced.",
+        "generic_wrong": "The scale is tilted. Adjust the weights until both sides are equal."
+      }
+    },
+    {
+      "stepId": "step_02_problem",
+      "type": "scale-balance",
+      "instruction": "The equation x + 3 = 7 is balanced. Isolate x by subtracting 3 from both sides — drag the block or tap the operation button.",
+      "widgetConfig": {
+        "equationLeft": "X + 3",
+        "equationRight": "7",
+        "targetVariable": "X"
+      },
+      "validationRules": {
+        "expectedLeft": "X",
+        "expectedRight": "4"
+      },
+      "explanations": {
+        "correct": "Excellent! Subtracting 3 from both sides leaves x = 4 — and the scale stays balanced.",
+        "wrong_moved_incorrectly": "Moving +3 across the equals sign flips it to −3 on the right. Try subtracting 3 from both sides instead.",
+        "generic_wrong": "The scale tilted. Whatever you do to one side, do the same to the other.",
+        "incomplete": "Remove the +3 from the left side using the same operation on both sides."
+      }
+    },
+    {
+      "stepId": "step_03_problem",
+      "type": "scale-balance",
+      "instruction": "Now solve x + 5 = 12. Keep the scale balanced!",
+      "widgetConfig": {
+        "equationLeft": "X + 5",
+        "equationRight": "12",
+        "targetVariable": "X"
+      },
+      "validationRules": {
+        "expectedLeft": "X",
+        "expectedRight": "7"
+      },
+      "explanations": {
+        "correct": "You got it! x + 5 = 12 means x = 7.",
+        "wrong_moved_incorrectly": "When +5 crosses the equals sign it becomes −5 on the other side.",
+        "generic_wrong": "Keep both pans balanced while removing the constant from the left.",
+        "incomplete": "Subtract 5 from both sides, then check your answer."
+      }
+    },
+    {
+      "stepId": "step_04_problem",
+      "type": "scale-balance",
+      "instruction": "Solve x + 2 = 6. Take the same amount off both pans.",
+      "widgetConfig": {
+        "equationLeft": "X + 2",
+        "equationRight": "6",
+        "targetVariable": "X"
+      },
+      "validationRules": {
+        "expectedLeft": "X",
+        "expectedRight": "4"
+      },
+      "explanations": {
+        "correct": "Nice! x + 2 = 6 means x = 4.",
+        "wrong_moved_incorrectly": "Subtract 2 from BOTH sides — don't just slide it across.",
+        "generic_wrong": "Remove 2 units from each pan to keep it balanced.",
+        "incomplete": "Subtract 2 from both sides to isolate x."
+      }
+    },
+    {
+      "stepId": "step_05_problem",
+      "type": "scale-balance",
+      "instruction": "Solve x + 4 = 9. Isolate the variable block.",
+      "widgetConfig": {
+        "equationLeft": "X + 4",
+        "equationRight": "9",
+        "targetVariable": "X"
+      },
+      "validationRules": {
+        "expectedLeft": "X",
+        "expectedRight": "5"
+      },
+      "explanations": {
+        "correct": "Great! x + 4 = 9 means x = 5.",
+        "wrong_moved_incorrectly": "Take 4 off both pans at once — keep them even.",
+        "generic_wrong": "Whatever you remove from the left, remove from the right too.",
+        "incomplete": "Subtract 4 from both sides, then check."
+      }
+    },
+    {
+      "stepId": "step_06_problem",
+      "type": "scale-balance",
+      "instruction": "Last one: solve x + 6 = 10.",
+      "widgetConfig": {
+        "equationLeft": "X + 6",
+        "equationRight": "10",
+        "targetVariable": "X"
+      },
+      "validationRules": {
+        "expectedLeft": "X",
+        "expectedRight": "4"
+      },
+      "explanations": {
+        "correct": "Boom! x + 6 = 10 means x = 4. You've mastered the scale!",
+        "wrong_moved_incorrectly": "+6 becomes −6 when it crosses — but here just subtract 6 from both sides.",
+        "generic_wrong": "Balance it: remove 6 units from each pan.",
+        "incomplete": "Subtract 6 from both sides to finish."
+      }
+    }
+  ]
+}

@@ -44,6 +44,10 @@
   cursor: not-allowed;
 }
 
+.visual-intro .balance-badge {
+  align-self: center;
+}
+
 .intro-scale-svg {
   width: 100%;
   max-width: 400px;

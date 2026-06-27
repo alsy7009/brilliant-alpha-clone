@@ -1,4 +1,5 @@
 import type { Lesson } from '../types/lesson'
+import lesson00 from './lessons/alg_balancing_01.json'
 import lesson01 from './lessons/alg_expressions_01.json'
 import lesson02 from './lessons/alg_evaluate_01.json'
 import lesson03 from './lessons/alg_linear_01.json'
@@ -6,6 +7,7 @@ import lesson04 from './lessons/alg_foil_01.json'
 import lesson05 from './lessons/alg_quadratics_01.json'
 
 export const LESSONS: Lesson[] = [
+  lesson00,
   lesson01,
   lesson02,
   lesson03,

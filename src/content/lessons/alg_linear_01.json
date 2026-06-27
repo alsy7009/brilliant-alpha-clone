@@ -2,7 +2,7 @@
   "lessonId": "alg_linear_01",
   "title": "Graphing Linear Equations",
   "subject": "algebra",
-  "order": 3,
+  "order": 4,
   "steps": [
     {
       "stepId": "step_slope_intercept_intro",

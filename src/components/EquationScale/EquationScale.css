@@ -29,6 +29,25 @@
   color: #333;
 }
 
+.balance-badge {
+  font-family: system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+}
+
+.balance-badge.is-balanced {
+  background: #e3f9d3;
+  color: #2f7d12;
+  box-shadow: 0 0 0 2px #62d321 inset;
+}
+
+.balance-badge.is-tilted {
+  background: #fdeede;
+  color: #9a5a12;
+}
+
 .scale-svg {
   width: 100%;
   max-width: 400px;
@@ -43,6 +62,40 @@
   font-size: 11px;
   font-weight: 700;
   fill: #1a1a1a;
+}
+
+.unit-var-text {
+  font-family: system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  fill: #14331a;
+}
+
+.unit-leaving {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.unit-leaving-left {
+  animation: blockFlyLeft 0.45s ease-in forwards;
+}
+
+.unit-leaving-right {
+  animation: blockFlyRight 0.45s ease-in forwards;
+}
+
+@keyframes blockFlyLeft {
+  to {
+    opacity: 0;
+    transform: translate(-34px, -46px) rotate(-22deg);
+  }
+}
+
+@keyframes blockFlyRight {
+  to {
+    opacity: 0;
+    transform: translate(34px, -46px) rotate(22deg);
+  }
 }
 
 .term-block {

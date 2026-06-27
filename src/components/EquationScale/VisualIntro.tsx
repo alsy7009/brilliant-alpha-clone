@@ -20,6 +20,7 @@ export function VisualIntro({
   disabled = false,
 }: VisualIntroProps) {
   const angle = tiltFromWeights(state.leftWeight, state.rightWeight)
+  const balanced = state.leftWeight === state.rightWeight
 
   const adjust = (side: 'left' | 'right', delta: number) => {
     if (disabled || !config.isInteractive) return
@@ -48,6 +49,10 @@ export function VisualIntro({
         </div>
       </div>
 
+      <span className={`balance-badge ${balanced ? 'is-balanced' : 'is-tilted'}`}>
+        {balanced ? '⚖ Balanced!' : '⚠ Not balanced'}
+      </span>
+
       <svg className="intro-scale-svg" viewBox="0 0 400 240" aria-hidden="true">
         <rect x="185" y="20" width="30" height="120" fill="#5c4d3c" rx="4" />
         <polygon points="120,140 280,140 200,170" fill="#6b5a47" />
@@ -58,7 +63,7 @@ export function VisualIntro({
             transition: 'transform 0.2s ease-out',
           }}
         >
-          <rect x="40" y="132" width="320" height="10" fill="#8b7355" rx="5" />
+          <rect x="40" y="132" width="320" height="10" fill={balanced ? '#62d321' : '#8b7355'} rx="5" />
           <g transform="translate(55, 145)">
             {Array.from({ length: state.leftWeight }).map((_, i) => (
               <rect
