@@ -66,6 +66,8 @@ interface GamificationValue extends LevelInfo {
   registerDrillComplete: () => void
   /** Call when the Boss Level quiz ends — awards XP proportional to correct answers. */
   registerQuizComplete: (correct: number) => void
+  /** Call when a battle is won — awards a flat XP amount with a popup. */
+  registerBattleWin: (xp: number) => void
   markSession: () => void
   pendingLevelUp: number | null
   dismissLevelUp: () => void
@@ -212,6 +214,17 @@ export function GamificationProvider({ userId, progressList, streak, children }:
     [addBonus, pushReward],
   )
 
+  const registerBattleWin = useCallback(
+    (xp: number) => {
+      sessionStartedRef.current = true
+      if (xp > 0) {
+        addBonus(xp)
+        pushReward(`+${xp} XP`, 'Victory! ⚔️')
+      }
+    },
+    [addBonus, pushReward],
+  )
+
   const dismissLevelUp = useCallback(() => setPendingLevelUp(null), [])
 
   const todaysGoal = getTodaysGoal()
@@ -237,6 +250,7 @@ export function GamificationProvider({ userId, progressList, streak, children }:
     registerLessonComplete,
     registerDrillComplete,
     registerQuizComplete,
+    registerBattleWin,
     markSession,
     pendingLevelUp,
     dismissLevelUp,

@@ -9,6 +9,9 @@ export const XP_PER_DRILL = 5
 /** XP earned per correct answer in the Boss Level quiz (score-proportional reward). */
 export const BOSS_XP_PER_CORRECT = 10
 
+/** XP earned per monster defeated in the battle arena. */
+export const XP_PER_ENEMY = 12
+
 /** Bonus XP per consecutive correct answer in a session combo (combo of n → +COMBO_BONUS*(n-1)). */
 export const COMBO_BONUS = 5
 

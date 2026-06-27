@@ -9,6 +9,7 @@ import { ProfilePage } from './components/Profile/ProfilePage'
 import { FriendsPage } from './components/Friends/FriendsPage'
 import { PracticePage } from './components/Practice/PracticePage'
 import { BossLevel } from './components/BossLevel/BossLevel'
+import { BattleArena } from './components/BattleArena/BattleArena'
 import { LevelUpModal } from './components/Gamification/LevelUpModal'
 import { ComboLayer } from './components/Gamification/ComboLayer'
 import { GamificationProvider } from './context/GamificationContext'
@@ -171,7 +172,9 @@ function App() {
           ? 'friends'
           : key === 'practice'
             ? 'practice'
-            : 'roadmap',
+            : key === 'battle'
+              ? 'battle'
+              : 'roadmap',
     )
   }
 
@@ -203,10 +206,13 @@ function App() {
         ? 'friends'
         : view === 'practice'
           ? 'practice'
-          : 'dashboard'
+          : view === 'battle'
+            ? 'battle'
+            : 'dashboard'
 
   const inPracticeDrill = view === 'practice' && practiceLesson !== null
-  const immersive = view === 'lesson' || view === 'boss' || inPracticeDrill
+  const immersive =
+    view === 'lesson' || view === 'boss' || view === 'battle' || inPracticeDrill
 
   return (
     <GamificationProvider
@@ -246,6 +252,10 @@ function App() {
             }}
             onGoToPractice={() => setView('practice')}
           />
+        )}
+
+        {view === 'battle' && (
+          <BattleArena userId={userId} onExit={() => setView('roadmap')} />
         )}
 
         {view === 'profile' && (

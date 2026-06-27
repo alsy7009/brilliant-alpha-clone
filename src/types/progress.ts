@@ -26,3 +26,4 @@ export type AppView =
   | 'friends'
   | 'practice'
   | 'boss'
+  | 'battle'
