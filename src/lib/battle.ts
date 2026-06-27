@@ -125,14 +125,37 @@ export interface Enemy {
   color: string
 }
 
-/** The enemy convoy, escalating to a War Machine boss. */
+/** Base enemy templates, escalating to a War Machine boss. The actual wave is scaled to
+ * the player's level by `buildWave` (fewer, weaker foes early; tougher later). */
 export const ENEMY_WAVE: Enemy[] = [
-  { id: 'e1', name: 'Recon Drone', kind: 'drone', maxHp: 45, attack: 8, color: '#9aa3b0' },
-  { id: 'e2', name: 'Armored Jeep', kind: 'jeep', maxHp: 65, attack: 12, color: '#6b7a3a' },
-  { id: 'e3', name: 'Gun Turret', kind: 'turret', maxHp: 90, attack: 16, color: '#7d6b53' },
-  { id: 'e4', name: 'Enemy Tank', kind: 'tank', maxHp: 115, attack: 20, color: '#7a2230' },
-  { id: 'e5', name: 'War Machine', kind: 'warmachine', maxHp: 160, attack: 26, color: '#3a2550' },
+  { id: 'e1', name: 'Recon Drone', kind: 'drone', maxHp: 30, attack: 7, color: '#9aa3b0' },
+  { id: 'e2', name: 'Armored Jeep', kind: 'jeep', maxHp: 42, attack: 10, color: '#6b7a3a' },
+  { id: 'e3', name: 'Gun Turret', kind: 'turret', maxHp: 55, attack: 13, color: '#7d6b53' },
+  { id: 'e4', name: 'Enemy Tank', kind: 'tank', maxHp: 72, attack: 17, color: '#7a2230' },
+  { id: 'e5', name: 'War Machine', kind: 'warmachine', maxHp: 95, attack: 22, color: '#3a2550' },
 ]
+
+/** Chance the enemy whiffs its counterattack entirely (keeps fights survivable). */
+export const ENEMY_MISS_CHANCE = 0.28
+
+export function enemyMisses(): boolean {
+  return Math.random() < ENEMY_MISS_CHANCE
+}
+
+/**
+ * Build the wave for a given commander level: 3 foes early, scaling up to a max of 5,
+ * with HP/attack ramping gently so it stays winnable but challenging.
+ */
+export function buildWave(level: number): Enemy[] {
+  const count = Math.min(5, Math.max(3, 2 + Math.ceil(level / 2)))
+  const hpScale = 1 + Math.max(0, level - 1) * 0.08
+  const atkScale = 1 + Math.max(0, level - 1) * 0.06
+  return ENEMY_WAVE.slice(0, count).map((e) => ({
+    ...e,
+    maxHp: Math.round(e.maxHp * hpScale),
+    attack: Math.round(e.attack * atkScale),
+  }))
+}
 
 /** Base critical-hit chance before the tank's bonus. */
 export const BASE_CRIT = 0.18

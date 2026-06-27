@@ -6,9 +6,11 @@ import { checkStep, revealAnswer } from '../../lib/widgets/checkStep'
 import { recordMastery, recordStruggle, topicForStepType } from '../../lib/weakAreas'
 import {
   availableAttacks,
-  ENEMY_WAVE,
+  buildWave,
+  enemyMisses,
   rollDamage,
   type Attack,
+  type Enemy,
 } from '../../lib/battle'
 import { baseHpForLevel, camoColor, getTank, type Loadout } from '../../lib/tank'
 import { XP_PER_ENEMY } from '../../lib/gamification'
@@ -48,8 +50,9 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
   const [qIndex, setQIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>('loading')
 
+  const [wave, setWave] = useState<Enemy[]>(() => buildWave(level))
   const [enemyIndex, setEnemyIndex] = useState(0)
-  const [enemyHp, setEnemyHp] = useState(ENEMY_WAVE[0].maxHp)
+  const [enemyHp, setEnemyHp] = useState(wave[0].maxHp)
   const [playerHp, setPlayerHp] = useState(maxHp)
   const [shield, setShield] = useState(0)
   const [enemyStunned, setEnemyStunned] = useState(false)
@@ -73,7 +76,7 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
   const popupId = useRef(0)
   const timers = useRef<number[]>([])
 
-  const enemy = ENEMY_WAVE[enemyIndex]
+  const enemy = wave[Math.min(enemyIndex, wave.length - 1)]
   const step = pool.length ? pool[qIndex % pool.length] : null
 
   const after = (ms: number, fn: () => void) => {
@@ -95,8 +98,10 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
   const loadArena = useCallback(() => {
     setPhase('loading')
     awardedRef.current = false
+    const freshWave = buildWave(level)
+    setWave(freshWave)
     setEnemyIndex(0)
-    setEnemyHp(ENEMY_WAVE[0].maxHp)
+    setEnemyHp(freshWave[0].maxHp)
     setPlayerHp(maxHp)
     setShield(0)
     setEnemyStunned(false)
@@ -107,7 +112,7 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
     setPlayerFx(null)
     setProjectile(null)
     setPopups([])
-    setLog([`Enemy contact: ${ENEMY_WAVE[0].name} inbound!`])
+    setLog([`Enemy contact: ${freshWave[0].name} inbound! (${freshWave.length} hostiles)`])
     return generatePracticeLesson({ topics: ALL_TOPIC_IDS, count: 28, title: 'Battle' }).then(
       (l: Lesson) => {
         setPool(l.steps)
@@ -115,7 +120,7 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
         setPhase('choose')
       },
     )
-  }, [maxHp])
+  }, [maxHp, level])
 
   useEffect(() => {
     void loadArena()
@@ -130,6 +135,8 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
       registerBattleWin(defeatedCount * XP_PER_ENEMY + bonus)
     }
   }, [phase, defeatedCount, registerBattleWin])
+
+  const waveSize = wave.length
 
   const pickAttack = (a: Attack) => {
     if ((cooldowns[a.id] ?? 0) > 0) return
@@ -221,6 +228,15 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
     if (!killed) {
       if (enemyStunned) {
         lines.push(`${enemy.name} is stunned and can't fire!`)
+      } else if (enemyMisses()) {
+        lines.push(`${enemy.name} fires… and misses!`)
+        after(620, () => {
+          setEnemyFx('attack')
+          setProjectile({ dir: 'in', color: '#8a93a3' })
+        })
+        after(900, () => pushPopup('player', 'MISS'))
+        after(1050, () => setProjectile(null))
+        after(1250, () => setEnemyFx(null))
       } else {
         let incoming = enemy.attack
         if (nextShield > 0) {
@@ -294,15 +310,15 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
       return
     }
     if (enemyDown) {
-      if (enemyIndex >= ENEMY_WAVE.length - 1) {
+      if (enemyIndex >= wave.length - 1) {
         setPhase('victory')
         return
       }
       const nextIdx = enemyIndex + 1
       setEnemyIndex(nextIdx)
-      setEnemyHp(ENEMY_WAVE[nextIdx].maxHp)
+      setEnemyHp(wave[nextIdx].maxHp)
       setEnemyStunned(false)
-      setLog([`Enemy contact: ${ENEMY_WAVE[nextIdx].name} inbound!`])
+      setLog([`Enemy contact: ${wave[nextIdx].name} inbound!`])
     }
     setAttack(null)
     setEnemyDown(false)
@@ -327,7 +343,7 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
           <p className="end-sub">
             {won
               ? 'You wiped out the entire enemy convoy!'
-              : `You destroyed ${defeatedCount} of ${ENEMY_WAVE.length} enemy units.`}
+              : `You destroyed ${defeatedCount} of ${waveSize} enemy units.`}
           </p>
           <div className="end-xp">+{xp} XP</div>
           <div className="battle-end-actions">
@@ -451,7 +467,7 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
               </button>
             )
           })}
-          <p className="arena-note">Solve a problem to fire — destroy all {ENEMY_WAVE.length} units!</p>
+          <p className="arena-note">Solve a problem to fire — destroy all {waveSize} units!</p>
         </div>
       )}
 
@@ -493,7 +509,7 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
         <div className="cast-panel">
           <button type="button" className="primary-button wide" onClick={continueAfterResolve}>
             {enemyDown
-              ? enemyIndex >= ENEMY_WAVE.length - 1
+              ? enemyIndex >= wave.length - 1
                 ? 'Claim victory →'
                 : 'Next target →'
               : 'Continue →'}
