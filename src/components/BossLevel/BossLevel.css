@@ -1,0 +1,160 @@
+.boss-level {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  gap: 1rem;
+}
+
+/* Locks a widget for read-only display (review / after lock-in). */
+.boss-readonly {
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.boss-badge {
+  align-self: flex-start;
+  font-family: var(--pixel-font);
+  font-size: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.boss-badge.good {
+  background: var(--c-lime);
+  color: var(--ink);
+}
+
+.boss-badge.bad {
+  background: #ffdcd2;
+  color: #8b2a1a;
+}
+
+/* ---- Results ---- */
+.boss-results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  padding: 1.5rem 1rem;
+}
+
+.boss-verdict {
+  margin: 0;
+  font-family: var(--pixel-font);
+  font-size: 0.95rem;
+  color: var(--c-orange);
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+.boss-cleared-chip {
+  font-family: var(--pixel-font);
+  font-size: 0.7rem;
+  color: var(--ink);
+  background: var(--c-lime);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+  padding: 0.35rem 0.7rem;
+}
+
+.boss-retry-chip {
+  font-size: 1rem;
+  color: #8b2a1a;
+  background: #ffdcd2;
+  border: 3px solid var(--ink);
+  padding: 0.35rem 0.7rem;
+}
+
+.boss-score {
+  font-family: var(--pixel-font);
+  font-size: 2.4rem;
+  color: var(--c-blue);
+  line-height: 1.1;
+}
+
+.boss-score-total {
+  font-size: 1.2rem;
+  color: #6a6488;
+  margin-left: 0.4rem;
+}
+
+.boss-score-label {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #3a3357;
+}
+
+.boss-xp {
+  font-family: var(--pixel-font);
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--c-yellow);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+  padding: 0.4rem 0.8rem;
+  margin: 0.3rem 0;
+}
+
+.boss-suggest {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--panel-2);
+  border: 3px solid var(--ink);
+  padding: 0.8rem;
+}
+
+.boss-suggest h2 {
+  margin: 0;
+  font-family: var(--pixel-font);
+  font-size: 0.65rem;
+  color: var(--ink);
+}
+
+.boss-suggest ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.boss-suggest li {
+  font-size: 1rem;
+  background: #fff;
+  border: 2px solid var(--ink);
+  padding: 0.2rem 0.5rem;
+}
+
+.boss-perfect {
+  margin: 0.3rem 0;
+  font-size: 1.1rem;
+  color: #1b5b2a;
+}
+
+.boss-results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-top: 0.6rem;
+}
+
+.boss-results-actions .primary-button,
+.boss-results-actions .secondary-button {
+  padding: 0 1rem;
+}
+
+.footer-spacer {
+  display: block;
+}

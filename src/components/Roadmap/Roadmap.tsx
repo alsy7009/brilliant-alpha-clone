@@ -1,15 +1,23 @@
 import { LESSONS } from '../../content/catalog'
 import type { UserProgress } from '../../types/progress'
 import { isLessonUnlocked } from '../../lib/progress'
+import { getBossCleared } from '../../lib/boss'
 import { GoalsCard } from '../Gamification/GoalsCard'
 import './Roadmap.css'
 
 interface RoadmapProps {
   progressList: UserProgress[]
+  userId: string
   onSelectLesson: (lessonId: string) => void
+  onStartBoss: () => void
 }
 
-export function Roadmap({ progressList, onSelectLesson }: RoadmapProps) {
+export function Roadmap({ progressList, userId, onSelectLesson, onStartBoss }: RoadmapProps) {
+  const bossUnlocked = LESSONS.every(
+    (l) => progressList.find((p) => p.lessonId === l.lessonId)?.isCompleted,
+  )
+  const bossCleared = bossUnlocked && getBossCleared(userId)
+
   return (
     <div className="roadmap">
       <header className="roadmap-header">
@@ -46,10 +54,29 @@ export function Roadmap({ progressList, onSelectLesson }: RoadmapProps) {
                   </span>
                 </div>
               </button>
-              {lesson.order < LESSONS.length && <div className="path-connector" />}
+              <div className="path-connector" />
             </li>
           )
         })}
+
+        <li className="lesson-node">
+          <button
+            type="button"
+            className={`lesson-card boss-card ${!bossUnlocked ? 'locked' : ''} ${bossCleared ? 'cleared' : ''}`}
+            disabled={!bossUnlocked}
+            onClick={onStartBoss}
+          >
+            <span className="lesson-order boss-order">{!bossUnlocked ? '🔒' : '👑'}</span>
+            <div className="lesson-card-body">
+              <strong>Boss Level</strong>
+              <span className="lesson-status">
+                {!bossUnlocked && 'CLEAR ALL MISSIONS'}
+                {bossCleared && 'CLEARED ✓ — REMATCH'}
+                {bossUnlocked && !bossCleared && '▶ FINAL CHALLENGE'}
+              </span>
+            </div>
+          </button>
+        </li>
       </ol>
     </div>
   )

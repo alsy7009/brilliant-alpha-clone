@@ -16,6 +16,7 @@ import {
   totalXpFromProgress,
   unlockedDecorationIds,
   XP_PER_DRILL,
+  BOSS_XP_PER_CORRECT,
   type Decoration,
   type LevelInfo,
 } from '../lib/gamification'
@@ -63,6 +64,8 @@ interface GamificationValue extends LevelInfo {
   registerLessonComplete: () => void
   /** Call when an ephemeral practice drill is finished — awards a small flat XP. */
   registerDrillComplete: () => void
+  /** Call when the Boss Level quiz ends — awards XP proportional to correct answers. */
+  registerQuizComplete: (correct: number) => void
   markSession: () => void
   pendingLevelUp: number | null
   dismissLevelUp: () => void
@@ -197,6 +200,18 @@ export function GamificationProvider({ userId, progressList, streak, children }:
     pushReward(`+${XP_PER_DRILL} XP`, 'Drill cleared! ⚡')
   }, [addBonus, pushReward])
 
+  const registerQuizComplete = useCallback(
+    (correct: number) => {
+      sessionStartedRef.current = true
+      const xp = Math.max(0, correct) * BOSS_XP_PER_CORRECT
+      if (xp > 0) {
+        addBonus(xp)
+        pushReward(`+${xp} XP`, 'Boss defeated! 👑')
+      }
+    },
+    [addBonus, pushReward],
+  )
+
   const dismissLevelUp = useCallback(() => setPendingLevelUp(null), [])
 
   const todaysGoal = getTodaysGoal()
@@ -221,6 +236,7 @@ export function GamificationProvider({ userId, progressList, streak, children }:
     registerAnswer,
     registerLessonComplete,
     registerDrillComplete,
+    registerQuizComplete,
     markSession,
     pendingLevelUp,
     dismissLevelUp,

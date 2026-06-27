@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import type { ExpressionEvaluateConfig, SlotWidgetState } from '../../types/lesson'
 import { createInitialSlotState } from '../../lib/validation/slots'
 import { useTileDrag } from '../../lib/widgets/useTileDrag'
+import { buildBankTiles, placeValue, usedFlags } from '../../lib/widgets/slotTiles'
 import { DragGhost } from '../StepWidget/DragGhost'
 import './ExpressionEvaluate.css'
 
@@ -20,37 +21,36 @@ export function ExpressionEvaluate({
   disabled = false,
   slotFeedback,
 }: ExpressionEvaluateProps) {
-  const [selectedTile, setSelectedTile] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const color = config.visualModel.variableColor ?? '#9b59b6'
   const { variable, variableCount, constantCount } = config.visualModel
 
-  const usedTiles = useMemo(
-    () => new Set(Object.values(state.slots).filter(Boolean)),
-    [state.slots],
+  const tiles = useMemo(() => buildBankTiles(config.tileBank), [config.tileBank])
+  const used = useMemo(
+    () => usedFlags(config.tileBank, state.slots),
+    [config.tileBank, state.slots],
   )
+  const selectedValue = selectedId
+    ? (tiles.find((t) => t.id === selectedId)?.value ?? null)
+    : null
 
   const placeInSlot = useCallback(
-    (slotId: string, tile: string) => {
-      const nextSlots = { ...state.slots }
-      for (const key of Object.keys(nextSlots)) {
-        if (nextSlots[key] === tile) nextSlots[key] = null
-      }
-      nextSlots[slotId] = tile
-      onStateChange({ slots: nextSlots })
-      setSelectedTile(null)
+    (slotId: string, value: string) => {
+      onStateChange({ slots: placeValue(state.slots, slotId, value, config.tileBank) })
+      setSelectedId(null)
     },
-    [onStateChange, state.slots],
+    [config.tileBank, onStateChange, state.slots],
   )
 
-  const { registerSlot, startDrag, dragTile, pointer, hoverSlot } = useTileDrag({
+  const { registerSlot, startDrag, dragId, dragValue, pointer, hoverSlot } = useTileDrag({
     onPlace: placeInSlot,
     disabled,
   })
 
   const handleSlotClick = (slotId: string) => {
     if (disabled) return
-    if (selectedTile) {
-      placeInSlot(slotId, selectedTile)
+    if (selectedValue) {
+      placeInSlot(slotId, selectedValue)
       return
     }
     if (state.slots[slotId]) {
@@ -60,7 +60,7 @@ export function ExpressionEvaluate({
 
   const handleStartOver = () => {
     onStateChange(createInitialSlotState(config.slotIds.map((id) => ({ slotId: id }))))
-    setSelectedTile(null)
+    setSelectedId(null)
   }
 
   return (
@@ -96,7 +96,7 @@ export function ExpressionEvaluate({
                 ref={registerSlot(slotId)}
                 type="button"
                 className={`eval-slot ${value ? 'filled' : ''} ${
-                  selectedTile || dragTile ? 'drop-ready' : ''
+                  selectedValue || dragValue ? 'drop-ready' : ''
                 } ${hoverSlot === slotId ? 'snap-hover' : ''} ${fbClass}`}
                 onClick={() => handleSlotClick(slotId)}
                 disabled={disabled}
@@ -110,20 +110,23 @@ export function ExpressionEvaluate({
       </div>
 
       <div className="tile-bank">
-        {config.tileBank.map((tile) => {
-          const inSlot = usedTiles.has(tile)
+        {tiles.map((t, i) => {
+          const inSlot = used[i]
           return (
             <button
-              key={tile}
+              key={t.id}
               type="button"
-              className={`bank-tile ${selectedTile === tile ? 'selected' : ''} ${
+              className={`bank-tile ${selectedId === t.id ? 'selected' : ''} ${
                 inSlot ? 'used' : ''
-              } ${dragTile === tile ? 'dragging' : ''}`}
+              } ${dragId === t.id ? 'dragging' : ''}`}
               disabled={disabled || inSlot}
-              onPointerDown={(e) => startDrag(tile, e)}
-              onClick={() => setSelectedTile((p) => (p === tile ? null : tile))}
+              onPointerDown={(e) => startDrag(t.id, t.value, e)}
+              onClick={() => {
+                if (inSlot) return
+                setSelectedId((p) => (p === t.id ? null : t.id))
+              }}
             >
-              {tile}
+              {t.value}
             </button>
           )
         })}
@@ -135,7 +138,7 @@ export function ExpressionEvaluate({
 
       <p className="tile-hint">Drag a number into a box — or tap a number, then tap a box.</p>
 
-      <DragGhost tile={dragTile} pointer={pointer} />
+      <DragGhost tile={dragValue} pointer={pointer} />
     </div>
   )
 }

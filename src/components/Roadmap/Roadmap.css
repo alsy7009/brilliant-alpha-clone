@@ -111,3 +111,41 @@
   background: var(--c-yellow);
   margin: 0 auto;
 }
+
+.boss-card {
+  background: #2a2548;
+  border-color: var(--c-yellow);
+  box-shadow: 4px 4px 0 var(--c-orange);
+}
+
+.boss-card:not(.locked) .lesson-card-body strong {
+  color: var(--c-yellow);
+}
+
+.boss-card .lesson-status {
+  color: #d8d3f0;
+}
+
+.boss-order {
+  background: var(--c-orange);
+  color: #fff;
+}
+
+.boss-card.locked {
+  background: var(--panel);
+  border-color: var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.boss-card.locked .lesson-card-body strong {
+  color: var(--ink);
+}
+
+.boss-card.cleared .boss-order {
+  background: var(--c-lime);
+  color: var(--ink);
+}
+
+.boss-card.cleared .lesson-status {
+  color: var(--c-lime);
+}

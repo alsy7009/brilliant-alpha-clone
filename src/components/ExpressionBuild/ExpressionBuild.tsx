@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import type { ExpressionBuildConfig, ExpressionBuildState } from '../../types/lesson'
 import { createInitialSlotState } from '../../lib/validation/slots'
 import { useTileDrag } from '../../lib/widgets/useTileDrag'
+import { buildBankTiles, placeValue, usedFlags } from '../../lib/widgets/slotTiles'
 import { DragGhost } from '../StepWidget/DragGhost'
 import './ExpressionBuild.css'
 
@@ -24,12 +25,16 @@ export function ExpressionBuild({
   disabled = false,
   slotFeedback,
 }: ExpressionBuildProps) {
-  const [selectedTile, setSelectedTile] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const usedTiles = useMemo(
-    () => new Set(Object.values(state.slots).filter(Boolean)),
-    [state.slots],
+  const tiles = useMemo(() => buildBankTiles(config.tileBank), [config.tileBank])
+  const used = useMemo(
+    () => usedFlags(config.tileBank, state.slots),
+    [config.tileBank, state.slots],
   )
+  const selectedValue = selectedId
+    ? (tiles.find((t) => t.id === selectedId)?.value ?? null)
+    : null
 
   const tileAccepted = useCallback(
     (slotId: string, tile: string) => {
@@ -46,21 +51,15 @@ export function ExpressionBuild({
   )
 
   const placeInSlot = useCallback(
-    (slotId: string, tile: string) => {
-      if (!tileAccepted(slotId, tile)) return
-      const nextSlots = { ...state.slots }
-      // remove the tile from any slot it already occupies (move, not duplicate)
-      for (const key of Object.keys(nextSlots)) {
-        if (nextSlots[key] === tile) nextSlots[key] = null
-      }
-      nextSlots[slotId] = tile
-      onStateChange({ slots: nextSlots })
-      setSelectedTile(null)
+    (slotId: string, value: string) => {
+      if (!tileAccepted(slotId, value)) return
+      onStateChange({ slots: placeValue(state.slots, slotId, value, config.tileBank) })
+      setSelectedId(null)
     },
-    [onStateChange, state.slots, tileAccepted],
+    [config.tileBank, onStateChange, state.slots, tileAccepted],
   )
 
-  const { registerSlot, startDrag, dragTile, pointer, hoverSlot } = useTileDrag({
+  const { registerSlot, startDrag, dragId, dragValue, pointer, hoverSlot } = useTileDrag({
     onPlace: placeInSlot,
     canAccept: tileAccepted,
     disabled,
@@ -73,22 +72,22 @@ export function ExpressionBuild({
 
   const handleSlotClick = (slotId: string) => {
     if (disabled) return
-    if (selectedTile) {
-      placeInSlot(slotId, selectedTile)
+    if (selectedValue) {
+      placeInSlot(slotId, selectedValue)
       return
     }
     clearSlot(slotId)
   }
 
-  const handleTileClick = (tile: string) => {
-    if (disabled || usedTiles.has(tile)) return
-    setSelectedTile((prev) => (prev === tile ? null : tile))
+  const handleTileClick = (id: string, isUsed: boolean) => {
+    if (disabled || isUsed) return
+    setSelectedId((prev) => (prev === id ? null : id))
   }
 
   const handleStartOver = () => {
     if (disabled) return
     onStateChange(createInitialSlotState(config.slots))
-    setSelectedTile(null)
+    setSelectedId(null)
   }
 
   const { variable, variableColor, variableCount, constantCount } = config.visualModel
@@ -134,7 +133,7 @@ export function ExpressionBuild({
               ref={registerSlot(key)}
               type="button"
               className={`expression-slot ${value ? 'filled' : ''} ${
-                selectedTile || dragTile ? 'drop-ready' : ''
+                selectedValue || dragValue ? 'drop-ready' : ''
               } ${hoverSlot === key ? 'snap-hover' : ''} ${fbClass}`}
               onClick={() => handleSlotClick(key)}
               disabled={disabled}
@@ -147,26 +146,26 @@ export function ExpressionBuild({
       </div>
 
       <div className="tile-bank">
-        {config.tileBank.map((tile) => {
-          const inSlot = usedTiles.has(tile)
-          const isVar = isVariable(tile, config)
+        {tiles.map((t, i) => {
+          const inSlot = used[i]
+          const isVar = isVariable(t.value, config)
           return (
             <button
-              key={tile}
+              key={t.id}
               type="button"
               className={`bank-tile ${isVar ? 'bank-tile-var' : ''} ${
-                selectedTile === tile ? 'selected' : ''
-              } ${inSlot ? 'used' : ''} ${dragTile === tile ? 'dragging' : ''}`}
+                selectedId === t.id ? 'selected' : ''
+              } ${inSlot ? 'used' : ''} ${dragId === t.id ? 'dragging' : ''}`}
               disabled={disabled || inSlot}
-              onPointerDown={(e) => startDrag(tile, e)}
-              onClick={() => handleTileClick(tile)}
+              onPointerDown={(e) => startDrag(t.id, t.value, e)}
+              onClick={() => handleTileClick(t.id, inSlot)}
               style={
-                isVar && tile === variable
+                isVar && t.value === variable
                   ? { borderColor: variableColor, color: variableColor }
                   : undefined
               }
             >
-              {tile}
+              {t.value}
             </button>
           )
         })}
@@ -184,9 +183,9 @@ export function ExpressionBuild({
       <p className="tile-hint">Drag a tile into a box — or tap a tile, then tap a box.</p>
 
       <DragGhost
-        tile={dragTile}
+        tile={dragValue}
         pointer={pointer}
-        variant={dragTile && isVariable(dragTile, config) ? 'variable' : 'default'}
+        variant={dragValue && isVariable(dragValue, config) ? 'variable' : 'default'}
       />
     </div>
   )

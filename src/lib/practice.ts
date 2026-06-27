@@ -8,13 +8,21 @@ export interface PracticeTopic {
   blurb: string
 }
 
-export type TopicId = 'expressions' | 'evaluate' | 'linear' | 'foil'
+export type TopicId =
+  | 'expressions'
+  | 'evaluate'
+  | 'linear'
+  | 'foil'
+  | 'plot'
+  | 'quadratic'
 
 export const PRACTICE_TOPICS: PracticeTopic[] = [
   { id: 'expressions', label: 'Building Expressions', blurb: 'Write a·x + b from a picture' },
   { id: 'evaluate', label: 'Evaluating Expressions', blurb: 'Plug in a value and simplify' },
   { id: 'linear', label: 'Linear Intercepts', blurb: 'Find x- and y-intercepts' },
+  { id: 'plot', label: 'Plotting Lines', blurb: 'Plot a line by placing dots' },
   { id: 'foil', label: 'FOIL / Expanding', blurb: 'Multiply two binomials' },
+  { id: 'quadratic', label: 'Quadratic Graphs', blurb: 'Match an equation to its parabola' },
 ]
 
 // ---------- small helpers ----------
@@ -60,9 +68,23 @@ function tileBank(answers: string[], distractors: string[], size: number): strin
 
 /** Format "y = mx + b" with a proper minus sign for the constant. */
 function lineLabel(slope: number, intercept: number): string {
-  const m = slope === 1 ? 'x' : `${slope}x`
+  const m = slope === 1 ? 'x' : slope === -1 ? '−x' : `${slope < 0 ? '−' : ''}${Math.abs(slope)}x`
   if (intercept === 0) return `y = ${m}`
   return intercept > 0 ? `y = ${m} + ${intercept}` : `y = ${m} − ${Math.abs(intercept)}`
+}
+
+/** Format a quadratic y = a x² + b x + c (a is ±1 here) with clean signs. */
+function quadraticLabel(a: number, b: number, c: number): string {
+  const head = a === 1 ? 'x²' : a === -1 ? '−x²' : `${a}x²`
+  let s = `y = ${head}`
+  if (b !== 0) {
+    const coef = Math.abs(b) === 1 ? 'x' : `${Math.abs(b)}x`
+    s += b > 0 ? ` + ${coef}` : ` − ${coef}`
+  }
+  if (c !== 0) {
+    s += c > 0 ? ` + ${c}` : ` − ${Math.abs(c)}`
+  }
+  return s
 }
 
 // ---------- per-topic step builders (answers computed here, never trusted to the AI) ----------
@@ -82,6 +104,9 @@ interface RawSpec {
   a?: number
   q?: number
   b?: number
+  r1?: number
+  r2?: number
+  opens?: string
 }
 
 function buildExpressionBuild(spec: RawSpec, idx: number): LessonStep {
@@ -255,6 +280,90 @@ function buildFoil(spec: RawSpec, idx: number): LessonStep {
   }
 }
 
+function buildPlotLine(spec: RawSpec, idx: number): LessonStep {
+  const slopeOptions = [-3, -2, -1, 1, 2, 3]
+  let slope = spec.slope ?? pick(slopeOptions)
+  slope = clamp(slope, -3, 3)
+  if (slope === 0) slope = 2
+  const intercept = clamp(spec.intercept ?? randInt(-3, 3), -4, 4)
+  const label = lineLabel(slope, intercept)
+
+  return {
+    stepId: `p${idx}_plot`,
+    type: 'plot-line',
+    instruction: `Plot the line ${label}. Place 2 dots on the line.`,
+    widgetConfig: {
+      equation: { slope, intercept },
+      grid: { xMin: -5, xMax: 5, yMin: -8, yMax: 8 },
+      equationLabel: label,
+    },
+    explanations: {
+      correct: `Both dots sit on ${label} — for example (0, ${intercept}) and (1, ${slope + intercept}).`,
+      incomplete: 'Place 2 dots on the line. Click a dot again to remove it.',
+      generic_wrong: `Each point must satisfy ${label}. Try x = 0: y = ${intercept}.`,
+    },
+  }
+}
+
+function buildGraphSelect(spec: RawSpec, idx: number): LessonStep {
+  const inRange = (n: unknown): n is number =>
+    typeof n === 'number' && Number.isInteger(n) && n >= -3 && n <= 3
+
+  let r1 = inRange(spec.r1) ? spec.r1 : randInt(-3, 3)
+  let r2 = inRange(spec.r2) ? spec.r2 : randInt(-3, 3)
+  while (r2 === r1) r2 = randInt(-3, 3)
+  const opens: 'up' | 'down' = spec.opens === 'down' ? 'down' : spec.opens === 'up' ? 'up' : pick(['up', 'down'])
+
+  const keyOf = (roots: [number, number], o: string) =>
+    `${[...roots].sort((a, b) => a - b).join(',')}|${o}`
+
+  const correctRoots: [number, number] = [r1, r2]
+  const seen = new Set<string>([keyOf(correctRoots, opens)])
+  const distractors: { roots: [number, number]; opens: 'up' | 'down' }[] = []
+  let guard = 0
+  while (distractors.length < 3 && guard < 100) {
+    guard += 1
+    let a = randInt(-3, 3)
+    let b = randInt(-3, 3)
+    while (b === a) b = randInt(-3, 3)
+    const o: 'up' | 'down' = pick(['up', 'down'])
+    const k = keyOf([a, b], o)
+    if (seen.has(k)) continue
+    seen.add(k)
+    distractors.push({ roots: [a, b], opens: o })
+  }
+
+  const all = shuffle([{ roots: correctRoots, opens }, ...distractors])
+  const ids = ['a', 'b', 'c', 'd']
+  const options = all.map((o, i) => ({ optionId: ids[i], roots: o.roots, opens: o.opens }))
+  const correctOptionId = options.find(
+    (o) => keyOf(o.roots, o.opens) === keyOf(correctRoots, opens),
+  )!.optionId
+
+  // Label derived from roots + opening so exactly the correct parabola matches.
+  const sign = opens === 'up' ? 1 : -1
+  const a = sign
+  const b = -sign * (r1 + r2)
+  const c = sign * (r1 * r2)
+  const label = quadraticLabel(a, b, c)
+
+  return {
+    stepId: `p${idx}_quad`,
+    type: 'graph-select',
+    instruction: `Which graph shows ${label}?`,
+    widgetConfig: {
+      equationLabel: label,
+      options,
+    },
+    validationRules: { correctOptionId },
+    explanations: {
+      correct: `That's it! ${label} opens ${opens} with roots at x = ${r1} and x = ${r2}.`,
+      incomplete: 'Tap the graph that matches the equation.',
+      generic_wrong: `Check the roots (where it crosses the x-axis: x = ${r1}, ${r2}) and whether it opens ${opens}.`,
+    },
+  }
+}
+
 function buildStep(topic: TopicId, spec: RawSpec, idx: number): LessonStep {
   switch (topic) {
     case 'expressions':
@@ -265,6 +374,10 @@ function buildStep(topic: TopicId, spec: RawSpec, idx: number): LessonStep {
       return buildLinear(spec, idx)
     case 'foil':
       return buildFoil(spec, idx)
+    case 'plot':
+      return buildPlotLine(spec, idx)
+    case 'quadratic':
+      return buildGraphSelect(spec, idx)
   }
 }
 
@@ -391,9 +504,12 @@ async function requestAiSpecs(topics: TopicId[], count: number): Promise<{ topic
     '- expressions: {variable: letter, variableCount: 2-5, constantCount: 1-5}\n' +
     '- evaluate: {coef: 2-6, variable: letter, constant: 1-9, value: 2-9}\n' +
     '- linear: {slope: 1-4, intercept: -6..8, mode: "y" or "x"}\n' +
-    '- foil: {p: 1-3, a: 1-4, q: 1-3, b: 1-4} for (p·x + a)(q·x + b)'
+    '- plot: {slope: -3..3 (not 0), intercept: -4..4}\n' +
+    '- foil: {p: 1-3, a: 1-4, q: 1-3, b: 1-4} for (p·x + a)(q·x + b)\n' +
+    '- quadratic: {r1: -3..3, r2: -3..3 (different from r1), opens: "up" or "down"}'
 
-  const user = `Generate exactly ${count} problems using only these topics: ${topics.join(', ')}. Interleave them.`
+  const nonce = Math.random().toString(36).slice(2, 8)
+  const user = `Generate exactly ${count} problems using only these topics: ${topics.join(', ')}. Interleave them. Use fresh, varied numbers (random seed ${nonce}) — do not reuse the example numbers.`
 
   const data = await aiJson(system, user)
   if (!data || typeof data !== 'object') return []

@@ -76,8 +76,7 @@ export function PracticePage({ userId, onStart }: PracticePageProps) {
         <h1 className="practice-title">⚡ Bolt's Mixed Drills</h1>
         <p className="practice-sub">
           Pick your targets and Bolt, your mission leader, will generate a fresh, shuffled
-          set of problems. Topics are mixed (interleaved) on purpose — switching between
-          skills helps them stick.
+          set of problems.
         </p>
       </header>
 

@@ -8,6 +8,7 @@ import { MainLayout, type NavKey } from './components/Layout/MainLayout'
 import { ProfilePage } from './components/Profile/ProfilePage'
 import { FriendsPage } from './components/Friends/FriendsPage'
 import { PracticePage } from './components/Practice/PracticePage'
+import { BossLevel } from './components/BossLevel/BossLevel'
 import { LevelUpModal } from './components/Gamification/LevelUpModal'
 import { ComboLayer } from './components/Gamification/ComboLayer'
 import { GamificationProvider } from './context/GamificationContext'
@@ -205,6 +206,7 @@ function App() {
           : 'dashboard'
 
   const inPracticeDrill = view === 'practice' && practiceLesson !== null
+  const immersive = view === 'lesson' || view === 'boss' || inPracticeDrill
 
   return (
     <GamificationProvider
@@ -220,10 +222,30 @@ function App() {
         photoURL={photoURL}
         demoMode={demoUser || isDemoMode()}
         onSignOut={() => void handleSignOut()}
-        immersive={view === 'lesson' || inPracticeDrill}
+        immersive={immersive}
       >
         {view === 'roadmap' && (
-          <Roadmap progressList={progressList} onSelectLesson={openLesson} />
+          <Roadmap
+            progressList={progressList}
+            userId={userId}
+            onSelectLesson={openLesson}
+            onStartBoss={() => {
+              setActiveLessonId(null)
+              setPracticeLesson(null)
+              setView('boss')
+            }}
+          />
+        )}
+
+        {view === 'boss' && (
+          <BossLevel
+            userId={userId}
+            onExit={() => {
+              setView('roadmap')
+              void refreshProgress()
+            }}
+            onGoToPractice={() => setView('practice')}
+          />
         )}
 
         {view === 'profile' && (

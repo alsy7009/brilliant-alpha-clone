@@ -147,6 +147,11 @@ function revealNonSlotAnswer(step: LessonStep): string {
   }
 }
 
+/** Human-readable correct answer for any step (used by Boss Level review). */
+export function revealAnswer(step: LessonStep): string {
+  return isSlotStep(step) ? revealSlotAnswer(step) : revealNonSlotAnswer(step)
+}
+
 /**
  * Escalating feedback:
  *  - attempt 1: name the wrong part(s) + a concept nudge

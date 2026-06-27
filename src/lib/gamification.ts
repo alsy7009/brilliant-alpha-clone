@@ -6,6 +6,9 @@ export const XP_PER_STEP = 10
 /** Small flat XP for finishing a full practice drill — far less than a real lesson. */
 export const XP_PER_DRILL = 5
 
+/** XP earned per correct answer in the Boss Level quiz (score-proportional reward). */
+export const BOSS_XP_PER_CORRECT = 10
+
 /** Bonus XP per consecutive correct answer in a session combo (combo of n → +COMBO_BONUS*(n-1)). */
 export const COMBO_BONUS = 5
 

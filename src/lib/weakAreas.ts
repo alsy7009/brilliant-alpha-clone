@@ -19,10 +19,13 @@ export function topicForStepType(type: string): TopicId | null {
     case 'expression-evaluate':
       return 'evaluate'
     case 'linear-graph':
-    case 'plot-line':
       return 'linear'
+    case 'plot-line':
+      return 'plot'
     case 'foil-multiply':
       return 'foil'
+    case 'graph-select':
+      return 'quadratic'
     default:
       return null
   }
