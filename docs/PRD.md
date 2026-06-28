@@ -1,9 +1,15 @@
-# Product Requirements Document (PRD): ActiveLearn MVP
+# Product Requirements Document (PRD): Algebra Quest
 
-**Version:** 0.4  
-**Date:** June 22, 2026  
-**Status:** Draft  
-**Stack:** React · Firebase (Auth, Firestore, Hosting) · SVG · plain CSS
+**Version:** 1.0 (as-built)
+**Date:** June 28, 2026
+**Status:** Implemented & deployed — Phase 1 (MVP) + Phase 2 (AI) + optional Game Mode (`game` branch)
+**Stack:** React (Vite + TypeScript) · Firebase (Auth, Firestore, Hosting, Cloud Functions) · inline SVG · plain CSS · OpenAI (server-side via Cloud Function)
+**Live:** https://brilliant-alpha-clone.web.app
+
+> The original product was code-named "ActiveLearn"; it shipped as **Algebra Quest**. Sections 1–16
+> below capture the original phased plan and remain largely accurate; **Section 1.5 (Implementation
+> Status — As Built)** is the authoritative summary of what actually exists today, and **Section 17**
+> documents the optional military Game Mode on the `game` branch.
 
 ---
 
@@ -11,7 +17,7 @@
 
 The goal of this MVP is to build a **high-performance, mobile-responsive web application** modeled on Brilliant's "learn-by-doing" pedagogical framework. Moving completely away from static video lectures or generic multiple-choice quizzes, the platform focuses on **interactive visual problem-solving**.
 
-Following a strict project cadence, this MVP **explicitly bans all AI features, model calls, or LLM-generated hints**. It serves as a pure structural test of a single, hand-crafted interactive lesson path that can teach a complex concept natively through visual mechanics and **hardcoded, specific feedback loops**.
+Following a strict project cadence, the **Phase 1 MVP explicitly banned all AI features**, model calls, or LLM-generated hints — a pure structural test of hand-crafted interactive lessons with **hardcoded, specific feedback loops**. (Phase 2 has since added AI for *problem generation only*, via a secure server-side proxy — see **Section 1.5**. The hand-written hint/feedback system remains the core; there is no AI chatbot.)
 
 ### What the MVP Is
 
@@ -47,6 +53,77 @@ A signed-in learner can:
 | Progress persists mid-lesson | `user_progress.currentStepId` |
 | Auth + mobile + deployed | Firebase Auth; mobile-first CSS; Firebase Hosting |
 | No AI in MVP | Hard gate — Phase 2 only |
+
+---
+
+## 1.5 Implementation Status — As Built
+
+This section reflects what is actually implemented and deployed (supersedes the original
+"AI ban" framing, which applied only to the Phase 1 MVP).
+
+### Lessons & widgets (Phase 1, shipped)
+
+Six hand-authored algebra lessons (`src/content/lessons/*.json`), bundled with the client
+(not stored in Firestore), played through a single `LessonPlayer`:
+
+1. **Intro to Equation Scales** — variable explainer + balance-scale solving (with block-by-block
+   subtraction animation and a "Balanced!" indicator)
+2. **Constructing Expressions** — drag tiles to build `a·x + b`
+3. **Evaluating Expressions** — substitute a value and simplify
+4. **Graphing Linear Equations** — intercepts + plot-a-line by placing points
+5. **The FOIL Method** — expand binomials by placing coefficients
+6. **Quadratic Graphs** — slider sandbox + match-equation-to-parabola
+
+Interactive widget types: `visual-intro`, `scale-balance`, `expression-build`,
+`expression-evaluate`, `linear-graph`, `plot-line`, `quad-explore`, `graph-select`,
+`foil-multiply`, `explanation-slide`. All validation is client-side (<100ms) with **escalating,
+answer-withholding hints** (concept nudge → directional hint → reveal on the 3rd miss) and
+per-slot red/green correctness.
+
+### Gamification (shipped)
+
+XP per step, levels with an XP-curve, daily **streak** (activity-based), **combo** bonus
+(5 first-try-correct in a row), one **daily goal** (cycling), level-up modal with unlockable
+**decorations/insignia**, coin-burst + screen-shake + trophy effects.
+
+### Social (shipped)
+
+Friends tab: search by email, send/accept/deny **friend requests**, view a friend's profile,
+stats, and earned trophies. Stats mirrored to each user's Firestore doc.
+
+### AI features (Phase 2, shipped — chatbot intentionally removed)
+
+- **Secure OpenAI proxy:** the key lives only in a Firebase **Cloud Function** (`functions/index.js`,
+  callable `aiChat`, key stored via `firebase functions:secrets:set OPENAI_API_KEY`). The browser
+  never sees it.
+- **AI-generated drills** (`Drills` tab): pick one or more topics; Bolt proposes problem
+  parameters while **answers are computed deterministically client-side**, so generated problems
+  are always valid. Questions are **interleaved** (no two same-topic in a row).
+- **Recommended review:** drills weighted toward the topics the learner has missed (tracked in
+  `src/lib/weakAreas.ts`).
+- **Boss Level:** a 15-question mixed quiz (interleaved, weighted toward graphing/FOIL) with
+  scoring, score-proportional XP, suggested practice areas, answer review, and a "cleared at ≥60%"
+  badge that's replayable with fresh randomized questions.
+- **Removed:** the conversational "Ask Bolt" tutor chatbot was deliberately cut (desirable
+  difficulty — see `docs/BRAINLIFT.md`). AI is used for problem *generation* only, not chat.
+
+### Game Mode (optional, `game` branch — see Section 17)
+
+Prodigy-style **tank battle arena**: a pre-battle briefing to choose tank + camo and review the
+arsenal, then solve math to fire attacks at a level-scaled enemy convoy; level-gated tanks/attacks,
+tank abilities, win/loss records, and a **global leaderboard** with personal rank.
+
+### Auth, persistence, deployment (shipped)
+
+Firebase email/password + Google sign-in with an **account-linking** flow and friendly error
+messages; progress/streak/rewards persisted (Firestore + `localStorage`); Firestore security
+rules for all collections; deployed to **Firebase Hosting**.
+
+### Stack reality check
+
+Built strictly with **React + Vite + TypeScript, Firebase, inline SVG, and plain CSS** — the
+8-bit arcade theme and all animations are hand-written CSS (no Tailwind, no Framer Motion, no UI
+or sprite libraries).
 
 ---
 
@@ -120,25 +197,28 @@ UserProgress   Composite key userId_lessonId → currentStepId, completedSteps, 
 | **Gamification (P1)** | Daily streak counter + visual celebration on step/lesson mastery |
 | **Deployment** | Public deploy on Firebase Hosting |
 
-### 3.2 Out-of-Scope for MVP
+### 3.2 Out-of-Scope for MVP (with as-built status)
 
-| Feature | Phase | Rationale |
-|---------|-------|-----------|
-| **AI elements / chatbot tutors** | Phase 2 | Zero Anthropic/OpenAI; no Koji-style features |
-| **AI lesson generation** | Phase 2 | All content is hand-written JSON |
-| **Automated hint generation** | Phase 2 | Hints are pre-authored in `explanations` maps |
-| **Account linking** | Phase 2 | Email + Google cannot be merged to one profile in MVP; `linkWithCredential` deferred |
-| **Interleaving** | Phase 3 | Learning science enhancement |
-| **Spaced repetition engines** | Phase 3 | Deferred |
-| **Knowledge tracing** | Phase 3 | Deferred |
-| **Competitive leagues** | Phase 3 | Social gamification |
-| **Premium paywalls** | Phase 3 | Monetization |
-| **Multi-course selection hubs** | Phase 3 | Algebra-only for MVP |
-| **Onboarding competency quiz** | — | Not in MVP; auth gate only |
-| **Native mobile apps** | — | Responsive web only |
-| **CMS / content admin UI** | Phase 2+ | Seed Firestore or repo JSON manually |
-| **Third-party UI / animation libraries** | — | No Tailwind, Framer Motion, MUI, etc. — styling and motion via plain CSS + SVG only |
-| **Backend beyond Firebase** | — | No custom servers, Cloud Functions, or non-Firebase APIs in MVP |
+Deferred at MVP time; the **Status** column notes what later shipped in Phase 2 / Game Mode.
+
+| Feature | Original phase | Status (as built) |
+|---------|----------------|-------------------|
+| **AI chatbot tutor** | Phase 2 | ❌ Cut on purpose (desirable difficulty) — no chat |
+| **AI problem generation** | Phase 2 | ✅ Shipped — secure Cloud Function proxy (drills + boss) |
+| **Automated hint generation** | Phase 2 | ➖ Hints stay hand-authored + escalating (no AI hints) |
+| **Account linking** | Phase 2 | ✅ Shipped — email/Google linking flow |
+| **Interleaving** | Phase 3 | ✅ Shipped — drills + boss interleave topics |
+| **Recommended / mistake-based review** | Phase 3 | ✅ Shipped — weak-area weighting |
+| **Spaced repetition engines** | Phase 3 | ⏳ Still deferred |
+| **Knowledge tracing** | Phase 3 | ⏳ Still deferred (lightweight weak-area tracking only) |
+| **Competitive leagues / leaderboard** | Phase 3 | ✅ Shipped — global battle leaderboard + rank (Game Mode) |
+| **Premium paywalls** | Phase 3 | ⏳ Still deferred |
+| **Multi-course selection hubs** | Phase 3 | ⏳ Algebra-only |
+| **Onboarding competency quiz** | — | ⏳ Not built |
+| **Native mobile apps** | — | ➖ Responsive web only (by design) |
+| **CMS / content admin UI** | Phase 2+ | ➖ Lessons remain repo JSON |
+| **Third-party UI / animation libraries** | — | ➖ Held — plain CSS + inline SVG only |
+| **Backend beyond Firebase** | — | ✅ Firebase **Cloud Functions** added (OpenAI proxy) |
 
 ---
 
@@ -298,10 +378,16 @@ Firestore uses document collections. The content layout uses a **structural JSON
 ### 6.1 Collections Overview
 
 ```
-/lessons/{lessonId}              Lesson content (JSON step tree)
-/users/{userId}                  User profile
+/users/{userId}                  User profile + mirrored stats (incl. battle record)
 /user_progress/{userId_lessonId} Per-user, per-lesson progress (composite key)
+/friend_requests/{requestId}     Pending/accepted/denied friend requests
+/friendships/{pairId}            Accepted friendships (pairId = sorted uid pair)
 ```
+
+> **As-built note:** lesson content ships **bundled with the client** (`src/content/lessons/*.json`),
+> not in a Firestore `lessons` collection. The schema below for `lessons` documents the JSON shape
+> regardless of where it's stored. The global **leaderboard** is derived from `/users` ordered by
+> `battlesWon` (no separate collection).
 
 ### 6.2 `lessons` Collection
 
@@ -366,22 +452,38 @@ Each document is a self-contained lesson. Can be seeded via Firebase console, im
   "userId": "firebase_auth_uid_123",
   "displayName": "Alex Learner",
   "email": "alex@domain.com",
-  "photoURL": "https://lh3.googleusercontent.com/...",
+  "emailLower": "alex@domain.com",
   "authProvider": "google.com",
-  "createdAt": "2026-06-22T20:55:14Z"
+  "createdAt": "2026-06-22T20:55:14Z",
+
+  "equippedDecoration": "neon-ring",
+  "totalXp": 240,
+  "level": 4,
+  "streak": 3,
+  "lessonsCompleted": 5,
+  "completedLessons": ["alg_balancing_01", "alg_expressions_01"],
+  "battlesWon": 7,
+  "battlesLost": 2,
+  "statsUpdatedAt": "2026-06-28T18:00:00Z"
 }
 ```
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `userId` | string | Same as Auth uid |
-| `displayName` | string | From Auth (Google provides by default) |
-| `email` | string | From Auth |
-| `photoURL` | string | Optional; typically set for Google sign-in |
-| `authProvider` | string | Primary sign-in method: `"password"` or `"google.com"` |
+| `displayName` | string | From Auth |
+| `email` / `emailLower` | string | `emailLower` powers case-insensitive friend lookup |
+| `authProvider` | string | `"password"` or `"google.com"` |
 | `createdAt` | timestamp | Account creation |
+| `equippedDecoration` | string | Equipped insignia/decoration id |
+| `totalXp`, `level`, `streak` | number | Mirrored stats so friends can see them |
+| `lessonsCompleted`, `completedLessons` | number / array | Mission/trophy progress snapshot |
+| `battlesWon`, `battlesLost` | number | Battle record (Game Mode); drives the leaderboard |
+| `statsUpdatedAt` | timestamp | Last mirror write |
 
-> Streak is stored on `user_progress` per lesson in MVP; optionally aggregate to `users` in a later pass.
+> The user doc is a **read-only mirror** of stats for friends + leaderboard; the source of truth for
+> progress is `user_progress`, and battle/reward state is also kept in `localStorage`. `photoURL` is
+> no longer written (photo upload was replaced by the in-app character/tank avatar).
 
 ### 6.4 `user_progress` Collection (Key-Value State Tracking)
 
@@ -415,10 +517,13 @@ Each document is a self-contained lesson. Can be seeded via Firebase console, im
 
 | Data | Storage | Key | Value |
 |------|---------|-----|-------|
-| Lesson content | Firestore doc or `src/content/` | `lessons/{lessonId}` | Full step tree + widget configs |
-| User profile | Firestore doc | `users/{userId}` | displayName, email, photoURL, authProvider |
+| Lesson content | Bundled client JSON | `src/content/lessons/*.json` | Full step tree + widget configs |
+| User profile + stats mirror | Firestore doc | `users/{userId}` | profile, XP/level/streak, battle record |
 | Lesson progress | Firestore doc | `user_progress/{userId}_{lessonId}` | currentStepId, completedSteps, streak |
-| Live widget state | React state (ephemeral) | `stepId` | Balance positions until submit |
+| Friend requests / friendships | Firestore docs | `friend_requests/*`, `friendships/{pairId}` | Social graph |
+| Rewards, weak-areas, loadout, battle record | `localStorage` | per-user keys | bonus XP, daily goal, struggles, tank/camo, W/L |
+| Live widget state | React state (ephemeral) | `stepId` | Widget positions until submit |
+| OpenAI key | Cloud Function secret | `OPENAI_API_KEY` | Server-side only (never shipped to client) |
 | Auth session | Firebase Auth | `uid` | JWT / session token |
 
 ---
