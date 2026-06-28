@@ -5,14 +5,24 @@ import { initWidgetState } from '../../lib/widgets/widgetState'
 import { checkStep, revealAnswer } from '../../lib/widgets/checkStep'
 import { recordMastery, recordStruggle, topicForStepType } from '../../lib/weakAreas'
 import {
+  ATTACKS,
   availableAttacks,
+  BASE_CRIT,
   buildWave,
   enemyMisses,
   rollDamage,
   type Attack,
   type Enemy,
 } from '../../lib/battle'
-import { baseHpForLevel, camoColor, getTank, type Loadout } from '../../lib/tank'
+import {
+  baseHpForLevel,
+  CAMO,
+  camoColor,
+  getTank,
+  TANKS,
+  type Loadout,
+  type TankKind,
+} from '../../lib/tank'
 import { XP_PER_ENEMY } from '../../lib/gamification'
 import { useGamification } from '../../context/GamificationContext'
 import { StepWidget } from '../StepWidget/StepWidget'
@@ -22,7 +32,7 @@ import './BattleArena.css'
 const ALL_TOPIC_IDS = PRACTICE_TOPICS.map((t) => t.id) as TopicId[]
 const FULL_CLEAR_BONUS = 25
 
-type Phase = 'loading' | 'choose' | 'cast' | 'resolve' | 'victory' | 'defeat'
+type Phase = 'setup' | 'loading' | 'choose' | 'cast' | 'resolve' | 'victory' | 'defeat'
 
 interface DamagePopup {
   id: number
@@ -38,9 +48,17 @@ interface BattleArenaProps {
   onExit: () => void
   /** Reports the final result so the app can persist the win/loss record. */
   onBattleEnd?: (won: boolean) => void
+  /** Lets the pre-battle briefing change the player's tank/camo. */
+  onLoadoutChange?: (next: Loadout) => void
 }
 
-export function BattleArena({ userId, loadout, onExit, onBattleEnd }: BattleArenaProps) {
+export function BattleArena({
+  userId,
+  loadout,
+  onExit,
+  onBattleEnd,
+  onLoadoutChange,
+}: BattleArenaProps) {
   const { registerBattleWin, markSession, level } = useGamification()
 
   const tank = getTank(loadout.tankId)
@@ -50,7 +68,7 @@ export function BattleArena({ userId, loadout, onExit, onBattleEnd }: BattleAren
 
   const [pool, setPool] = useState<LessonStep[]>([])
   const [qIndex, setQIndex] = useState(0)
-  const [phase, setPhase] = useState<Phase>('loading')
+  const [phase, setPhase] = useState<Phase>('setup')
 
   const [wave, setWave] = useState<Enemy[]>(() => buildWave(level))
   const [enemyIndex, setEnemyIndex] = useState(0)
@@ -123,11 +141,6 @@ export function BattleArena({ userId, loadout, onExit, onBattleEnd }: BattleAren
       },
     )
   }, [maxHp, level])
-
-  useEffect(() => {
-    void loadArena()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   // Award XP + record the result once the battle ends.
   useEffect(() => {
@@ -327,6 +340,92 @@ export function BattleArena({ userId, loadout, onExit, onBattleEnd }: BattleAren
     setAttack(null)
     setEnemyDown(false)
     setPhase('choose')
+  }
+
+  const selectTank = (id: TankKind) => onLoadoutChange?.({ ...loadout, tankId: id })
+  const selectCamo = (id: string) => onLoadoutChange?.({ ...loadout, camo: id })
+
+  // ---------- Pre-battle briefing ----------
+  if (phase === 'setup') {
+    return (
+      <div className="battle-arena">
+        <button type="button" className="text-button battle-quit" onClick={onExit}>
+          ← Back
+        </button>
+        <div className="battle-setup">
+          <h1 className="setup-title">⚙️ Mission Briefing</h1>
+
+          <div className="setup-preview">
+            <PlayerTank kind={tank.id} color={tankColor} size={150} />
+            <div className="setup-preview-info">
+              <span className="setup-tank-name">{tank.name}</span>
+              <div className="setup-stats">
+                <span>{maxHp} HP</span>
+                <span>{tank.damageMult}× DMG</span>
+                <span>{Math.round((BASE_CRIT + tank.critBonus) * 100)}% Crit</span>
+              </div>
+              <span className="setup-ability">{tank.ability}</span>
+            </div>
+          </div>
+
+          <h2 className="setup-heading">Choose your tank</h2>
+          <div className="setup-tank-grid">
+            {TANKS.map((t) => {
+              const locked = level < t.unlockLevel
+              const selected = loadout.tankId === t.id
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`setup-tank ${selected ? 'selected' : ''} ${locked ? 'locked' : ''}`}
+                  onClick={() => !locked && selectTank(t.id)}
+                  disabled={locked}
+                >
+                  <PlayerTank kind={t.id} color={tankColor} size={70} />
+                  <span className="setup-tank-label">{t.name}</span>
+                  {locked && <span className="setup-tank-lock">🔒 LV{t.unlockLevel}</span>}
+                </button>
+              )
+            })}
+          </div>
+
+          <h2 className="setup-heading">Camo</h2>
+          <div className="setup-camo-row">
+            {CAMO.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                className={`setup-swatch ${loadout.camo === c.id ? 'selected' : ''}`}
+                style={{ background: c.color }}
+                onClick={() => selectCamo(c.id)}
+                title={c.name}
+                aria-label={c.name}
+              />
+            ))}
+          </div>
+
+          <h2 className="setup-heading">Your arsenal</h2>
+          <div className="setup-arsenal">
+            {ATTACKS.map((a) => {
+              const locked = level < a.unlockLevel
+              return (
+                <div key={a.id} className={`setup-attack ${locked ? 'locked' : ''}`}>
+                  <span className="setup-attack-icon" style={{ background: locked ? '#b9bec7' : a.color }}>
+                    {a.icon}
+                  </span>
+                  <span className="setup-attack-name">{a.name}</span>
+                  <span className="setup-attack-status">{locked ? `LV${a.unlockLevel}` : 'Ready'}</span>
+                </div>
+              )
+            })}
+          </div>
+
+          <button type="button" className="primary-button setup-deploy" onClick={() => void loadArena()}>
+            ▶ Deploy to battle
+          </button>
+        </div>
+      </div>
+    )
   }
 
   // ---------- Render ----------

@@ -178,7 +178,7 @@ export function MainLayout({
 
       <main className={`ml-content ${immersive ? 'immersive' : ''}`}>{children}</main>
 
-      {/* Mobile bottom nav */}
+      {/* Mobile bottom nav (icon-only) */}
       <nav className="ml-bottom-nav">
         {NAV_ITEMS.map((item) => (
           <button
@@ -186,9 +186,10 @@ export function MainLayout({
             type="button"
             className={`ml-bottom-item ${active === item.key ? 'active' : ''}`}
             onClick={() => onNavigate(item.key)}
+            aria-label={item.label}
+            title={item.label}
           >
             {item.icon}
-            <span>{item.label}</span>
           </button>
         ))}
       </nav>

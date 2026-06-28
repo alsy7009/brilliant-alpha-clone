@@ -269,6 +269,7 @@ function App() {
             userId={userId}
             loadout={loadout}
             onBattleEnd={handleBattleEnd}
+            onLoadoutChange={handleLoadoutChange}
             onExit={() => setView('roadmap')}
           />
         )}

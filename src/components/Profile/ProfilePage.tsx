@@ -97,9 +97,9 @@ export function ProfilePage({
                   </div>
                   <span className="tank-card-name">{t.name}</span>
                   <div className="tank-stats">
-                    <span title="Hull HP">❤️ {baseHpForLevel(t, level)}</span>
-                    <span title="Damage">⚔️ ×{t.damageMult}</span>
-                    <span title="Crit chance">🎯 {Math.round((BASE_CRIT + t.critBonus) * 100)}%</span>
+                    <span>{baseHpForLevel(t, level)} HP</span>
+                    <span>{t.damageMult}× DMG</span>
+                    <span>{Math.round((BASE_CRIT + t.critBonus) * 100)}% Crit</span>
                   </div>
                   <span className="tank-ability">{t.ability}</span>
                   {locked && <span className="tank-lock">🔒 Unlocks at LVL {t.unlockLevel}</span>}
