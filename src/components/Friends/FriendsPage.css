@@ -288,3 +288,67 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Leaderboard */
+.leaderboard {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  counter-reset: none;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  border: 3px solid var(--ink);
+  background: #fff;
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.leaderboard-row.is-me {
+  background: var(--c-yellow);
+}
+
+.lb-rank {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-family: var(--pixel-font);
+  font-size: 0.62rem;
+  color: #fff;
+  background: var(--c-blue);
+  border: 2px solid var(--ink);
+}
+
+.lb-rank-1 { background: #ffcf33; color: var(--ink); }
+.lb-rank-2 { background: #c6ccd6; color: var(--ink); }
+.lb-rank-3 { background: #cd7f32; }
+
+.lb-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 1.05rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-record {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.4rem;
+  font-family: var(--pixel-font);
+  font-size: 0.55rem;
+}
+
+.lb-wins { color: #1b6b3a; }
+.lb-losses { color: #8b2a1a; }

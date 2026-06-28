@@ -3,9 +3,11 @@ import {
   collection,
   deleteDoc,
   doc,
+  getCountFromServer,
   getDoc,
   getDocs,
   limit,
+  orderBy,
   query,
   setDoc,
   updateDoc,
@@ -36,6 +38,8 @@ export interface FriendProfile {
   lessonsCompleted: number
   completedLessons: string[]
   equippedDecoration: string
+  battlesWon: number
+  battlesLost: number
 }
 
 export interface UserStats {
@@ -44,6 +48,16 @@ export interface UserStats {
   streak: number
   lessonsCompleted: number
   completedLessons: string[]
+  battlesWon: number
+  battlesLost: number
+}
+
+export interface LeaderboardEntry {
+  userId: string
+  displayName: string
+  level: number
+  battlesWon: number
+  battlesLost: number
 }
 
 function pairId(a: string, b: string): string {
@@ -76,6 +90,8 @@ function toProfile(id: string, data: Record<string, unknown>): FriendProfile {
     lessonsCompleted: (data.lessonsCompleted as number) ?? 0,
     completedLessons: (data.completedLessons as string[]) ?? [],
     equippedDecoration: (data.equippedDecoration as string) ?? 'none',
+    battlesWon: (data.battlesWon as number) ?? 0,
+    battlesLost: (data.battlesLost as number) ?? 0,
   }
 }
 
@@ -189,5 +205,43 @@ export async function getFriends(uid: string): Promise<FriendProfile[]> {
     return profiles.filter((p): p is FriendProfile => p !== null)
   } catch {
     return []
+  }
+}
+
+/** Top players globally, ranked by battles won. */
+export async function getLeaderboard(top = 10): Promise<LeaderboardEntry[]> {
+  if (!isFirebaseConfigured) return []
+  try {
+    const snap = await getDocs(
+      query(collection(db, 'users'), orderBy('battlesWon', 'desc'), limit(top)),
+    )
+    return snap.docs.map((d) => {
+      const data = d.data()
+      return {
+        userId: d.id,
+        displayName: (data.displayName as string) ?? 'Commander',
+        level: (data.level as number) ?? 1,
+        battlesWon: (data.battlesWon as number) ?? 0,
+        battlesLost: (data.battlesLost as number) ?? 0,
+      }
+    })
+  } catch {
+    return []
+  }
+}
+
+/**
+ * The current player's global rank by battles won (1 = best). Returns the number of
+ * players ranked strictly above them, plus one — never the total player count.
+ */
+export async function getMyRank(myWins: number): Promise<number | null> {
+  if (!isFirebaseConfigured) return null
+  try {
+    const c = await getCountFromServer(
+      query(collection(db, 'users'), where('battlesWon', '>', myWins)),
+    )
+    return c.data().count + 1
+  } catch {
+    return null
   }
 }

@@ -24,6 +24,7 @@ import {
 import { fetchAllProgress } from './lib/progress'
 import { getDisplayStreak, recordActivityStreak } from './lib/streak'
 import { updateUserStats } from './lib/friends'
+import { getBattleRecord, recordBattleResult, type BattleRecord } from './lib/battleStats'
 import { getBonusXp } from './lib/rewards'
 import { levelInfoFromXp, totalXpFromProgress } from './lib/gamification'
 import { getLoadout, setLoadout, type Loadout } from './lib/tank'
@@ -40,6 +41,7 @@ function App() {
   const [practiceLesson, setPracticeLesson] = useState<Lesson | null>(null)
   const [progressList, setProgressList] = useState<UserProgress[]>([])
   const [loadout, setLoadoutState] = useState<Loadout>(() => getLoadout('local'))
+  const [battleRecord, setBattleRecord] = useState<BattleRecord>(() => getBattleRecord('local'))
   const [displayNameState, setDisplayNameState] = useState<string | null>(null)
   const [streak, setStreak] = useState(0)
   const [confirmLinkEmail, setConfirmLinkEmail] = useState<string | null>(null)
@@ -63,7 +65,15 @@ function App() {
 
   useEffect(() => {
     setLoadoutState(getLoadout(userId))
+    setBattleRecord(getBattleRecord(userId))
   }, [userId])
+
+  const handleBattleEnd = useCallback(
+    (won: boolean) => {
+      setBattleRecord(recordBattleResult(userId, won))
+    },
+    [userId],
+  )
 
   // Display the saved streak on login (starts at 0; only a completed question bumps it).
   useEffect(() => {
@@ -92,8 +102,10 @@ function App() {
       streak,
       lessonsCompleted: completed.length,
       completedLessons: completed.map((p) => p.lessonId),
+      battlesWon: battleRecord.won,
+      battlesLost: battleRecord.lost,
     })
-  }, [authUser, progressList, streak])
+  }, [authUser, progressList, streak, battleRecord])
 
   // Keep the display name in sync once the auth profile carries it.
   useEffect(() => {
@@ -253,7 +265,12 @@ function App() {
         )}
 
         {view === 'battle' && (
-          <BattleArena userId={userId} loadout={loadout} onExit={() => setView('roadmap')} />
+          <BattleArena
+            userId={userId}
+            loadout={loadout}
+            onBattleEnd={handleBattleEnd}
+            onExit={() => setView('roadmap')}
+          />
         )}
 
         {view === 'profile' && (
@@ -272,6 +289,7 @@ function App() {
               name: displayName ?? 'Learner',
               email: authUser?.email ?? '',
             }}
+            myWins={battleRecord.won}
           />
         )}
 

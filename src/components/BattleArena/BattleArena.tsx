@@ -36,9 +36,11 @@ interface BattleArenaProps {
   userId: string
   loadout: Loadout
   onExit: () => void
+  /** Reports the final result so the app can persist the win/loss record. */
+  onBattleEnd?: (won: boolean) => void
 }
 
-export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
+export function BattleArena({ userId, loadout, onExit, onBattleEnd }: BattleArenaProps) {
   const { registerBattleWin, markSession, level } = useGamification()
 
   const tank = getTank(loadout.tankId)
@@ -127,14 +129,16 @@ export function BattleArena({ userId, loadout, onExit }: BattleArenaProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Award XP once the battle ends.
+  // Award XP + record the result once the battle ends.
   useEffect(() => {
     if ((phase === 'victory' || phase === 'defeat') && !awardedRef.current) {
       awardedRef.current = true
-      const bonus = phase === 'victory' ? FULL_CLEAR_BONUS : 0
+      const won = phase === 'victory'
+      const bonus = won ? FULL_CLEAR_BONUS : 0
       registerBattleWin(defeatedCount * XP_PER_ENEMY + bonus)
+      onBattleEnd?.(won)
     }
-  }, [phase, defeatedCount, registerBattleWin])
+  }, [phase, defeatedCount, registerBattleWin, onBattleEnd])
 
   const waveSize = wave.length
 

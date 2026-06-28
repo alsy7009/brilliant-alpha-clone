@@ -136,7 +136,7 @@ export const ENEMY_WAVE: Enemy[] = [
 ]
 
 /** Chance the enemy whiffs its counterattack entirely (keeps fights survivable). */
-export const ENEMY_MISS_CHANCE = 0.28
+export const ENEMY_MISS_CHANCE = 0.2
 
 export function enemyMisses(): boolean {
   return Math.random() < ENEMY_MISS_CHANCE

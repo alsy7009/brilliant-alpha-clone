@@ -9,9 +9,12 @@ import {
   denyFriendRequest,
   getFriends,
   getIncomingRequests,
+  getLeaderboard,
+  getMyRank,
   sendFriendRequest,
   type FriendProfile,
   type FriendRequest,
+  type LeaderboardEntry,
 } from '../../lib/friends'
 import { AvatarDecoration } from '../Gamification/AvatarDecoration'
 import { LevelBadge } from '../Gamification/LevelBadge'
@@ -20,9 +23,10 @@ import './FriendsPage.css'
 
 interface FriendsPageProps {
   me: { uid: string; name: string; email: string; photoURL?: string }
+  myWins: number
 }
 
-export function FriendsPage({ me }: FriendsPageProps) {
+export function FriendsPage({ me, myWins }: FriendsPageProps) {
   const [friends, setFriends] = useState<FriendProfile[]>([])
   const [incoming, setIncoming] = useState<FriendRequest[]>([])
   const [email, setEmail] = useState('')
@@ -31,13 +35,22 @@ export function FriendsPage({ me }: FriendsPageProps) {
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<FriendProfile | null>(null)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [myRank, setMyRank] = useState<number | null>(null)
 
   const refresh = useCallback(async () => {
-    const [f, inc] = await Promise.all([getFriends(me.uid), getIncomingRequests(me.uid)])
+    const [f, inc, lb, rank] = await Promise.all([
+      getFriends(me.uid),
+      getIncomingRequests(me.uid),
+      getLeaderboard(10),
+      getMyRank(myWins),
+    ])
     setFriends(f)
     setIncoming(inc)
+    setLeaderboard(lb)
+    setMyRank(rank)
     setLoading(false)
-  }, [me.uid])
+  }, [me.uid, myWins])
 
   useEffect(() => {
     void refresh()
@@ -77,6 +90,7 @@ export function FriendsPage({ me }: FriendsPageProps) {
               <StreakFlame streak={selected.streak} size={20} /> streak
             </span>
             <span className="friend-badge">{selected.totalXp} XP</span>
+            <span className="friend-badge">⚔️ {selected.battlesWon}W · {selected.battlesLost}L</span>
           </div>
         </section>
 
@@ -226,7 +240,8 @@ export function FriendsPage({ me }: FriendsPageProps) {
                       <span className="friend-xp">{f.totalXp} XP</span>
                     </span>
                     <span className="friend-sub">
-                      {f.completedLessons.filter((id) => LESSON_IDS.has(id)).length} missions cleared
+                      {f.completedLessons.filter((id) => LESSON_IDS.has(id)).length} missions ·
+                      {' '}⚔️ {f.battlesWon}W-{f.battlesLost}L
                     </span>
                   </div>
                   <span className="friend-chevron" aria-hidden="true">›</span>
@@ -234,6 +249,36 @@ export function FriendsPage({ me }: FriendsPageProps) {
               </li>
             ))}
           </ul>
+        )}
+      </section>
+
+      {/* Global leaderboard */}
+      <section className="friends-card">
+        <h3 className="friends-heading">
+          🏆 Global Leaderboard
+          {myRank !== null && <span className="friends-count">Your rank #{myRank}</span>}
+        </h3>
+        {leaderboard.length === 0 ? (
+          <p className="friends-demo">No battles fought yet — be the first to top the charts!</p>
+        ) : (
+          <ol className="leaderboard">
+            {leaderboard.map((entry, i) => (
+              <li
+                key={entry.userId}
+                className={`leaderboard-row ${entry.userId === me.uid ? 'is-me' : ''}`}
+              >
+                <span className={`lb-rank lb-rank-${i + 1}`}>{i + 1}</span>
+                <span className="lb-name">
+                  {entry.displayName}
+                  {entry.userId === me.uid && ' (you)'}
+                </span>
+                <span className="lb-record">
+                  <span className="lb-wins">{entry.battlesWon}W</span>
+                  <span className="lb-losses">{entry.battlesLost}L</span>
+                </span>
+              </li>
+            ))}
+          </ol>
         )}
       </section>
     </div>
