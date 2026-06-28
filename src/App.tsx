@@ -10,6 +10,8 @@ import { FriendsPage } from './components/Friends/FriendsPage'
 import { PracticePage } from './components/Practice/PracticePage'
 import { BossLevel } from './components/BossLevel/BossLevel'
 import { BattleArena } from './components/BattleArena/BattleArena'
+import { PvpLobby } from './components/Pvp/PvpLobby'
+import { PvpBattle } from './components/Pvp/PvpBattle'
 import { LevelUpModal } from './components/Gamification/LevelUpModal'
 import { ComboLayer } from './components/Gamification/ComboLayer'
 import { GamificationProvider } from './context/GamificationContext'
@@ -25,6 +27,8 @@ import { fetchAllProgress } from './lib/progress'
 import { getDisplayStreak, recordActivityStreak } from './lib/streak'
 import { updateUserStats } from './lib/friends'
 import { getBattleRecord, recordBattleResult, type BattleRecord } from './lib/battleStats'
+import { getRp } from './lib/rank'
+import type { MatchInfo } from './lib/pvp'
 import { getBonusXp } from './lib/rewards'
 import { levelInfoFromXp, totalXpFromProgress } from './lib/gamification'
 import { getLoadout, setLoadout, type Loadout } from './lib/tank'
@@ -42,6 +46,8 @@ function App() {
   const [progressList, setProgressList] = useState<UserProgress[]>([])
   const [loadout, setLoadoutState] = useState<Loadout>(() => getLoadout('local'))
   const [battleRecord, setBattleRecord] = useState<BattleRecord>(() => getBattleRecord('local'))
+  const [rp, setRpState] = useState<number>(() => getRp('local'))
+  const [pvpMatch, setPvpMatch] = useState<MatchInfo | null>(null)
   const [displayNameState, setDisplayNameState] = useState<string | null>(null)
   const [streak, setStreak] = useState(0)
   const [confirmLinkEmail, setConfirmLinkEmail] = useState<string | null>(null)
@@ -49,6 +55,11 @@ function App() {
   const userId = demoUser ? resolveUserId(null) : resolveUserId(authUser)
   const displayName =
     displayNameState ?? authUser?.displayName ?? (demoUser ? 'Demo Learner' : undefined)
+
+  // Player level (for PvP matchmaking + display) derived from total XP.
+  const playerLevel = levelInfoFromXp(
+    totalXpFromProgress(progressList) + getBonusXp(userId),
+  ).level
 
   const handleLoadoutChange = useCallback(
     (next: Loadout) => {
@@ -66,11 +77,21 @@ function App() {
   useEffect(() => {
     setLoadoutState(getLoadout(userId))
     setBattleRecord(getBattleRecord(userId))
+    setRpState(getRp(userId))
   }, [userId])
 
   const handleBattleEnd = useCallback(
     (won: boolean) => {
       setBattleRecord(recordBattleResult(userId, won))
+    },
+    [userId],
+  )
+
+  const handlePvpFinish = useCallback(
+    (outcome: 'win' | 'loss' | 'draw', newRp: number) => {
+      setRpState(newRp)
+      if (outcome === 'win') setBattleRecord(recordBattleResult(userId, true))
+      else if (outcome === 'loss') setBattleRecord(recordBattleResult(userId, false))
     },
     [userId],
   )
@@ -175,6 +196,7 @@ function App() {
   const handleNavigate = (key: NavKey) => {
     setActiveLessonId(null)
     setPracticeLesson(null)
+    setPvpMatch(null)
     setView(
       key === 'profile'
         ? 'profile'
@@ -184,7 +206,9 @@ function App() {
             ? 'practice'
             : key === 'battle'
               ? 'battle'
-              : 'roadmap',
+              : key === 'versus'
+                ? 'pvp'
+                : 'roadmap',
     )
   }
 
@@ -218,11 +242,14 @@ function App() {
           ? 'practice'
           : view === 'battle'
             ? 'battle'
-            : 'dashboard'
+            : view === 'pvp'
+              ? 'versus'
+              : 'dashboard'
 
   const inPracticeDrill = view === 'practice' && practiceLesson !== null
+  const inPvpBattle = view === 'pvp' && pvpMatch !== null
   const immersive =
-    view === 'lesson' || view === 'boss' || view === 'battle' || inPracticeDrill
+    view === 'lesson' || view === 'boss' || view === 'battle' || inPracticeDrill || inPvpBattle
 
   return (
     <GamificationProvider
@@ -274,12 +301,32 @@ function App() {
           />
         )}
 
+        {view === 'pvp' && !pvpMatch && (
+          <PvpLobby
+            me={{ uid: userId, name: displayName ?? 'You', level: playerLevel }}
+            rp={rp}
+            onStart={(m) => setPvpMatch(m)}
+            onExit={() => setView('roadmap')}
+          />
+        )}
+
+        {view === 'pvp' && pvpMatch && (
+          <PvpBattle
+            me={{ uid: userId, name: displayName ?? 'You', level: playerLevel }}
+            loadout={loadout}
+            match={pvpMatch}
+            onFinish={handlePvpFinish}
+            onExit={() => setPvpMatch(null)}
+          />
+        )}
+
         {view === 'profile' && (
           <ProfilePage
             displayName={displayName}
             progressList={progressList}
             loadout={loadout}
             onLoadoutChange={handleLoadoutChange}
+            rp={rp}
           />
         )}
 

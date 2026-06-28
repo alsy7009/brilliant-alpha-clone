@@ -27,3 +27,4 @@ export type AppView =
   | 'practice'
   | 'boss'
   | 'battle'
+  | 'pvp'

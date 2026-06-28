@@ -33,6 +33,19 @@ service cloud.firestore {
       allow delete: if request.auth != null
         && request.auth.uid in resource.data.members;
     }
+    match /pvp_queue/{uid} {
+      // Signed-in players can read the queue (to find an opponent) and manage their own entry.
+      allow read: if request.auth != null;
+      allow create, delete: if request.auth != null && request.auth.uid == uid;
+      // Owner can update their own entry; an opponent may flip it to "matched" during claim.
+      allow update: if request.auth != null;
+    }
+    match /pvp_matches/{matchId} {
+      // Both players (the doc id is "uidA__uidB") can read and write match/round data.
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && request.auth.uid in matchId.split('__');
+    }
     match /user_progress/{docId} {
       // Doc id is "{uid}_{lessonId}". Firebase UIDs contain no underscores, so the
       // first segment is the owner — this also permits reads of not-yet-created docs.

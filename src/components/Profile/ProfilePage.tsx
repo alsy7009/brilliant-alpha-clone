@@ -11,6 +11,7 @@ import {
   type TankKind,
 } from '../../lib/tank'
 import { ATTACKS, BASE_CRIT } from '../../lib/battle'
+import { getRankInfo } from '../../lib/rank'
 import { PlayerTank, TankBadge } from '../Tank/TankSprite'
 import { LevelBadge } from '../Gamification/LevelBadge'
 import { StreakFlame } from '../Gamification/StreakFlame'
@@ -22,6 +23,7 @@ interface ProfilePageProps {
   progressList: UserProgress[]
   loadout: Loadout
   onLoadoutChange: (next: Loadout) => void
+  rp: number
 }
 
 export function ProfilePage({
@@ -29,7 +31,9 @@ export function ProfilePage({
   progressList,
   loadout,
   onLoadoutChange,
+  rp,
 }: ProfilePageProps) {
+  const rank = getRankInfo(rp)
   const {
     level,
     xpIntoLevel,
@@ -71,6 +75,9 @@ export function ProfilePage({
               <StreakFlame streak={streak} size={22} /> streak
             </span>
             <span className="profile-badge">{totalXp} XP</span>
+            <span className="profile-badge" style={{ color: rank.tier.color }}>
+              ⚔️ {rank.tier.name}
+            </span>
           </div>
           <div className="profile-xp">
             <XpBar level={level} xpIntoLevel={xpIntoLevel} xpForNext={xpForNext} />
