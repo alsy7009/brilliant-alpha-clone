@@ -98,8 +98,11 @@
 }
 
 .topic-blurb {
-  font-size: 1.05rem;
+  font-family: var(--body-font);
+  font-size: 0.95rem;
+  line-height: 1.25;
   color: #3a3357;
+  margin-top: 0.1rem;
 }
 
 .count-row {
