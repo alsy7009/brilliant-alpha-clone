@@ -75,6 +75,7 @@ export function PvpLobby({ me, rp, onStart, onExit }: PvpLobbyProps) {
     }
 
     let matched = false
+    const startedAt = Date.now()
     try {
       await joinQueue(me, tc)
     } catch {
@@ -88,14 +89,18 @@ export function PvpLobby({ me, rp, onStart, onExit }: PvpLobbyProps) {
       begin(info)
     })
 
-    const poll = window.setInterval(async () => {
+    const attempt = async () => {
       if (matched) return
-      const info = await tryMatch(me, tc)
+      // Start strict on level, then relax so cross-device / mismatched-level duels still pair.
+      const gap = Date.now() - startedAt > 3500 ? 999 : 3
+      const info = await tryMatch(me, tc, gap)
       if (info && !matched) {
         matched = true
         begin(info)
       }
-    }, 1600)
+    }
+    void attempt() // try right away, not just after the first interval
+    const poll = window.setInterval(attempt, 1500)
 
     const timeout = window.setTimeout(() => {
       if (!matched) {

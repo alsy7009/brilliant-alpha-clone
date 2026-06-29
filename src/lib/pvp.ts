@@ -11,9 +11,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
-  limit,
   onSnapshot,
-  orderBy,
   query,
   runTransaction,
   serverTimestamp,
@@ -36,7 +34,7 @@ export const LOSS_XP = 5
 /** Only match players within this many levels of each other. */
 const LEVEL_BRACKET = 3
 /** Stop waiting for a human and fall back to a bot after this long. */
-export const SEARCH_TIMEOUT_MS = 8000
+export const SEARCH_TIMEOUT_MS = 11000
 
 export interface Opponent {
   uid: string
@@ -150,6 +148,7 @@ interface QueueDoc {
   oppUid?: string
   oppName?: string
   oppLevel?: number
+  createdAt?: { toMillis?: () => number } | null
 }
 
 /** Join the matchmaking queue for a time control. */
@@ -178,19 +177,20 @@ export async function leaveQueue(uid: string): Promise<void> {
 /**
  * Try to claim a waiting opponent (same time control, near level). Returns the MatchInfo if a
  * match was created, else null (keep waiting / fall back to a bot).
+ *
+ * Uses a single-field query (no composite index needed) and filters/sorts client-side.
+ * `maxLevelGap` can be widened by the caller the longer the search runs.
  */
-export async function tryMatch(me: QueueMe, tc: TimeControl): Promise<MatchInfo | null> {
+export async function tryMatch(
+  me: QueueMe,
+  tc: TimeControl,
+  maxLevelGap: number = LEVEL_BRACKET,
+): Promise<MatchInfo | null> {
   if (!isFirebaseConfigured) return null
   let candidates
   try {
     candidates = await getDocs(
-      query(
-        collection(db, 'pvp_queue'),
-        where('timeControl', '==', tc),
-        where('status', '==', 'waiting'),
-        orderBy('createdAt', 'asc'),
-        limit(10),
-      ),
+      query(collection(db, 'pvp_queue'), where('timeControl', '==', tc)),
     )
   } catch {
     return null
@@ -198,7 +198,13 @@ export async function tryMatch(me: QueueMe, tc: TimeControl): Promise<MatchInfo 
 
   const opp = candidates.docs
     .map((d) => d.data() as QueueDoc)
-    .find((d) => d.uid !== me.uid && Math.abs((d.level ?? 1) - me.level) <= LEVEL_BRACKET)
+    .filter(
+      (d) =>
+        d.uid !== me.uid &&
+        d.status === 'waiting' &&
+        Math.abs((d.level ?? 1) - me.level) <= maxLevelGap,
+    )
+    .sort((a, b) => (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0))[0]
   if (!opp) return null
 
   const matchId = pairId(me.uid, opp.uid)
